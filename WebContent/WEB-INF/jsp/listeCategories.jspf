@@ -1,0 +1,7 @@
+<label for="categorie">Catégorie : </label><select name="no_categorie" id="categorie" required>
+				<option value="0">Sélectionnez une catégorie</option>
+				<option value="1">Informatique</option>
+				<option value="2">Ameublement</option>
+				<option value="3">Sports & Loisirs</option>
+				<option value="4">Vêtements</option>
+			</select>
