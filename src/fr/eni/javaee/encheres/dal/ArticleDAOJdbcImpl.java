@@ -11,28 +11,31 @@ import java.util.List;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
+import fr.eni.javaee.encheres.bo.Adresse;
 import fr.eni.javaee.encheres.bo.Article;
 
-
 public class ArticleDAOJdbcImpl implements ArticleDAO {
-	
+
 	private ModelException modelDalException = new ModelException();
-	
-	
-	private static final String INSERT_ARTICLE = "INSERT INTO Articles_Vendus(nom_article, description, date_debut_encheres, " + 
-	"date_fin_encheres, prix_initial, no_utilisateur, no_categorie) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	
+
+	private static final String INSERT_ARTICLE = "INSERT INTO Articles_Vendus(nom_article, description, date_debut_encheres, "
+			+ "date_fin_encheres, prix_initial, no_utilisateur, no_categorie) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
 	private static final String INSERT_ADRESSE_RETRAIT = "INSERT INTO Retraits (no_article, rue, code_postal, ville) VALUES (?, ?, ?, ?)";
-	private static final String SELECT_ARTICLE_ENCHERES_EC = "SELECT * FROM Articles_vendus WHERE (date_debut_encheres <= GETDATE() AND date_fin_encheres > GETDATE())";
-	
+	private static final String SELECT_ARTICLE_ENCHERES_EC = "SELECT * FROM Articles_vendus a \r\n"
+			+ "INNER JOIN Retraits r ON a.no_article = r.no_article \r\n"
+			+ "WHERE (date_debut_encheres <= GETDATE() AND date_fin_encheres > GETDATE())";
+
+	private static final String SELECT_USER = "SELECT pseudo FROM Utilisateurs WHERE no_utilisateur = ?";
+
 	/* Constructeur */
-	
+
 	public ArticleDAOJdbcImpl() {
 	}
 
 	@Override
 	public void insert(Article article) throws ModelException {
-		
+
 		try {
 			// obtention d'un connexion
 			Connection cnx = ConnectionProvider.getConnection();
@@ -55,24 +58,23 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 				// récupération de la clé primaire/identity générée par la BDD
 				ResultSet rs = query.getGeneratedKeys();
-				
+
 				if (rs.next()) {
 					// valorisation de l'attribut Id de l'objet article avec cette clé
 					article.setNoArticle(rs.getInt(1));
 				}
-				
+
 				// Préparation de la seconde requête
 				PreparedStatement query2 = cnx.prepareStatement(INSERT_ADRESSE_RETRAIT, Statement.RETURN_GENERATED_KEYS);
-				
+
 				// valorisation des paramètres
 				query2.setInt(1, article.getNoArticle());
 				query2.setString(2, article.getAdresseRetrait().getRue());
 				query2.setInt(3, article.getAdresseRetrait().getCodePostal());
 				query2.setString(4, article.getAdresseRetrait().getVille());
-				
+
 				// exécution de la requête
 				query2.executeUpdate();
-			
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -102,7 +104,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	@Override
 	public List<Article> selectByStatus() throws ModelException {
 		List<Article> listeEncheresEnCours = new ArrayList<Article>();
-		
+
 		try {
 			// obtention d'un connexion
 			Connection cnx = ConnectionProvider.getConnection();
@@ -110,21 +112,35 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			try {
 				// Préparation de la première requête
 				PreparedStatement query = cnx.prepareStatement(SELECT_ARTICLE_ENCHERES_EC);
-				
+
 				// exécution de la requête
 				ResultSet rs = query.executeQuery();
 
 				while (rs.next()) {
-					
+
 					Article article = articleBuilder(rs);
-					
+
+					PreparedStatement query2 = cnx.prepareStatement(SELECT_USER);
+
+					// valorisation du paramètre
+					System.out.println("\n TEST DAO // Numéro du vendeur : " + article.getNoUtilisateur());
+					query2.setInt(1, article.getNoUtilisateur());
+
+					// exécution de la requête
+					ResultSet rs2 = query2.executeQuery();
+
+					if (rs2.next()) {
+						article.setPseudoVendeur(rs2.getString(1));
+						System.out.println("\n DEBUG DAO // Pseudo du vendeur = " + article.getPseudoVendeur());
+					}
+
 					listeEncheresEnCours.add(article);
 				}
-				
+
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête SELECT a échoué.");
-				System.out.println("L'exécution de la requête SELECT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution d'une des requêtes SELECT a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -143,15 +159,16 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 			throw modelDalException;
 		}
-		
-		// System.out.println("\nTEST DAO // Liste des enchères en cours : " + listeEncheresEnCours);
+
+		// System.out.println("\nTEST DAO // Liste des enchères en cours : " +
+		// listeEncheresEnCours);
 		return listeEncheresEnCours;
-		
+
 	}
-	
+
 	private Article articleBuilder(ResultSet rs) {
 		Article article = new Article();
-		
+
 		try {
 			article.setNoArticle(rs.getInt(1));
 			article.setNomArticle(rs.getString(2));
@@ -162,26 +179,31 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			article.setPrixVente(rs.getInt(7));
 			article.setNoUtilisateur(rs.getInt(8));
 			article.setNoCategorie(rs.getInt(9));
-			
-			System.out.println("\n TEST DAO : Article actuellement en vente : " + article);
-			
+
+			Adresse adresseRetrait = new Adresse();
+			adresseRetrait.setRue(rs.getString(11));
+			adresseRetrait.setCodePostal(rs.getInt(12));
+			adresseRetrait.setVille(rs.getString(13));
+
+			article.setAdresseRetrait(adresseRetrait);
+
+			System.out.println("\nTEST DAO : Article actuellement en vente : " + article);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return article;
 	}
 
 	@Override
 	public void delete(Integer chiffre) throws ModelException {
-		
+
 	}
 
 	@Override
 	public void update(Article objet) throws ModelException {
-		
+
 	}
-
-
 
 }

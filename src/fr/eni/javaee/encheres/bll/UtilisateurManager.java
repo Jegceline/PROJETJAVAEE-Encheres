@@ -2,6 +2,8 @@ package fr.eni.javaee.encheres.bll;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
@@ -200,8 +202,9 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * Vérifie que l'adresse mail ne fait pas plus de 50 caractères Vérifie que
-	 * l'adresse mail n'est pas déjà utilisée
+	 * Vérifie que l'adresse mail ne fait pas plus de 50 caractères
+	 * Vérifie que l'adresse mail n'est pas déjà utilisée
+	 * vérifie que l'adresse mail comporte un @
 	 * 
 	 * @param email
 	 * @throws ModelException
@@ -231,11 +234,19 @@ public class UtilisateurManager {
 			}
 
 		}
+		Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$");
+		Matcher emailMatcher  = pattern.matcher(email);
+		
+		if(!emailMatcher.matches()) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_EMAIL_FORMAT, "Veuillez renseigner une adresse e-mail valide.");
+			// System.out.println("MANAGER : L'adresse e-mail ne respecte pas format d'une adresse e-mail.");
+		}
 	}
 
 	/**
-	 * Vérifie que le pseudo ne fait pas plus de 30 caractères Vérifie que le pseudo
-	 * n'est pas déjà utilisé
+	 * Vérifie que le pseudo ne fait pas plus de 30 caractères 
+	 * Vérifie que le pseudo n'est pas déjà utilisé
+	 * vérifie que le pseudo ne contient que des caractères alphanumériques
 	 * 
 	 * @param pseudo
 	 * @throws ModelException
@@ -256,12 +267,21 @@ public class UtilisateurManager {
 			e.printStackTrace();
 			throw e;
 		}
+		
 		for (String pseudoCourant : listePseudo) {
 			if (pseudo.equals(pseudoCourant)) {
 				modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_EXISTANT, "Ce pseudo est déjà utilisé.");
-				System.out.println("MANAGER : Ce pseudo est déjà utilisé");
+				// System.out.println("MANAGER : Ce pseudo est déjà utilisé");
 			}
 
+		}
+		
+		Pattern pattern = Pattern.compile("^[a-zA-Z0-9]*$");
+		Matcher pseudoMatcher  = pattern.matcher(pseudo);
+		
+		if(!pseudoMatcher.matches()) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_FORMAT, "Votre pseudo doit uniquement contenir des caractères alphanumériques.");
+			// System.out.println("MANAGER : Le pseudo de l'uilisateur ne respecte pas le format autorisé.");
 		}
 	}
 

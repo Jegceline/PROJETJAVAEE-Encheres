@@ -15,6 +15,7 @@ public class Article {
 	private Integer noUtilisateur;
 	private Integer noCategorie;
 	private Adresse adresseRetrait;
+	private String pseudoVendeur;
 
 	/* Constructeurs */
 	
@@ -35,6 +36,27 @@ public class Article {
 		this.noUtilisateur = noUtilisateur;
 		this.noCategorie = noCategorie;
 		this.adresseRetrait = adresseRetrait;
+	}
+	
+	
+
+
+	public Article(Integer noArticle, String nomArticle, String description, LocalDate dateDebutEncheres, LocalDate dateFinEncheres,
+			Integer prixInitial, Integer prixVente, String etatVente, Integer noUtilisateur, Integer noCategorie, Adresse adresseRetrait,
+			String pseudoVendeur) {
+		super();
+		this.noArticle = noArticle;
+		this.nomArticle = nomArticle;
+		this.description = description;
+		this.dateDebutEncheres = dateDebutEncheres;
+		this.dateFinEncheres = dateFinEncheres;
+		this.prixInitial = prixInitial;
+		this.prixVente = prixVente;
+		this.etatVente = etatVente;
+		this.noUtilisateur = noUtilisateur;
+		this.noCategorie = noCategorie;
+		this.adresseRetrait = adresseRetrait;
+		this.pseudoVendeur = pseudoVendeur;
 	}
 
 
@@ -118,12 +140,6 @@ public class Article {
 		this.noCategorie = noCategorie;
 	}
 
-	@Override
-	public String toString() {
-		return "Article [noArticle=" + noArticle + ", nomArticle=" + nomArticle + ", description=" + description + ", dateDebutEncheres="
-				+ dateDebutEncheres + ", dateFinEncheres=" + dateFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
-				+ ", etatVente=" + etatVente + ", noUtilisateur=" + noUtilisateur + ", noCategorie=" + noCategorie + "]";
-	}
 
 	public Adresse getAdresseRetrait() {
 		return adresseRetrait;
@@ -131,6 +147,25 @@ public class Article {
 
 	public void setAdresseRetrait(Adresse adresseRetrait) {
 		this.adresseRetrait = adresseRetrait;
+	}
+
+
+	public String getPseudoVendeur() {
+		return pseudoVendeur;
+	}
+
+
+	public void setPseudoVendeur(String pseudoVendeur) {
+		this.pseudoVendeur = pseudoVendeur;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Article [noArticle=" + noArticle + ", nomArticle=" + nomArticle + ", description=" + description + ", dateDebutEncheres="
+				+ dateDebutEncheres + ", dateFinEncheres=" + dateFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
+				+ ", etatVente=" + etatVente + ", noUtilisateur=" + noUtilisateur + ", noCategorie=" + noCategorie + ", adresseRetrait="
+				+ adresseRetrait + ", pseudoVendeur=" + pseudoVendeur + "]";
 	}
 	
 	

@@ -5,6 +5,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Modifier mes informations</title>
+
+<%@ include file="css.jspf"%>
 </head>
 <body>
 
@@ -16,58 +18,69 @@
 		<p style="color: red;">${couple.value}</p>
 	</c:forEach>
 
-	<form action="modifier-profil" method="POST">
+	<div class="container pt-5">
 
-		<p>
-			<label for="pseudo">Pseudo : </label> <input id="pseudo" type="text" value="${ profilUtilisateur.pseudo }" name="pseudo" required />
-		</p>
+		<form action="modifier-profil" method="POST">
 
-		<p>
-			<label for="nom">Nom : </label> <input id="nom" type="text" value="${ profilUtilisateur.nom }" name="nom" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="pseudo">Pseudo : </label> <input id="pseudo" type="text" value="${ profilUtilisateur.pseudo }" name="pseudo" class="form-control"
+					required />
+			</div>
 
-		<p>
-			<label for="prenom">Prénom : </label> <input id="prenom" type="text" value="${ profilUtilisateur.prenom }" name="prenom" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="nom">Nom : </label> <input id="nom" type="text" value="${ profilUtilisateur.nom }" name="nom" class="form-control" required />
+			</div>
 
-		<p>
-			<label for="email">E-mail : </label> <input id="email" type="text" value="${ profilUtilisateur.email }" name="email" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="prenom">Prénom : </label> <input id="prenom" type="text" value="${ profilUtilisateur.prenom }" name="prenom" class="form-control"
+					required />
+			</div>
 
-		<p>
-			<label for="telephone">Téléphone : </label> <input id="telephone" type="text" name="telephone" value="${ profilUtilisateur.telephone }" />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="email">E-mail : </label> <input id="email" type="text" value="${ profilUtilisateur.email }" name="email" class="form-control" required />
+			</div>
 
-		<p>
-			<label for="rue">Rue : </label> <input id="rue" type="text" name="rue" value="${ profilUtilisateur.rue }" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="telephone">Téléphone : </label> <input id="telephone" type="text" name="telephone" value="${ profilUtilisateur.telephone }"
+					class="form-control" required />
+			</div>
 
-		<p>
-			<label for="code_postal">Code postal :</label> <input id="code_postal" type="text" name="codePostal" value="${ profilUtilisateur.codePostal }"
-				required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="rue">Rue : </label> <input id="rue" type="text" name="rue" value="${ profilUtilisateur.rue }" class="form-control" required />
+			</div>
 
-		<p>
-			<label for="telephone">Ville : </label> <input id="ville" type="text" name="ville" value="${ profilUtilisateur.ville }" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="code_postal">Code postal :</label> <input id="code_postal" type="text" name="codePostal" value="${ profilUtilisateur.codePostal }"
+					class="form-control" required />
+			</div>
 
-		<p>
-			<label for="mot_de_passe">Mot de passe : </label> <input id="mot_de_passe" type="password" name="motDePasse"
-				value="${ profilUtilisateur.motDePasse}" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="telephone">Ville : </label> <input id="ville" type="text" name="ville" value="${ profilUtilisateur.ville }" class="form-control"
+					required />
+			</div>
 
-		<p>
-			<label for="mot_de_passe">Confirmation : </label> <input id="mot_de_passe" type="password" name="motDePasseBis"
-				value="${ profilUtilisateur.motDePasse}" required />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="mot_de_passe">Mot de passe : </label> <input id="mot_de_passe" type="password" name="motDePasse"
+					value="${ profilUtilisateur.motDePasse}" class="form-control" required />
+			</div>
 
-		<p>Crédit : ${ profilUtilisateur.credit }</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="mot_de_passe">Confirmation : </label> <input id="mot_de_passe" type="password" name="motDePasseBis"
+					value="${ profilUtilisateur.motDePasse}" class="form-control" required />
+			</div>
 
-		<p>
-			<input type="submit" value="Enregistrer" name="enregistrer" /> <input type="submit" value="Supprimer mon compte" name="suppression" />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<p>Crédit : ${ profilUtilisateur.credit }</p>
+			</div>
 
-	</form>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<button class="btn btn-success " name="enregistrer">Modifier</button>
+				<button class="btn btn-success " name="supprimer">Supprimer mon compte</button>
+			</div>
+
+		</form>
+
+	</div>
 
 </body>
 </html>

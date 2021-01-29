@@ -5,72 +5,89 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Vendre un article</title>
+
+<%@ include file="css.jspf"%>
 </head>
 <body>
 
 	<%@ include file="header.jspf"%>
 
-	<h2>Nouvelle vente</h2>
-	
+	<div class="container pt-5">
+
+		<h2>Nouvelle vente</h2>
+
+		<div class="container alert alert-${ alertMessage } ">${ erreurData }</div>
+
 		<p style="color: red;">${ erreurData }</p>
 
-	<c:forEach var="couple" items="${ mapErreurs }">
-		<p style="color: red;">${couple.value}</p>
-	</c:forEach>
+		<c:forEach var="couple" items="${ mapErreurs }">
+			<div class="container alert alert-${ alertMessage } ">${couple.value}</div>
+		</c:forEach>
 
-	<form action="vente" method="POST">
-		<p>
-			<label for="libelle">Article : </label> <input id="libelle" type="text" value="${ param.nom_article }" name="nom_article" required />
-		</p>
+		<div class="row">
+				
+		<form action="vente" method="POST">
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="libelle" class="form-label">Article : </label> <input id="libelle" type="text" value="${ param.nom_article }" name="nom_article" class="form-control" required />
+			</div>
 
-		<p>
-			<label for="description">Description : </label>
-			<textarea id="description" name="description" rows="4" cols="50" required>${ param.description }</textarea>
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="description" class="form-label">Description : </label>
+				<textarea id="description" name="description" rows="4" cols="50" class="form-control" required>${ param.description }</textarea>
+			</div>
 
-		<p>
-			<%@ include file="listeCategories.jspf"%>
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<%@ include file="listeCategories.jspf"%>
+			</div>
+			
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="photo" class="form-label">Photo de l'article : </label> <input id="photo" type="file" value="" name="photo" class="form-control" />
+			</div>
 
-		<p>
-			<label for="photo">Photo de l'article : </label> <input id="photo" type="file" value="" name="photo" />
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="prix" class="form-label">Mise à prix : </label><input type="number" id="prix" name="prix_initial" min="0" value="${ param.prix_initial }" class="form-control" required>
+			</div>
+			
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="debut" class="form-label">Début de l'enchère : </label> <input id="debut" type="date" name="date_debut_encheres" value="${ param.date_debut_encheres }"
+					class="form-control" required />
+			</div>
+			
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<label for="fin" class="form-label">Fin de l'enchère : </label> <input id="fin" type="date" name="date_fin_encheres" value="${ param.date_fin_encheres }" class="form-control" required />
+			</div>
 
-		<p>
-			<label for="prix">Mise à prix : </label><input type="number" id="prix" name="prix_initial" min="0" value="${ param.prix_initial }" required>
-		</p>
-		<p>
-			<label for="debut">Début de l'enchère : </label> <input id="debut" type="date" name="date_debut_encheres" value="${ param.date_debut_encheres }" required />
-		</p>
-		<p>
-			<label for="fin">Fin de l'enchère : </label> <input id="fin" type="date" name="date_fin_encheres" value="${ param.date_fin_encheres }" required/>
-		</p>
+			<div class="mb-3 col-sm-12 col-xs-12">
+			
+			<fieldset>
 
-		<fieldset>
+				<legend>Retrait</legend>
 
-			<legend>Retrait</legend>
+				<p>
+					<label for="rue" class="form-label">Rue : </label> <input id="rue" type="text" value="${ profilUtilisateur.rue }" name="rue" class="form-control" required />
+				</p>
+
+				<p>
+					<label for="code_postal" class="form-label">Code postal : </label> <input id="code_postal" type="text" value="${ profilUtilisateur.codePostal }" name="code_postal"
+						class="form-control" required />
+				</p>
+
+				<p>
+					<label for="ville" class="form-label">Ville : </label> <input id="ville" type="text" value="${ profilUtilisateur.ville }" name="ville" class="form-control" required />
+				</p>
+
+			</fieldset>
+			</div>
 
 			<p>
-				<label for="rue">Rue : </label> <input id="rue" type="text" value="${ profilUtilisateur.rue }" name="rue" required />
+				<input type="submit" value="Enregistrer" name="enregistrer" /> <input type="reset" value="Annuler" />
 			</p>
 
-			<p>
-				<label for="code_postal">Code postal : </label> <input id="code_postal" type="text" value="${ profilUtilisateur.codePostal }" name="code_postal"
-					required />
-			</p>
 
-			<p>
-				<label for="ville">Ville : </label> <input id="ville" type="text" value="${ profilUtilisateur.ville }" name="ville" required />
-			</p>
+		</form>
+		</div>
 
-		</fieldset>
-
-		<p>
-			<input type="submit" value="Enregistrer" name="enregistrer" /> <input type="reset" value="Annuler" /> 
-		</p>
-
-
-	</form>
+	</div>
 
 
 </body>

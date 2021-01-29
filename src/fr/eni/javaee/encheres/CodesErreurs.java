@@ -22,6 +22,9 @@ public abstract class CodesErreurs {
 	public static int ARTICLE_CATEGORIE_INEXISTANTE = 117;
 	public static int ARTICLE_PRIX_INVALIDE = 118;
 	public static int ERREUR_CHARGEMENT_ENCHERES_EC = 119;
+	public static int ERREUR_PSEUDO_FORMAT = 120;
+	public static int ERREUR_EMAIL_FORMAT = 121;
+	
 	
 	
 	// Erreurs de la DAL (entre 0 et 99)

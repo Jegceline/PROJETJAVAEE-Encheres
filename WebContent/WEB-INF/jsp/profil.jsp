@@ -1,55 +1,86 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Mes informations personnelles</title>
+
+<%@ include file="css.jspf"%>
 </head>
 <body>
 
 	<%@ include file="header.jspf"%>
 
-	<form action="profil" method="POST">
 
-		<p>
-			<label for="pseudo">Pseudo : </label> <input id="pseudo" type="text" value="${ profilUtilisateur.pseudo }" name="pseudo" disabled />
-		</p>
+	<div class="container pt-5">
 
-		<p>
-			<label for="nom">Nom : </label> <input id="nom" type="text" value="${ profilUtilisateur.nom }" name="nom" disabled />
-		</p>
+		<h2 class="my-4">Mon profil</h2>
 
-		<p>
-			<label for="prenom">Prénom : </label> <input id="prenom" type="text" value="${ profilUtilisateur.prenom }" name="prenom" disabled />
-		</p>
+		<form action="profil" method="POST">
 
-		<p>
-			<label for="email">E-mail : </label> <input id="email" type="text" value="${ profilUtilisateur.email }" name="email" disabled />
-		</p>
+			<div class="row my-2">
+				<div class="col">
+					<label for="pseudo" class="form-label">Pseudo : </label> <input id="pseudo" type="text" value="${ profilUtilisateur.pseudo }" name="pseudo" class="form-control"
+						disabled />
+				</div>
 
-		<p>
-			<label for="telephone">Téléphone : </label> <input id="telephone" type="text" name="telephone" value="${ profilUtilisateur.telephone }" disabled />
-		</p>
+				<div class="col">
+					<label for="nom" class="form-label">Nom : </label> <input id="nom" type="text" value="${ profilUtilisateur.nom }" name="nom" class="form-control" disabled />
+				</div>
+			</div>
 
-		<p>
-			<label for="rue">Rue : </label> <input id="rue" type="text" name="rue" value="${ profilUtilisateur.rue }" disabled />
-		</p>
+			<div class="row my-2">
+				<div class="col">
+					<label for="prenom" class="form-label">Prénom : </label> <input id="prenom" type="text" value="${ profilUtilisateur.prenom }" name="prenom" class="form-control"
+						disabled />
+				</div>
 
-		<p>
-			<label for="code_postal">Code postal :</label> <input id="code_postal" type="text" name="codePostal" value="${ profilUtilisateur.codePostal }"
-				disabled />
-		</p>
+				<div class="col">
+					<label for="email" class="form-label">E-mail : </label> <input id="email" type="text" value="${ profilUtilisateur.email }" name="email" class="form-control"
+						disabled />
+				</div>
+			</div>
 
-		<p>
-			<label for="telephone">Ville : </label> <input id="ville" type="text" name="ville" value="${ profilUtilisateur.ville }" disabled />
-		</p>
+			<div class="row my-2">
+				<div class="col">
+					<label for="telephone" class="form-label">Téléphone : </label> <input id="telephone" type="text" name="telephone" value="${ profilUtilisateur.telephone }"
+						class="form-control" disabled />
+				</div>
 
-		<p>Crédit : ${ profilUtilisateur.credit }</p>
+				<div class="col">
+					<label for="rue" class="form-label">Rue : </label> <input id="rue" type="text" name="rue" value="${ profilUtilisateur.rue }" class="form-control" disabled />
+				</div>
+			</div>
 
-		<p>
-			<input type="submit" value="Modifier" />
-		</p>
+			<div class="row my-2">
+				<div class="col">
+				<label for="code_postal" class="form-label">Code postal :</label> <input id="code_postal" type="text" name="codePostal" value="${ profilUtilisateur.codePostal }"
+					class="form-control" disabled />
+			</div>
 
-	</form>
+			<div class="col">
+				<label for="telephone" class="form-label">Ville : </label> <input id="ville" type="text" name="ville" value="${ profilUtilisateur.ville }" class="form-control"
+					disabled />
+			</div>
+			</div>
+
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<p>Crédit : ${ profilUtilisateur.credit }</p>
+			</div>
+
+			<div class="mb-3 col-sm-12 col-xs-12">
+				<button class="btn btn-success ">Modifier</button>
+			</div>
+
+			<!--  
+			<p>
+				<input type="submit" value="Modifier" />
+			</p>
+			 -->
+		</form>
+
+	</div>
+
 </body>
 </html>

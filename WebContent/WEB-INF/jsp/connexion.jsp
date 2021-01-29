@@ -6,44 +6,80 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Page d'accueil</title>
+
+<%@ include file="css.jspf"%>
 </head>
 
 <body>
 	<%@ include file="header.jspf"%>
+	
 
-	<p style="color: red;">${ erreurMotDePasse }</p>
+	<div class="container pt-5">
+	
+		<div class="container alert alert-${ alertMessage } ">${ erreurMotDePasse }
+		</div>
+	
 
-	<c:forEach var="couple" items="${ mapErreurs }">
-		<p style="color: red;">${couple.value}</p>
-	</c:forEach>
+		<p style="color: red;">${ erreurMotDePasse }</p>
 
+		<c:forEach var="couple" items="${ mapErreurs }">
+			<p style="color: red;">${couple.value}</p>
+		</c:forEach>
 
-	<form action="connexion" method="POST">
-		<p>
-			<label for="identifiant">Identifiant : </label> <input id="identifiant" type="text" value="" name="identifiant" required />
-		</p>
+		<div class="card card-signin flex-row m-auto col-sm-8 col-xs-12">
+			<div class="card-body">
+			
+				<div class="mb-3 col-sm-12 col-xs-12">
+					<form action="connexion" method="POST">
+						<p>
+							<label for="identifiant" class="form-label">Identifiant : </label> <input id="identifiant" type="text" value="" name="identifiant"
+								class="form-control" required />
+						</p>
+				</div>
 
-		<p>
-			<label for="motdepasse">Mot de passe : </label> <input id="motdepasse" type="text" value="" name="motdepasse" required />
-		</p>
+				<div class="mb-3 col-sm-12 col-xs-12">
+					<p>
+						<label for="motdepasse" class="form-label">Mot de passe : </label> <input id="motdepasse" type="text" value="" name="motdepasse"
+							class="form-control" required />
+					</p>
+				</div>
 
-		<p>
-			<label for="memoriserUtilisateur">Se souvenir de moi</label> <input id="memoriserUtilisateur" type="checkbox" name="memoriserUtilisateur" />
-		</p>
+				<div class="mb-3 col-sm-12 col-xs-12">
+					<p>
+						<input id="memoriserUtilisateur" type="checkbox"
+							name="memoriserUtilisateur" />
+							<label for="memoriserUtilisateur" class="form-label">Se souvenir de moi</label> 
+					</p>
+				</div>
 
-		<p>
-			<input type="submit" value="Connexion" />
-		</p>
+				<div class="mb-3 col-sm-12 col-xs-12">
+					<button class="btn btn-success ">Connexion</button>
+				</div>
 
-	</form>
+				</form>
 
-	<p>
-		<a href="">Mot de passe oublié</a>
-	</p>
+				<p>
+					<a href="">Mot de passe oublié</a>
+				</p>
 
-	<form action="inscription" method="get">
-		<input type="submit" value="Créer un compte" name="Submit" id="creationCompte" />
-	</form>
+				<form action="inscription" method="get">
+
+					<div class="mb-3 col-sm-12 col-xs-12">
+						<button class="btn btn-success">Créer un compte</button>
+					</div>
+
+				</form>
+
+				<!--  
+				<form action="inscription" method="get">
+					<input type="submit" value="Créer un compte" name="Submit" id="creationCompte" />
+				</form> 
+				
+				-->
+
+			</div>
+		</div>
+	</div>
 
 
 </body>

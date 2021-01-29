@@ -1,3 +1,57 @@
-<h1><a href="accueil">ENI-Enchères</a></h1>
+<!--   
 
-<hr>
+<h1>
+	<a href="accueil">ENI-Enchères</a>
+</h1>
+
+
+<c:if test="${empty sessionScope.profilUtilisateur }">
+
+	<a href="inscription">S'inscrire</a> -
+	<a href="connexion">Se connecter</a>
+
+</c:if>
+
+<c:if test="${not empty sessionScope.profilUtilisateur }">
+
+	<a href="">Enchères</a> -
+	<a href="vente">Vendre un article</a> -
+	<a href="profil">Mon Profil</a> -
+	<a href="deconnexion">Déconnexion</a>
+
+</c:if>
+
+-->
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark  bg-dark text-white">
+	<a class="navbar-brand" href="accueil"><strong>ENI Encheres</strong></a>
+	
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+		aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		
+		<ul class="navbar-nav mr-auto"></ul>
+		
+		<ul class="navbar-nav">
+
+			<c:if test="${empty sessionScope.profilUtilisateur }">
+
+				<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/inscription">S'inscrire</a></li>
+				<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/connexion">Se connecter</a></li>
+
+			</c:if>
+
+			<c:if test="${not empty sessionScope.profilUtilisateur }">
+
+	<li class="nav-item active"><a class="nav-link" href="">Enchères</a></li>
+	<li class="nav-item active"><a class="nav-link" href="vente">Vendre un article</a></li>
+	<li class="nav-item active"><a class="nav-link" href="profil">Mon Profil</a></li>  
+	<li class="nav-item active"><a class="nav-link" href="deconnexion">Déconnexion</a></li> 
+
+			</c:if>
+		</ul>
+	</div>
+</nav>

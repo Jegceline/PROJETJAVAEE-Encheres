@@ -1,4 +1,5 @@
-<label for="categorie">Catégorie : </label><select name="no_categorie" id="categorie" required>
+<label for="categorie">Catégorie : </label>
+<select name="no_categorie" id="categorie" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" required>
 				<option value="0">Sélectionnez une catégorie</option>
 				<option value="1">Informatique</option>
 				<option value="2">Ameublement</option>
