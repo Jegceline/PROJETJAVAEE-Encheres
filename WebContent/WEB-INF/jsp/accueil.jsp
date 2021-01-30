@@ -13,9 +13,11 @@
 
 	<%@ include file="header.jspf"%>
 
-	<div class="container pt-5">
+	<div class="container pt-5 mb-4">
 
 		<div class="container alert alert-${ alertMessage } ">
+
+			${succesEnchere}
 
 			<c:forEach var="couple" items="${ mapErreurs }">
 				<p style="color: red;">${couple.value}</p>
@@ -24,9 +26,9 @@
 
 		<h2 class="my-4">Liste des enchères</h2>
 
-		<form action="" method="POST">
+		<h4 class="my-4">Filtres</h4>
 
-			<h4 class="my-4">Filtres</h4>
+		<form action="" method="POST">
 
 			<div class="row my-4">
 				<div class="col">
@@ -44,15 +46,23 @@
 			<div class="row">
 				<div class="col">
 
-					<input type="radio" id="achats" name="achats" value="achats" disabled> <label for="achats" class="form-check-label">Achats</label>
+
+					<input type="radio" id="achats" name="type" value="achats"> <label for="achats" class="form-check-label">Achats</label>
 
 					<div class="form-check">
 
-						<input type="checkbox" class="form-check-input" id="achats1" name="achats" value="encheres_ouvertes" checked> <label for="achats1"
-							class="form-check-label">enchères ouvertes</label> <input type="checkbox" class="form-check-input" id="achats2" name="achats"
-							value="mes_encheres" disabled> <label for="achats2" class="form-check-label">mes enchères</label> <input type="checkbox"
-							class="form-check-input" id="achats3" name="achats" value="mes_encheres_remportees" disabled> <label for="achats3"
-							class="form-check-label">mes enchères remportées</label>
+						<p>
+							<input type="checkbox" class="form-check-input" id="achats1" name="type" value="encheres_ouvertes" checked> <label for="achats1"
+								class="form-check-label">enchères en cours</label>
+						</p>
+						<p>
+							<input type="checkbox" class="form-check-input" id="achats2" name="achats" value="mes_encheres" disabled> <label for="achats2"
+								class="form-check-label">mes enchères en cours</label>
+						</p>
+						<p>
+							<input type="checkbox" class="form-check-input" id="achats3" name="achats" value="mes_encheres_remportees" disabled> <label
+								for="achats3" class="form-check-label">mes enchères remportées</label>
+						</p>
 					</div>
 
 				</div>
@@ -61,19 +71,19 @@
 
 					<div class="form-check">
 						<p>
-							<input type="radio" class="form-check-input" id="ventes" name="ventes" value="ventes" disabled> <label for="ventes">Mes ventes</label>
+							<input type="radio" class="form-check-input" id="ventes" name="type" value="ventes"> <label for="ventes">Mes ventes</label>
 						</p>
 						<p>
-							<input type="checkbox" class="form-check-input" id="ventes1" name="achats" value="encheres_ouvertes" disabled> <label for="ventes1">enchères
-								ouvertes</label>
+							<input type="checkbox" class="form-check-input" id="ventes1" name="achats" value="encheres_ouvertes"> <label for="ventes1">enchères
+								à venir</label>
 						</p>
 						<p>
-							<input type="checkbox" class="form-check-input" id="ventes2" name="achats" value="mes_encheres" disabled> <label for="ventes2">mes
-								enchères</label>
+							<input type="checkbox" class="form-check-input" id="ventes2" name="achats" value="mes_encheres" checked> <label for="ventes2">enchères
+								en cours</label>
 						</p>
 						<p>
-							<input type="checkbox" class="form-check-input" id="ventes3" name="achats" value="mes_encheres_remportees" disabled> <label
-								for="ventes3">mes enchères remportées</label>
+							<input type="checkbox" class="form-check-input" id="ventes3" name="achats" value="mes_encheres_remportees"> <label for="ventes3">enchères
+								terminée</label>
 						</p>
 					</div>
 				</div>
@@ -85,42 +95,79 @@
 			</div>
 
 
-	</form>
+		</form>
 
-	</div>
+		<section class="container pt-5">
 
-	<section class="container pt-5">
+			<h4 class="my-4">Enchères ouvertes</h4>
 
-		<h4 class="my-4">Enchères ouvertes</h4>
+			<div class="row">
 
-		<div class="row">
+				<c:choose>
+					<c:when test="${ empty articlesFiltres }">
 
-			<c:forEach var="article" items="${encheresEC}">
+						<c:forEach var="article" items="${encheresEC}">
 
-				<div class="col-sm">
-					<div class="card" style="width: 18rem;">
+							<div class="col-sm">
+								<div class="card" style="width: 18rem;">
 
-						<div class="card-body">
-							<h5 class="card-title">${article.nomArticle}</h5>
-						</div>
+									<div class="card-body">
+										<h5 class="card-title">${article.nomArticle}</h5>
+									</div>
 
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item">Prix : ${article.prixVente} points</li>
-							<li class="list-group-item">Fin de l'enchère : ${article.dateFinEncheres}</li>
-							<li class="list-group-item">Vendeur : ${article.pseudoVendeur}</li>
-						</ul>
+									<ul class="list-group list-group-flush">
+										<li class="list-group-item">Prix : ${article.prixVente} points</li>
+										<li class="list-group-item">Fin de l'enchère : ${article.dateFinEncheres}</li>
+										<li class="list-group-item">Vendeur : ${article.pseudoVendeur}</li>
+									</ul>
 
-						<div class="card-body">
-							<a href="detail-article" class="card-link">Plus de détails</a>
-						</div>
-					</div>
-				</div>
+									<div class="card-body">
+										<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="card-link">Plus de détails</a>
+									</div>
+								</div>
+							</div>
 
-			</c:forEach>
+						</c:forEach>
 
-		</div>
+					</c:when>
 
-	</section>
+					<c:when test="${ not empty articlesFiltres }">
+
+						<c:forEach var="article" items="${articlesFiltres}">
+
+							<div class="col-sm">
+								<div class="card" style="width: 18rem;">
+
+									<div class="card-body">
+										<h5 class="card-title">${article.nomArticle}</h5>
+									</div>
+
+									<ul class="list-group list-group-flush">
+										<li class="list-group-item">Prix : ${article.prixVente} points</li>
+										<li class="list-group-item">Fin de l'enchère : ${article.dateFinEncheres}</li>
+										<li class="list-group-item">Vendeur : ${article.pseudoVendeur}</li>
+									</ul>
+
+									<div class="card-body">
+										<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="card-link">Plus de détails</a>
+
+									</div>
+								</div>
+							</div>
+
+						</c:forEach>
+					</c:when>
+
+				</c:choose>
+
+			</div>
+
+		</section>
+		
+			</div>
+		
+			<%@ include file="footer.jspf"%>
+
 
 </body>
 </html>

@@ -52,7 +52,7 @@ public class ServletConnexion extends HttpServlet {
 		
 		try {
 				utilisateurManager.verifieExistenceUtilisateur(identifiant, motDePasse);
-				utilisateur = utilisateurManager.recupereUtilisateur(identifiant);	
+				utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);	
 				System.out.println("\n SERVLET // Utilisateur retourné par le Manager : " + utilisateur);
 			
 		} catch (ModelException e) {
@@ -71,7 +71,9 @@ public class ServletConnexion extends HttpServlet {
 			request.getSession().setAttribute("profilUtilisateur", utilisateur);
 			
 			request.getSession().setAttribute("succesConnexion", "Connexion réussie !");
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/accueil");
+			// remarque : on veut appeler la méthode doGet() de la servlet Accueil et non sa méthode doPost() donc on ne peut pas utiliser de RequestDispatcher
+
 		}
 
 	}

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
+import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 import fr.eni.javaee.encheres.dal.DAO;
 import fr.eni.javaee.encheres.dal.DAOFactory;
@@ -20,10 +21,14 @@ public class UtilisateurManager {
 	public UtilisateurManager() {
 	}
 
+	/* ----------------------------------------- */
+	/* ------------- Méthodes CRUD ------------- */
+	/* ----------------------------------------- */
+
 	public Utilisateur ajouteUtilisateur(Utilisateur utilisateur, String motDePasseBis) throws ModelException {
 
 		/* vérifier que les contraintes imposées par la database sont respectées */
-		
+
 		valideNomPrenom(utilisateur.getNom(), utilisateur.getPrenom());
 		validePseudo(utilisateur.getPseudo());
 		valideEmail(utilisateur.getEmail());
@@ -32,7 +37,7 @@ public class UtilisateurManager {
 		valideMdp(utilisateur.getMotDePasse(), motDePasseBis);
 
 		/* si les étapes de validation ont été passées avec succès, aappeler le DAO */
-		
+
 		if (!modelBllException.contientErreurs()) {
 
 			System.out.println("\nMANAGER // Les paramètres sont ok, le DAO va être appelé.");
@@ -47,43 +52,52 @@ public class UtilisateurManager {
 			}
 
 		} else { // si une des étapes de validation a échoué
-			
+
 			utilisateur = null;
 			throw modelBllException;
 		}
 
-		// System.out.println("\nTEST // Utilisateur après insertion dans la BDD :  " + utilisateur);
+		// System.out.println("\nTEST // Utilisateur après insertion dans la BDD : " +
+		// utilisateur);
 
 		return utilisateur;
 	}
 
-	public void verifieExistenceUtilisateur(String identifiant, String motDePasse) throws ModelException {
-		String motDePasseBdd = null;
+	/**
+	 * recherche un hypothétique utilisateur dans la base de donnée méthode appelée
+	 * lors de la connexion
+	 * 
+	 * @param identifiant
+	 *            (pseudo ou email)
+	 * @return
+	 * @throws ModelException
+	 */
+	public Utilisateur rechercheUtilisateur(String identifiant) throws ModelException {
+		Utilisateur utilisateur = null;
 
 		try {
-			motDePasseBdd = ((UtilisateurDAO)utilisateurDAO).selectPassword(identifiant);
+			utilisateur = ((UtilisateurDAO) utilisateurDAO).retrieveUserInfo(identifiant);
 
 		} catch (ModelException e) {
 			e.printStackTrace();
 			throw e;
 		}
-		
-		if(motDePasseBdd == null){
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_UTILISATEUR_INEXISTANT, "Cet utilisateur n'existe pas.");
-			throw modelBllException;
-			
-		} else if (!motDePasseBdd.equals(motDePasse)) {
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_INCORRECT, "Le mot de passe est incorrect.");
-			throw modelBllException;
-		}
-
+		return utilisateur;
 	}
 
-	public Utilisateur recupereUtilisateur(String identifiant) throws ModelException {
+	/**
+	 * recherche et récupère un utilisateur grâce à sa primary key
+	 * 
+	 * @param noUtilisateur
+	 *            (pk)
+	 * @return un objet Utilisateur
+	 * @throws ModelException
+	 */
+	public Utilisateur recupereUtilisateur(Integer noUtilisateur) throws ModelException {
 		Utilisateur utilisateur = null;
 
 		try {
-			utilisateur = ((UtilisateurDAO)utilisateurDAO).retrieveUserInfo(identifiant);
+			utilisateur = utilisateurDAO.selectById(noUtilisateur);
 
 		} catch (ModelException e) {
 			e.printStackTrace();
@@ -103,23 +117,24 @@ public class UtilisateurManager {
 
 	}
 
-	public Utilisateur metAJourUtilisateur(Utilisateur utilisateurSession, Utilisateur utilisateurAvecModif, String confirmationMdp) throws ModelException {
+	public Utilisateur metAJourUtilisateur(Utilisateur utilisateurSession, Utilisateur utilisateurAvecModif, String confirmationMdp)
+			throws ModelException {
 
 		/* Vérification des nouveaux paramètres */
-		
-		if(!utilisateurSession.getEmail().equals(utilisateurAvecModif.getEmail())){
+
+		if (!utilisateurSession.getEmail().equals(utilisateurAvecModif.getEmail())) {
 			valideEmail(utilisateurAvecModif.getEmail());
 		}
-		
-		if(!utilisateurSession.getPseudo().equals(utilisateurAvecModif.getPseudo())) {
+
+		if (!utilisateurSession.getPseudo().equals(utilisateurAvecModif.getPseudo())) {
 			validePseudo(utilisateurAvecModif.getPseudo());
 		}
-		
+
 		valideNomPrenom(utilisateurAvecModif.getNom(), utilisateurAvecModif.getPrenom());
 		valideTelephone(utilisateurAvecModif.getTelephone());
 		valideAdresse(utilisateurAvecModif.getRue(), utilisateurAvecModif.getCodePostal());
 		valideMdp(utilisateurAvecModif.getMotDePasse(), confirmationMdp);
-		
+
 		// si les paramères sont intègres, appeler le DAO
 		if (!modelBllException.contientErreurs()) {
 
@@ -128,7 +143,7 @@ public class UtilisateurManager {
 			try {
 				utilisateurAvecModif.setCredit(utilisateurSession.getCredit());
 				utilisateurAvecModif.setAdministrateur(utilisateurSession.isAdministrateur());
-				
+
 				System.out.println("\nTEST MANAGER // Utilisateur modifié qui va être envoyé au DAO : + " + utilisateurAvecModif);
 				utilisateurDAO.update(utilisateurAvecModif);
 
@@ -148,8 +163,77 @@ public class UtilisateurManager {
 		return utilisateurAvecModif;
 	}
 
+	/*
+	 * récupère le crédit d'un utilisateur
+	 */
+	public Integer recupereCredit(Integer noUtilisateur) throws ModelException {
+		Integer credit;
+		try {
+			credit = ((UtilisateurDAO) utilisateurDAO).selectCredit(noUtilisateur);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return credit;
+
+	}
+
+	public void actualiseCredit(Enchere enchere) throws ModelException {
+
+		// Integer credit;
+		//
+		// try {
+		// credit = recupereCredit(enchere.getNoUtilisateur());
+		//
+		// } catch (ModelException e) {
+		// e.printStackTrace();
+		// throw e;
+		// }
+		//
+		// if(credit < enchere.getMontant()) {
+		// modelBllException.ajouterErreur(CodesErreurs.ERREUR_CREDIT_INSUFFISANT,
+		// "Votre crédit est insuffisant");
+		//
+		// } else {
+		//
+		try {
+			((UtilisateurDAO) utilisateurDAO).updateCredit(enchere);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	/* ----------------------------------------- */
+	/* ------- Méthodes de vérification -------- */
+	/* ----------------------------------------- */
+
+	public void verifieExistenceUtilisateur(String identifiant, String motDePasse) throws ModelException {
+		String motDePasseBdd = null;
+
+		try {
+			motDePasseBdd = ((UtilisateurDAO) utilisateurDAO).selectPassword(identifiant);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		if (motDePasseBdd == null) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_UTILISATEUR_INEXISTANT, "Cet utilisateur n'existe pas.");
+			throw modelBllException;
+
+		} else if (!motDePasseBdd.equals(motDePasse)) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_INCORRECT, "Le mot de passe est incorrect.");
+			throw modelBllException;
+		}
+
+	}
+
 	/**
-	 * Vérfie que le mot de passe ne fait pas plus de 30 caractères Vérifie que les
+	 * Vérifie que le mot de passe ne fait pas plus de 30 caractères Vérifie que les
 	 * deux mots de passe sont identiques
 	 * 
 	 * @param mdp
@@ -202,9 +286,9 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * Vérifie que l'adresse mail ne fait pas plus de 50 caractères
-	 * Vérifie que l'adresse mail n'est pas déjà utilisée
-	 * vérifie que l'adresse mail comporte un @
+	 * Vérifie que l'adresse mail ne fait pas plus de 50 caractères Vérifie que
+	 * l'adresse mail n'est pas déjà utilisée vérifie que l'adresse mail comporte
+	 * un @
 	 * 
 	 * @param email
 	 * @throws ModelException
@@ -220,7 +304,7 @@ public class UtilisateurManager {
 
 		// récupérer une liste de tous les emails de la base de données
 		try {
-			listeEmails = ((UtilisateurDAO)utilisateurDAO).selectAllEmails();
+			listeEmails = ((UtilisateurDAO) utilisateurDAO).selectAllEmails();
 			// System.out.println("\nTEST // Liste des emails : " + listeEmails);
 		} catch (ModelException e) {
 			throw e;
@@ -235,18 +319,19 @@ public class UtilisateurManager {
 
 		}
 		Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$");
-		Matcher emailMatcher  = pattern.matcher(email);
-		
-		if(!emailMatcher.matches()) {
+		Matcher emailMatcher = pattern.matcher(email);
+
+		if (!emailMatcher.matches()) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_EMAIL_FORMAT, "Veuillez renseigner une adresse e-mail valide.");
-			// System.out.println("MANAGER : L'adresse e-mail ne respecte pas format d'une adresse e-mail.");
+			// System.out.println("MANAGER : L'adresse e-mail ne respecte pas format d'une
+			// adresse e-mail.");
 		}
 	}
 
 	/**
-	 * Vérifie que le pseudo ne fait pas plus de 30 caractères 
-	 * Vérifie que le pseudo n'est pas déjà utilisé
-	 * vérifie que le pseudo ne contient que des caractères alphanumériques
+	 * Vérifie que le pseudo ne fait pas plus de 30 caractères Vérifie que le pseudo
+	 * n'est pas déjà utilisé vérifie que le pseudo ne contient que des caractères
+	 * alphanumériques
 	 * 
 	 * @param pseudo
 	 * @throws ModelException
@@ -261,13 +346,13 @@ public class UtilisateurManager {
 		}
 
 		try {
-			listePseudo = ((UtilisateurDAO)utilisateurDAO).selectAllPseudo();
+			listePseudo = ((UtilisateurDAO) utilisateurDAO).selectAllPseudo();
 
 		} catch (ModelException e) {
 			e.printStackTrace();
 			throw e;
 		}
-		
+
 		for (String pseudoCourant : listePseudo) {
 			if (pseudo.equals(pseudoCourant)) {
 				modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_EXISTANT, "Ce pseudo est déjà utilisé.");
@@ -275,13 +360,15 @@ public class UtilisateurManager {
 			}
 
 		}
-		
+
 		Pattern pattern = Pattern.compile("^[a-zA-Z0-9]*$");
-		Matcher pseudoMatcher  = pattern.matcher(pseudo);
-		
-		if(!pseudoMatcher.matches()) {
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_FORMAT, "Votre pseudo doit uniquement contenir des caractères alphanumériques.");
-			// System.out.println("MANAGER : Le pseudo de l'uilisateur ne respecte pas le format autorisé.");
+		Matcher pseudoMatcher = pattern.matcher(pseudo);
+
+		if (!pseudoMatcher.matches()) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_FORMAT,
+					"Votre pseudo doit uniquement contenir des caractères alphanumériques.");
+			// System.out.println("MANAGER : Le pseudo de l'uilisateur ne respecte pas le
+			// format autorisé.");
 		}
 	}
 

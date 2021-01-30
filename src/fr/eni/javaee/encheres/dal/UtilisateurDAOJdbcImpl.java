@@ -10,11 +10,12 @@ import java.util.List;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
+import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
 public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
-	/* Attributs */
+	/* Variables & Constantes */
 
 	private ModelException modelDalException = new ModelException();
 	private static final String INSERT_USER = "INSERT INTO Utilisateurs (pseudo, nom, prenom, email, telephone, rue, "
@@ -22,10 +23,13 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	private static final String SELECT_ALL_EMAILS = "SELECT email FROM Utilisateurs";
 	private static final String SELECT_ALL_PSEUDO = "SELECT pseudo FROM Utilisateurs";
 	private static final String SELECT_PASSWORD = "SELECT mot_de_passe FROM Utilisateurs WHERE email = ? OR pseudo = ?";
-	private static final String SELECT_USER = "SELECT * FROM Utilisateurs WHERE email = ? OR pseudo = ?";
+	private static final String FOUND_USER_CONNECTION = "SELECT * FROM Utilisateurs WHERE email = ? OR pseudo = ?";
+	private static final String SELECT_USER = "SELECT * FROM Utilisateurs WHERE no_utilisateur = ?";
 	private static final String DELETE_USER = "DELETE FROM Utilisateurs WHERE no_utilisateur = ?";
 	private static final String UPDATE_USER = "UPDATE Utilisateurs SET pseudo = ?, nom = ?, prenom = ?, email = ?, telephone = ?, rue = ?, "  
 			+ "code_postal = ?, ville = ?, mot_de_passe = ?, credit = ?, administrateur = ? WHERE no_utilisateur = ?";
+	private static final String SELECT_CREDIT = "SELECT credit FROM Utilisateurs WHERE no_utilisateur = ?";
+	private static final String UPDATE_CREDIT = "UPDATE Utilisateurs SET credit = ? WHERE no_utilisateur = ?";
 
 	/* Constructeur */
 
@@ -33,7 +37,58 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	}
 
 	/* Méthodes */
+	
+	@Override
+	public void updateCredit(Enchere enchere) throws ModelException {
+		
+		Integer creditActuel = selectCredit(enchere.getNoUtilisateur());
+		Integer creditNouveau = creditActuel - enchere.getMontant();
+		System.out.println("\nTEST DAO // Crédit après enchere : " + creditNouveau);
+		
+		try {
+			/* obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
 
+			try {
+				/* Préparation de la requête */
+				PreparedStatement query = cnx.prepareStatement(UPDATE_CREDIT);
+				
+				/* valorisation des paramètres */
+				query.setInt(1, creditNouveau);
+				query.setInt(2, enchere.getNoUtilisateur());
+				
+				/* exécution de la requête */
+				query.executeUpdate();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_CREDIT, "L'exécution de la requête UPDATE_CREDIT a échoué.");
+				System.out.println("L'exécution de la requête UPDATE_CREDIT a échoué !");
+
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+		
+	}
+
+	/**
+	 * enregistre un utilisateur dans la bases
+	 */
 	@Override
 	public void insert(Utilisateur utilisateur) throws ModelException {
 		try {
@@ -69,8 +124,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête INSERT a échoué.");
-				System.out.println("L'exécution de la requête INSERT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête INSERT_USER a échoué.");
+				System.out.println("L'exécution de la requête INSERT_USER a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -92,6 +147,9 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 	}
 
+	/**
+	 * récupère et retourne une liste de tous les e-mails
+	 */
 	@Override
 	public List<String> selectAllEmails() throws ModelException {
 
@@ -114,8 +172,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_MAILS_SQL, "L'exécution de la requête SELECT a échoué.");
-				System.out.println("L'exécution de la requête SELECT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_MAILS_SQL, "L'exécution de la requête SELECT_ALL_EMAILS a échoué.");
+				System.out.println("L'exécution de la requête SELECT_ALL_EMAILS a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -139,6 +197,9 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		return listeEmails;
 	}
 
+	/**
+	 * récupère et retourne une liste de tous les pseudo des personnes inscrites
+	 */
 	public List<String> selectAllPseudo() throws ModelException {
 
 		List<String> listePseudo = new ArrayList<>();
@@ -160,8 +221,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT a échoué.");
-				System.out.println("L'exécution de la requête SELECT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT_ALL_PSEUDO a échoué.");
+				System.out.println("L'exécution de la requête SELECT_ALL_PSEUDO a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -185,6 +246,9 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		return listePseudo;
 	}
 
+	/**
+	 * retourne le mot de passe d'un utilisateur
+	 */
 	@Override
 	public String selectPassword(String identifiant) throws ModelException {
 
@@ -213,8 +277,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PASSWORD, "L'exécution de la requête SELECT a échoué.");
-				System.out.println("\n TEST DAO : L'exécution de la requête SELECT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PASSWORD, "L'exécution de la requête SELECT_PASSWORD a échoué.");
+				System.out.println("\n TEST DAO : L'exécution de la requête SELECT_PASSWORD a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -255,7 +319,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			try {
 				// Préparation de la requête
-				PreparedStatement query = cnx.prepareStatement(SELECT_USER);
+				PreparedStatement query = cnx.prepareStatement(FOUND_USER_CONNECTION);
 				
 				// valorisation du paramètre
 				query.setString(1, identifiant);
@@ -269,8 +333,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT a échoué.");
-				System.out.println("L'exécution de la requête SELECT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT_USER a échoué.");
+				System.out.println("L'exécution de la requête SELECT_USER a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -293,6 +357,12 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		return utilisateur;
 	}
 
+	/**
+	 * créé un objet Utilisateur à partir des données retournée par une requête
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
 	private Utilisateur utilisateurBuilder(ResultSet rs) throws SQLException {
 
 		Utilisateur utilisateur = new Utilisateur();
@@ -311,11 +381,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 			utilisateur.setAdministrateur(rs.getBoolean(12));
 		}
 
-		System.out.println("\nTEST // Utilisateur créé dans la DAO : " + utilisateur);
+		System.out.println("\nTEST // TEST DAO : Utilisateur créé par utilisateurBuilder : " + utilisateur);
 
 		return utilisateur;
 	}
 
+	/**
+	 * supprime un utilisateur 
+	 */
 	@Override
 	public void delete(Integer noUtilisateur) throws ModelException {
 
@@ -335,8 +408,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_DELETE_SQL, "L'exécution de la requête DELETE a échoué.");
-				System.out.println("L'exécution de la requête DELETE a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_DELETE_SQL, "L'exécution de la requête DELETE_USER a échoué.");
+				System.out.println("L'exécution de la requête DELETE_USER a échoué !");
 
 				throw modelDalException;
 
@@ -359,6 +432,9 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 	}
 
+	/**
+	 * met à jour les données d'un utilisateur
+	 */
 	@Override
 	public void update(Utilisateur utilisateur) throws ModelException {
 
@@ -389,8 +465,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_SQL, "L'exécution de la requête UPDATE a échoué.");
-				System.out.println("L'exécution de la requête UPDATE a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_SQL, "L'exécution de la requête UPDATE_USER a échoué.");
+				System.out.println("L'exécution de la requête UPDATE_USER a échoué !");
 
 				throw modelDalException;
 
@@ -412,4 +488,106 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		}
 		
 	}
+
+	/*
+	 * récupère et retourne un utilisateur
+	 */
+	@Override
+	public Utilisateur selectById(Integer noUtilisateur) throws ModelException {
+		Utilisateur utilisateur = null;
+
+		try {
+			// obtention d'un connexion
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				// Préparation de la requête
+				PreparedStatement query = cnx.prepareStatement(SELECT_USER);
+				
+				// valorisation du paramètre
+				query.setInt(1, noUtilisateur);
+
+				// exécution de la requête
+				ResultSet rs = query.executeQuery();
+				
+
+				utilisateur = utilisateurBuilder(rs);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_USER, "L'exécution de la requête SELECT_USER a échoué.");
+				System.out.println("L'exécution de la requête SELECT_USER a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+
+			}
+			throw modelDalException;
+
+		}
+		return utilisateur;
+		
+	}
+
+	@Override
+	public Integer selectCredit(Integer noUtilisateur) throws ModelException {
+		Integer credit=null;
+		
+		try {
+			/* obtention d'une connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				/* Préparation de la requête */
+				PreparedStatement query = cnx.prepareStatement(SELECT_CREDIT);
+				
+				/* valorisation des paramètres */
+				query.setInt(1, noUtilisateur);
+
+				/* exécution de la requête */
+				ResultSet rs = query.executeQuery();
+				
+				if (rs.next()) {
+					credit = rs.getInt(1);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_CREDIT, "L'exécution de la requête SELECT_CREDIT a échoué.");
+				System.out.println("L'exécution de la requête SELECT_CREDIT a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+
+			}
+			throw modelDalException;
+
+		}
+
+		return credit;
+	}
+
+
 }

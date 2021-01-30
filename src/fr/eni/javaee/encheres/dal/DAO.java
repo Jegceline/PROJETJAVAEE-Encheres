@@ -9,5 +9,7 @@ public interface DAO<T> {
 	public void delete(Integer nb) throws ModelException;
 
 	public void update(T objet) throws ModelException;
+	
+	public T selectById(Integer number) throws ModelException;
 
 }

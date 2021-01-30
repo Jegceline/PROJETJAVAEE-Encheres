@@ -26,7 +26,7 @@ public class ServletProfil extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect(request.getContextPath() + "/modifier-profil ");
+		response.sendRedirect(request.getContextPath() + "/modifier-profil");
 	}
 
 }

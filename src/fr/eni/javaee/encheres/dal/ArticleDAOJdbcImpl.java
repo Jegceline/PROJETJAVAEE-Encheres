@@ -18,6 +18,8 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	private ModelException modelDalException = new ModelException();
 
+	/* Constantes */
+
 	private static final String INSERT_ARTICLE = "INSERT INTO Articles_Vendus(nom_article, description, date_debut_encheres, "
 			+ "date_fin_encheres, prix_initial, no_utilisateur, no_categorie) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -27,21 +29,27 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			+ "WHERE (date_debut_encheres <= GETDATE() AND date_fin_encheres > GETDATE())";
 
 	private static final String SELECT_USER = "SELECT pseudo FROM Utilisateurs WHERE no_utilisateur = ?";
+	private static final String SELECT_ARTICLE_BYID = "SELECT * FROM Articles_vendus WHERE no_article = ?";
+	private static final String SELECT_INITIAL_PRICE = "SELECT prix_initial FROM Articles_vendus WHERE no_article = ?";
+	private static final String SELECT_CURRENT_PRICE = "SELECT prix_vente FROM Articles_vendus WHERE no_article = ?";
+	private static final String SELECT_PICKUP_ADDRESS = "SELECT rue, code_postal, ville FROM Retraits WHERE no_article = ?";
 
 	/* Constructeur */
 
 	public ArticleDAOJdbcImpl() {
 	}
 
+	/* Méthodes interrogeant la base de données */
+
 	@Override
 	public void insert(Article article) throws ModelException {
 
 		try {
-			// obtention d'un connexion
+			/* Obtention d'un connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la première requête
+				/* Préparation de la première requête */
 				PreparedStatement query = cnx.prepareStatement(INSERT_ARTICLE, Statement.RETURN_GENERATED_KEYS);
 
 				// valorisation des paramètres
@@ -53,33 +61,33 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 				query.setInt(6, article.getNoUtilisateur());
 				query.setInt(7, article.getNoCategorie());
 
-				// exécution de la requête
+				/* exécution de la requête */
 				query.executeUpdate();
 
-				// récupération de la clé primaire/identity générée par la BDD
+				/* récupération de la clé primaire/identity générée par la BDD */
 				ResultSet rs = query.getGeneratedKeys();
 
 				if (rs.next()) {
-					// valorisation de l'attribut Id de l'objet article avec cette clé
+					/* valorisation de l'attribut Id de l'objet article avec cette clé */
 					article.setNoArticle(rs.getInt(1));
 				}
 
-				// Préparation de la seconde requête
+				/* Préparation de la seconde requête */
 				PreparedStatement query2 = cnx.prepareStatement(INSERT_ADRESSE_RETRAIT, Statement.RETURN_GENERATED_KEYS);
 
-				// valorisation des paramètres
+				/* valorisation des paramètres */
 				query2.setInt(1, article.getNoArticle());
 				query2.setString(2, article.getAdresseRetrait().getRue());
 				query2.setInt(3, article.getAdresseRetrait().getCodePostal());
 				query2.setString(4, article.getAdresseRetrait().getVille());
 
-				// exécution de la requête
+				/* exécution de la requête */
 				query2.executeUpdate();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête INSERT a échoué.");
-				System.out.println("L'exécution de la requête INSERT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête INSERT_ARTICLE a échoué.");
+				System.out.println("L'exécution de la requête INSERT_ARTICLE a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -106,11 +114,11 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		List<Article> listeEncheresEnCours = new ArrayList<Article>();
 
 		try {
-			// obtention d'un connexion
+			/* Obtention d'un connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la première requête
+				/* Préparation de la première requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_ARTICLE_ENCHERES_EC);
 
 				// exécution de la requête
@@ -120,27 +128,17 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 					Article article = articleBuilder(rs);
 
-					PreparedStatement query2 = cnx.prepareStatement(SELECT_USER);
-
-					// valorisation du paramètre
-					System.out.println("\n TEST DAO // Numéro du vendeur : " + article.getNoUtilisateur());
-					query2.setInt(1, article.getNoUtilisateur());
-
-					// exécution de la requête
-					ResultSet rs2 = query2.executeQuery();
-
-					if (rs2.next()) {
-						article.setPseudoVendeur(rs2.getString(1));
-						System.out.println("\n DEBUG DAO // Pseudo du vendeur = " + article.getPseudoVendeur());
-					}
+					ajoutePseudoVendeur(cnx, article);
+					ajouteAdresseRetrait(cnx, article);
 
 					listeEncheresEnCours.add(article);
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution d'une des requêtes SELECT a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
+						"L'exécution d'une des requêtes SELECT_ARTICLE_ENCHERES_EC a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLE_ENCHERES_EC a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -166,6 +164,198 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	}
 
+	private void ajoutePseudoVendeur(Connection cnx, Article article) throws SQLException {
+
+		/* Préparation de la requête */
+		PreparedStatement query = cnx.prepareStatement(SELECT_USER);
+
+		/* Valorisation du paramètre */
+		query.setInt(1, article.getNoUtilisateur());
+
+		/* Exécution de la requête */
+		ResultSet rs = query.executeQuery();
+
+		if (rs.next()) {
+			article.setPseudoVendeur(rs.getString(1));
+			// System.out.println("\n DEBUG DAO // Pseudo du vendeur = " +
+			// article.getPseudoVendeur());
+		}
+	}
+
+	private void ajouteAdresseRetrait(Connection cnx, Article article) throws SQLException {
+		
+		Adresse adresseRetrait = new Adresse();
+
+		/* Préparation de la requête */
+		PreparedStatement query = cnx.prepareStatement(SELECT_PICKUP_ADDRESS);
+
+		/* Valorisation du paramètre */
+		query.setInt(1, article.getNoArticle());
+
+		/* Exécution de la requête */
+		ResultSet rs = query.executeQuery();
+
+		if (rs.next()) {
+			adresseRetrait.setRue(rs.getString(1));
+			adresseRetrait.setCodePostal(rs.getInt(2));
+			adresseRetrait.setVille(rs.getString(3));
+		}
+		
+		System.out.println("\nTEST DAO // Adresse de retrait = " + adresseRetrait);
+		article.setAdresseRetrait(adresseRetrait);
+	}
+
+	@Override
+	public List<Article> selectByCriteria(Integer noCategorie, String keyword) throws ModelException {
+		List<Article> listeArticlesFiltres = new ArrayList<Article>();
+
+		String select_articles_filtres = SELECT_ARTICLE_ENCHERES_EC;
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+
+				if (noCategorie != 0) {
+					select_articles_filtres += " AND (no_categorie = ?)";
+					System.out.println("\nTEST DAO // Requête SQL avec catégorie : " + select_articles_filtres);
+				}
+
+				if (!keyword.isEmpty()) {
+					select_articles_filtres += " AND (nom_article LIKE ?)";
+					System.out.println("\nTEST DAO // Requête SQL avec mot clé : " + select_articles_filtres);
+				}
+
+				/* Préparation de requête */
+				PreparedStatement query = cnx.prepareStatement(select_articles_filtres);
+
+				/* valorisation des paramètres */
+
+				if (noCategorie != 0 && !keyword.isEmpty()) {
+					System.out.println("tic"); // debug
+					query.setInt(1, noCategorie);
+					query.setString(2, "%" + keyword + "%");
+				}
+
+				if (noCategorie != 0 && keyword.isEmpty()) {
+					System.out.println("tac"); // debug
+					query.setInt(1, noCategorie);
+				}
+
+				if (noCategorie == 0 && !keyword.isEmpty()) {
+					System.out.println("toc"); // debug
+					query.setString(1, "%" + keyword + "%");
+				}
+
+				/* Exécution de la requête */
+				ResultSet rs = query.executeQuery();
+
+				while (rs.next()) {
+
+					Article article = articleBuilder(rs);
+
+					ajoutePseudoVendeur(cnx, article);
+					ajouteAdresseRetrait(cnx, article);
+
+					listeArticlesFiltres.add(article);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECTION_SQL,
+						"L'exécution de la requête SELECT_ARTICLE_ENCHERES_EC a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLE_ENCHERES_EC a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+
+		// System.out.println("\nTEST DAO // Liste des enchères en cours : " +
+		// listeEncheresEnCours);
+
+		return listeArticlesFiltres;
+	}
+
+	@Override
+	public Article selectById(Integer number) throws ModelException {
+
+		Article article = null;
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				/* Préparation de requête */
+				PreparedStatement query = cnx.prepareStatement(SELECT_ARTICLE_BYID);
+
+				/* Valorisation du paramètre */
+				query.setInt(1, number);
+
+				/* exécution de la requête */
+				ResultSet rs = query.executeQuery();
+
+				if (rs.next()) {
+					article = articleBuilder(rs);
+				}
+				
+				ajoutePseudoVendeur(cnx, article);
+				ajouteAdresseRetrait(cnx, article);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
+						"L'exécution d'une des requêtes SELECT_ARTICLE_BYID a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLE_BYID a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+
+		return article;
+	}
+
+	@Override
+	public void delete(Integer chiffre) throws ModelException {
+
+	}
+
+	@Override
+	public void update(Article objet) throws ModelException {
+
+	}
+
+	/* Builders */
+
 	private Article articleBuilder(ResultSet rs) {
 		Article article = new Article();
 
@@ -180,14 +370,15 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			article.setNoUtilisateur(rs.getInt(8));
 			article.setNoCategorie(rs.getInt(9));
 
-			Adresse adresseRetrait = new Adresse();
-			adresseRetrait.setRue(rs.getString(11));
-			adresseRetrait.setCodePostal(rs.getInt(12));
-			adresseRetrait.setVille(rs.getString(13));
+			// Adresse adresseRetrait = new Adresse();
+			// adresseRetrait.setRue(rs.getString(11));
+			// adresseRetrait.setCodePostal(rs.getInt(12));
+			// adresseRetrait.setVille(rs.getString(13));
+			//
+			// article.setAdresseRetrait(adresseRetrait);
 
-			article.setAdresseRetrait(adresseRetrait);
-
-			System.out.println("\nTEST DAO : Article actuellement en vente : " + article);
+			// System.out.println("\nTEST DAO : Article actuellement en vente : " +
+			// article);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -197,13 +388,120 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	}
 
 	@Override
-	public void delete(Integer chiffre) throws ModelException {
+	public void updateAuction(Integer noArticle, Integer noUtilisateur, Integer enchere) throws ModelException {
 
+		/* faire un insert dans la table Enchères */
+		/* recréditer le précédent enchérisseur */
+		/* mettre à jour le crédit de l'utilisateur */
+		/* mettre à jour la table Articles_vendus */
+	}
+
+	/**
+	 * récupère le prix de vente initial d'un objet
+	 * 
+	 * @throws ModelException
+	 */
+	@Override
+	public Integer selectInitialPrice(Integer noArticle) throws ModelException {
+
+		Integer prixInitial = null;
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				/* Préparation de requête */
+				PreparedStatement query = cnx.prepareStatement(SELECT_INITIAL_PRICE);
+
+				/* Valorisation du paramètre */
+				query.setInt(1, noArticle);
+
+				/* exécution de la requête */
+				ResultSet rs = query.executeQuery();
+
+				if (rs.next()) {
+					prixInitial = rs.getInt(1);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_INITIAL_PRICE,
+						"L'exécution d'une de la requête SELECT_INITIAL_PRICE a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_INITIAL_PRICE a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+
+		return prixInitial;
 	}
 
 	@Override
-	public void update(Article objet) throws ModelException {
+	public Integer selectCurrentPrice(Integer noArticle) throws ModelException {
 
+		Integer prixActuel = null;
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+
+				/* Préparation de requête */
+				PreparedStatement query = cnx.prepareStatement(SELECT_CURRENT_PRICE);
+
+				/* Valorisation du paramètre */
+				query.setInt(1, noArticle);
+
+				System.out.println("\nTEST DAO // Requête SELECT_CURRENT_PRICE : " + query);
+
+				/* exécution de la requête */
+				ResultSet rs = query.executeQuery();
+
+				if (rs.next()) {
+					prixActuel = rs.getInt(1);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_CURRENT_PRICE,
+						"L'exécution d'une de la requête SELECT_CURRENT_PRICE a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_CURRENT_PRICE a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+
+		return prixActuel;
 	}
 
 }

@@ -9,4 +9,11 @@ public interface ArticleDAO extends DAO<Article>{
 	
 	public List<Article> selectByStatus() throws ModelException;
 
+	public List<Article> selectByCriteria(Integer noCategorie, String keyword) throws ModelException;
+	
+	public void updateAuction(Integer noArticle, Integer noUtilisateur, Integer enchere) throws ModelException;
+
+	public Integer selectInitialPrice(Integer noArticle) throws ModelException;
+
+	public Integer selectCurrentPrice(Integer noArticle) throws ModelException;
 }

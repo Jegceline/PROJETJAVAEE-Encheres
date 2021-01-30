@@ -24,9 +24,12 @@ public abstract class CodesErreurs {
 	public static int ERREUR_CHARGEMENT_ENCHERES_EC = 119;
 	public static int ERREUR_PSEUDO_FORMAT = 120;
 	public static int ERREUR_EMAIL_FORMAT = 121;
-	
-	
-	
+	public static int ERREUR_CHARGEMENT_TRI_ARTICLES = 122;
+	public static int ERREUR_CREDIT_INSUFFISANT = 123;
+	public static int ERREUR_MONTANT_ENCHERE = 124;
+
+
+
 	// Erreurs de la DAL (entre 0 et 99)
 	
 	public static int ERREUR_INSERTION_SQL = 0;
@@ -38,5 +41,14 @@ public abstract class CodesErreurs {
 	public static int ERREUR_UPDATE_SQL = 6;
 	public static int ERREUR_DELETE_SQL = 7;
 	public static int ERREUR_SELECT_PASSWORD = 8;
+	public static int ERREUR_SELECTION_SQL = 9;
+	public static int ERREUR_SELECT_CREDIT = 10;
+	public static int ERREUR_SELECT_INITIAL_PRICE = 11;
+	public static int ERREUR_SELECT_CURRENT_PRICE = 12;
+	public static int ERREUR_UPDATE_BID = 13;
+	public static int ERREUR_INSERT_BID = 14;
+	public static int ERREUR_UPDATE_CREDIT = 15;
+	public static int ERREUR_SELECT_USER = 16;
+
 		
 }

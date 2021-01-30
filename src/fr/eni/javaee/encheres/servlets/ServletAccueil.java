@@ -1,6 +1,7 @@
 package fr.eni.javaee.encheres.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -35,7 +36,7 @@ public class ServletAccueil extends HttpServlet {
 		try {
 			listesEncheresEC = articleManager.recupereEncheresEnCours();
 			request.setAttribute("encheresEC", listesEncheresEC);
-			System.out.println("\n TEST SERVLET // Un attribut encheresEC a été créé.");
+			// System.out.println("\nTEST SERVLET // Un attribut encheresEC a été créé.");
 
 		} catch (ModelException e) {
 			e.printStackTrace();
@@ -54,27 +55,29 @@ public class ServletAccueil extends HttpServlet {
 
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
+		
+		Integer noCategorie = Integer.parseInt(request.getParameter("no_categorie"));
+		String keyword = request.getParameter("keyword");
+		// System.out.println("\nDEBUG SERVLET // Valeur de keyword = " + keyword);
 
-		/* Récupérer les paramètres de tri */
-		// Integer noCategorie = Integer.parseInt(request.getParameter("no_categorie"));
-		// String keyword = request.getParameter("keyword");
+		/* Récupérer les paramètres de tri et les placer dans une map */
+		
+//		Map<String, String> mapCritères = new HashMap<String, String>();
+//		mapCritères.put("noCategorie", request.getParameter("no_categorie"));
+//		mapCritères.put("keyword", request.getParameter("keyword"));
 
 		/* Appeler le manager */
 		
-		// ArticleManager articleManager = new ArticleManager();
-		// articleManager.trieEtRecupereArticles(noCategorie, keyword);
-
-//		if (noCategorie != null && keyword == null) {
-//			articleManager.trieEtRecupereArticlesParCategorie(noCategorie);
-//		}
-//		
-//		if(keyword != null && noCategorie == null) {
-//			articleManager.trieEtRecupereArticlesParMotCle(keyword);
-//		}
-//		
-//		if(noCategorie != null && keyword != null) {
-//			articleManager.trieEtRecupereArticlesParMotCleEtCategorie(keyword, noCategorie);
-//		}
+		ArticleManager articleManager = new ArticleManager();
+		List<Article> listeArticlesFiltres = new ArrayList<Article>();
+		try {
+			listeArticlesFiltres = articleManager.trieEtRecupereArticles(noCategorie, keyword);
+			request.setAttribute("articlesFiltres", listeArticlesFiltres);
+			System.out.println("\nTEST SERVLET // Un attribut articlesFiltres a été créé.");
+			
+		} catch (ModelException e) {
+			e.printStackTrace();
+		}
 
 		/* Rediriger vers la page accueil.jsp */
 		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
