@@ -178,27 +178,48 @@ public class UtilisateurManager {
 		return credit;
 
 	}
+	
+	/**
+	 * Vérifie que le crédit de l'utilisateur est suffisant pour effectuer l'enchère
+	 * qu'il souhaite
+	 * 
+	 * @param noUtilisateur
+	 * @param montantEnchere
+	 * @return
+	 * @throws ModelException
+	 */
+	public Integer verifieSoldeCredits(Integer noUtilisateur, Integer montantEnchere) throws ModelException {
 
-	public void actualiseCredit(Enchere enchere) throws ModelException {
+		Integer credit;
+		UtilisateurManager utilisateurManager = new UtilisateurManager();
 
-		// Integer credit;
-		//
-		// try {
-		// credit = recupereCredit(enchere.getNoUtilisateur());
-		//
-		// } catch (ModelException e) {
-		// e.printStackTrace();
-		// throw e;
-		// }
-		//
-		// if(credit < enchere.getMontant()) {
-		// modelBllException.ajouterErreur(CodesErreurs.ERREUR_CREDIT_INSUFFISANT,
-		// "Votre crédit est insuffisant");
-		//
-		// } else {
-		//
 		try {
-			((UtilisateurDAO) utilisateurDAO).updateCredit(enchere);
+			credit = utilisateurManager.recupereCredit(noUtilisateur);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		if (credit < montantEnchere) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CREDIT_INSUFFISANT, "Votre crédit est insuffisant !");
+			throw modelBllException;
+		}
+
+		return credit;
+	}
+
+	/**
+	 * Déduit le montant de l'enchère de l'enchérisseur
+	 * 
+	 * @param enchere
+	 * @param derniereEnchere
+	 * @throws ModelException
+	 */
+	public void actualiseCredit(Enchere enchere, Enchere derniereEnchere) throws ModelException {
+
+		try {
+			((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, derniereEnchere);
 
 		} catch (ModelException e) {
 			e.printStackTrace();

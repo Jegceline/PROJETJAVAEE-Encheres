@@ -1,4 +1,5 @@
 
+<!--  résoudre le pb du fixed-bottom 
 
 <div class="container-fluid footer_full_width bg-light fixed-bottom">
 <div class="row no-padding">
@@ -9,3 +10,10 @@
 </div>
 </div>
 </div>
+-->
+
+  <footer class="sticky-footer py-4 bg-dark navbar-fixed-bottom">
+    <div class="container text-center text-white">
+      Projet ENI Ecole Informatique 2021 - JAVA EE - Céline Jégousse (CDA015)
+    </div>
+  </footer>

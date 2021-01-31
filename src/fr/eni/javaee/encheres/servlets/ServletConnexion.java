@@ -43,7 +43,7 @@ public class ServletConnexion extends HttpServlet {
 
 		/* Récupérer les paramètres du formulaire */
 		String identifiant = request.getParameter("identifiant");
-		System.out.println("\nSERVLET // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
+		// System.out.println("\nSERVLET // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
 		String motDePasse = request.getParameter("motdepasse");
 
 		/* Appeler le manager */
@@ -53,7 +53,7 @@ public class ServletConnexion extends HttpServlet {
 		try {
 				utilisateurManager.verifieExistenceUtilisateur(identifiant, motDePasse);
 				utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);	
-				System.out.println("\n SERVLET // Utilisateur retourné par le Manager : " + utilisateur);
+				// System.out.println("\n SERVLET // Utilisateur retourné par le Manager : " + utilisateur);
 			
 		} catch (ModelException e) {
 			e.printStackTrace();

@@ -57,6 +57,8 @@ public class ServletDetailArticle extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		Enchere precedenteEnchere;
+		
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
 		
@@ -67,8 +69,8 @@ public class ServletDetailArticle extends HttpServlet {
 		Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 		Integer noUtilisateur = utilisateur.getNoUtilisateur();
 		Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
-		System.out.println("\nTEST SERVLET // id de l'article : " + noArticle);
-		System.out.println("\nTEST SERVLET // id de l'utilisateur : " + noUtilisateur);
+//		System.out.println("\nTEST SERVLET // id de l'article : " + noArticle);
+//		System.out.println("\nTEST SERVLET // id de l'utilisateur : " + noUtilisateur);
 		
 		/* Créer un objet Enchere */
 		Enchere enchere = new Enchere(montantEnchere, noArticle, noUtilisateur);
@@ -78,18 +80,22 @@ public class ServletDetailArticle extends HttpServlet {
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 
 		try {
-			articleManager.encherit(enchere);
-			utilisateurManager.actualiseCredit(enchere);
+			/* récupération de la précédente enchère s'il y en avait une */
+			precedenteEnchere = articleManager.recoitEnchere(enchere);
+			
+			/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y en avait un */
+			utilisateurManager.actualiseCredit(enchere, precedenteEnchere);
+			
+			/* récupération des infos mises à jour de l'utilisateur et mise à jour de ses infos dans la session */
 			Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
+			request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
+			System.out.println("\nTEST SERVLET // Crédit en session : " + utilisateurMaj.getCredit());
 			
 			request.setAttribute("succesEnchere", "Votre enchère a bien été prise en compte.");
 			System.out.println("\nDEBUG SERVLET // Un attribut succesEnchere a été créé.");
-			
-			request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
-			
-			System.out.println("\nTEST SERVLET // Crédit en session : " + utilisateurMaj.getCredit());
-			
-			response.sendRedirect(request.getContextPath() + "/accueil");
+
+			// response.sendRedirect(request.getContextPath() + "/accueil");
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 			
 		} catch (ModelException e) {
 			e.printStackTrace();

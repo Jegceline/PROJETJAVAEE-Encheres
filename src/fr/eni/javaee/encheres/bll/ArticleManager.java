@@ -10,6 +10,7 @@ import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.dal.ArticleDAO;
 import fr.eni.javaee.encheres.dal.DAO;
 import fr.eni.javaee.encheres.dal.DAOFactory;
+import fr.eni.javaee.encheres.dal.EnchereDAO;
 
 public class ArticleManager {
 
@@ -143,13 +144,16 @@ public class ArticleManager {
 
 	}
 
-	public void encherit(Enchere enchere) throws ModelException {
+	public Enchere recoitEnchere(Enchere enchere) throws ModelException {
 
 		Boolean premiereEnchere;
+		Enchere precedenteEnchere = null;
+		UtilisateurManager utilisateurManager = new UtilisateurManager();
 
-		/* Vérifier que l'enchère est bien supérieure au prix actuel */
 		try {
 
+			/* vérifier que l'enchère est bien supérieure à la précédente enchère */
+			/* déterminer si c'est la première enchère proposée pour l'article */
 			premiereEnchere = verifieMontantEnchere(enchere.getMontant(), enchere.getNoArticle());
 
 		} catch (ModelException e2) {
@@ -157,23 +161,28 @@ public class ArticleManager {
 			throw e2;
 		}
 
+		/* si l'enchère est bien supérieure à la précédente enchère */
 		if (!modelBllException.contientErreurs()) {
 
-			/* Vérifier que l'utilisateur a bien un crédit suffisant */
 			try {
-				verifieSoldeCredits(enchere.getNoUtilisateur(), enchere.getMontant());
+				/* vérifier que l'utilisateur a bien un crédit suffisant */
+				utilisateurManager.verifieSoldeCredits(enchere.getNoUtilisateur(), enchere.getMontant());
 
 			} catch (ModelException e1) {
 				e1.printStackTrace();
 				throw e1;
 			}
 		}
-
+		
+		/* si l'enchère est bien supérieure à l'énchère précédente et si l'utilisateur a un crédit suffisant */
 		if (!modelBllException.contientErreurs()) {
 
+			/* Si l'objet n'avait jamais fait l'objet d'une enchère */
 			if (premiereEnchere) {
 				System.out.println("\nTEST Manager // Il s'agit d'une première enchère sur cet article.");
+
 				try {
+					/* créer l'enchère dans la base de données */
 					enchereDAO.insert(enchere);
 
 				} catch (ModelException e) {
@@ -181,24 +190,33 @@ public class ArticleManager {
 					throw e;
 				}
 
-			} else {
+			/* s'il y a déjà eu des enchères sur l'article */
+			} else { 
+
 				try {
-					enchereDAO.update(enchere);
+					/* récupérer le numéro du dernier enchérisseur */
+					precedenteEnchere = ((EnchereDAO) enchereDAO).returnLastBid(enchere.getNoArticle());
+					
+					/* créer l'enchère dans la base de données */
+					enchereDAO.insert(enchere);
 
 				} catch (ModelException e) {
 					e.printStackTrace();
 					throw e;
 				}
+
 			}
 		}
-
+		
+		return precedenteEnchere;
 	}
 
-	/**
-	 * vérifie que l'enchère est supérieure au prix de vente actuel détermine si
-	 * c'est la première enchère effectuée sur l'objet
+	/*
+	 * vérifie que l'enchère est supérieure au prix de vente actuel 
+	 * détermine si c'est la première enchère effectuée sur l'objet
 	 * 
 	 * @param noArticle
+	 * 
 	 * @throws ModelException
 	 */
 	private boolean verifieMontantEnchere(Integer montantEnchere, Integer noArticle) throws ModelException {
@@ -209,10 +227,10 @@ public class ArticleManager {
 
 		try {
 			prixInitial = ((ArticleDAO) articleDAO).selectInitialPrice(noArticle);
-			System.out.println("\nTEST MANAGER // Prix initial de l'objet : " + prixInitial);
+			// System.out.println("\nTEST MANAGER ARTICLE // Prix initial de l'objet : " + prixInitial);
 
 			prixActuel = ((ArticleDAO) articleDAO).selectCurrentPrice(noArticle);
-			System.out.println("\nTEST MANAGER // Prix actuel de l'objet : " + prixActuel);
+			// System.out.println("\nTEST MANAGER ARTICLE // Prix actuel de l'objet : " + prixActuel);
 
 			if (prixActuel == null || prixActuel == 0) {
 				premiereEnchere = true;
@@ -245,36 +263,6 @@ public class ArticleManager {
 
 		return premiereEnchere;
 
-	}
-
-	/**
-	 * Vérifie que le crédit de l'utilisateur est suffisant pour effectuer l'enchère
-	 * qu'il souhaite
-	 * 
-	 * @param noUtilisateur
-	 * @param montantEnchere
-	 * @return
-	 * @throws ModelException
-	 */
-	private Integer verifieSoldeCredits(Integer noUtilisateur, Integer montantEnchere) throws ModelException {
-
-		Integer credit;
-		UtilisateurManager utilisateurManager = new UtilisateurManager();
-
-		try {
-			credit = utilisateurManager.recupereCredit(noUtilisateur);
-
-		} catch (ModelException e) {
-			e.printStackTrace();
-			throw e;
-		}
-
-		if (credit < montantEnchere) {
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CREDIT_INSUFFISANT, "Votre crédit est insuffisant !");
-			throw modelBllException;
-		}
-
-		return credit;
 	}
 
 }

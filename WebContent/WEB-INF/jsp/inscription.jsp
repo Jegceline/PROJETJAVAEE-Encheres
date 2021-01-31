@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
-<html>
+<html class="html-100">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Inscription</title>
@@ -9,23 +9,26 @@
 <%@ include file="css.jspf"%>
 
 </head>
-<body>
 
-	<div class="container">
-		<%@ include file="header.jspf"%>
+<body class="body-flex">
 
-		<div class="container alert alert-${ alertMessage } ">
-			<p style="color: red;">${ erreurData }</p>
+	<div class="container my-4 pt-5">
+
+		<div class="content">
+
+			<%@ include file="header.jspf"%>
+
+			<h2 class="my-4">S'inscrire</h2>
+			<hr>
+
+			<c:if test="${ not empty erreurData}">
+				<div class="alert alert-danger" role="alert">${erreurData}</div>
+			</c:if>
 
 			<c:forEach var="couple" items="${ mapErreurs }">
-				<p style="color: red;">${couple.value}</p>
+				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
 
-		</div>
-
-		<section class="container pt-5">
-
-			<h2>Mon profil</h2>
 
 			<div class="card-body">
 
@@ -92,21 +95,25 @@
 					<div class="row my-4">
 						<div class="col">
 							<button class="btn btn-success ">Créer un compte</button>
-
-							<form action="accueil" method="get">
-								<input type="submit" value="Annuler" name="reset" id="reset" />
-							</form>
 						</div>
 					</div>
 
-					<!-- <div class="mb-3 col-sm-12 col-xs-12">
+				</form>
+
+				<form action="accueil" method="get">
+					<input type="submit" value="Annuler" name="reset" id="reset" />
+				</form>
+
+			</div>
+		</div>
+
+		<!-- <div class="mb-3 col-sm-12 col-xs-12">
 					<input type="submit" value="Créer" />
 				</div>
 				  -->
 
-				</form>
+	</div>
 
-
-			</div>
+	<%@ include file="footer.jspf"%>
 </body>
 </html>

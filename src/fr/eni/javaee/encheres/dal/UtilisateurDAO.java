@@ -18,6 +18,6 @@ public interface UtilisateurDAO extends DAO<Utilisateur>{
 
 	public Integer selectCredit(Integer noUtilisateur) throws ModelException;
 
-	public void updateCredit(Enchere enchere) throws ModelException;
+	public void updateCredit(Enchere enchere, Enchere precedenteEnchere) throws ModelException;
 
 }

@@ -26,7 +26,9 @@ public abstract class ConnectionProvider {
     }
 
     public static Connection getConnection() throws SQLException {
+    	dataSource.getConnection().setAutoCommit(false);
         return dataSource.getConnection();
     }
 
+    
 }
