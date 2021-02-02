@@ -49,6 +49,9 @@ public abstract class CodesErreurs {
 	public static int ERREUR_INSERT_BID = 14;
 	public static int ERREUR_UPDATE_CREDIT = 15;
 	public static int ERREUR_SELECT_USER = 16;
+	public static int ERREUR_ENCHEREBUILDER = 17;
+	public static int ERREUR_ARTICLEBUILDER = 18;
+	public static int ERREUR_CURRENTLY_ON_SALE_ITEMS = 19;
 
 		
 }

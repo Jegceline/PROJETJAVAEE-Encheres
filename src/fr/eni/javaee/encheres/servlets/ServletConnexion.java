@@ -1,8 +1,6 @@
 package fr.eni.javaee.encheres.servlets;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
 import fr.eni.javaee.encheres.bll.UtilisateurManager;
 import fr.eni.javaee.encheres.bo.Utilisateur;
@@ -54,7 +51,7 @@ public class ServletConnexion extends HttpServlet {
 
 		try {
 			utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);
-			System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
+			// System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
 			
 			if(utilisateur != null) {
 				mdpBdd = utilisateurManager.recupereEtVerifieMdp(identifiant, motDePasse);	

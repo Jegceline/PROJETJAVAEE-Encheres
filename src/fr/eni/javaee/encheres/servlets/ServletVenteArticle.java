@@ -54,7 +54,7 @@ public class ServletVenteArticle extends HttpServlet {
 			LocalDate dateDebutEncheres = null;
 			LocalDate dateFinEncheres = null;
 			String rue = request.getParameter("rue");
-			Integer codePostal = Integer.parseInt(request.getParameter("code_postal"));
+			Integer codePostal = Integer.parseInt(request.getParameter("code_postal".trim()));
 			String ville = request.getParameter("ville");
 
 			/* Récupérer l'objet Uilisateur présent en session */

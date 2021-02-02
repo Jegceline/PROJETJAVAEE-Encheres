@@ -59,7 +59,7 @@
 				<div class="row my-2">
 					<div class="col">
 						<label for="telephone">Téléphone : </label> <input id="telephone" type="text" name="telephone" value="${ profilUtilisateur.telephone }"
-							class="form-control" required />
+							class="form-control" />
 					</div>
 
 					<div class="col">

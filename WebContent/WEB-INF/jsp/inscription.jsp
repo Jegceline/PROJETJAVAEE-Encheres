@@ -41,54 +41,54 @@
 						</div>
 
 						<div class="col">
-							<label for="nom" class="form-label">Nom : </label> <input id="nom" type="text" value="${ param.nom }" name="nom" class="form-control" required />
+							<label for="nom" class="form-label">Nom : </label> <input id="nom" type="text" value="${ param.nom }" name="nom" class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 					</div>
 
 					<div class="row my-2">
 						<div class="col">
 							<label for="prenom" class="form-label">Prénom : </label> <input id="prenom" type="text" value="${ param.prenom }" name="prenom"
-								class="form-control" required />
+								class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 
 						<div class="col">
 							<label for="email" class="form-label">E-mail : </label> <input id="email" type="text" value="${ param.email }" name="email"
-								class="form-control" required />
+								class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 					</div>
 
 					<div class="row my-2">
 						<div class="col">
 							<label for="telephone" class="form-label">Téléphone : </label> <input id="telephone" type="text" name="telephone" value="${ param.telephone }"
-								class="form-control" required />
+								class="form-control" />
 						</div>
 
 						<div class="col">
-							<label for="rue" class="form-label">Rue : </label> <input id="rue" type="text" name="rue" value="${ param.rue }" class="form-control" required />
+							<label for="rue" class="form-label">Rue : </label> <input id="rue" type="text" name="rue" value="${ param.rue }" class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 					</div>
 
 					<div class="row my-2">
 						<div class="col">
 							<label for="code_postal" class="form-label">Code postal :</label> <input id="code_postal" type="text" name="codePostal"
-								value="${ param.codePostal }" class="form-control" required />
+								value="${ param.codePostal }" class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 
 						<div class="col">
 							<label for="telephone" class="form-label">Ville : </label> <input id="ville" type="text" name="ville" value="${ param.ville }"
-								class="form-control" required />
+								class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 					</div>
 
 					<div class="row my-2">
 						<div class="col">
 							<label for="mot_de_passe" class="form-label">Mot de passe : </label> <input id="mot_de_passe" type="password" name="motDePasse"
-								value="${ param.mot_de_passe }" class="form-control" required />
+								value="${ param.mot_de_passe }" class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 
 						<div class="col">
 							<label for="confirmationMdp" class="form-label">Confirmation : </label> <input id="confirmationMdp" type="password" name="motDePasseBis"
-								value="${ param.confirmationMdp }" class="form-control" required />
+								value="${ param.confirmationMdp }" class="form-control" placeholder="Ce champ est obligatoire" required />
 						</div>
 					</div>
 

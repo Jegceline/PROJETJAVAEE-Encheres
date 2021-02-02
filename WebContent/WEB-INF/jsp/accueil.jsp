@@ -21,19 +21,30 @@
 
 			<h2 class="my-4">Liste des enchères</h2>
 			<hr>
+			
+			<!-- Messages conditionnels  -->
 
 			<c:if test="${ not empty succesEnchere}">
 				<div class="alert alert-success" role="alert">${succesEnchere}</div>
+			</c:if>
+			
+			<c:if test="${ not empty succesInscription}">
+				<div class="alert alert-success" role="alert">${succesInscription}</div>
 			</c:if>
 
 			<c:if test="${ not empty succesAjoutVente}">
 				<div class="alert alert-success" role="alert">${succesAjoutVente}</div>
 			</c:if>
-
-
+			
+			<c:if test="${ not empty succesSupression}">
+				<div class="alert alert-success" role="alert">${succesSupression}</div>
+			</c:if>
+			
 			<c:forEach var="couple" items="${ mapErreurs }">
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
+			
+			<!-- Fin des messages conditionnels -->
 
 
 			<h4 class="my-4">Filtres</h4>
@@ -75,7 +86,7 @@
 										class="form-check-label">mes enchères en cours</label>
 								</p>
 								<p>
-									<input type="checkbox" class="form-check-input" id="achats3" name="mes_encheres_remportees" value="mes_encheres_remportees" disabled> <label
+									<input type="checkbox" class="form-check-input" id="achats3" name="mes_encheres_remportees" value="mes_encheres_remportees"> <label
 										for="mes_encheres_remportees" class="form-check-label">mes enchères remportées</label>
 								</p>
 							</div>
@@ -107,80 +118,81 @@
 						</div>
 
 						<hr>
+
+					</div>
 				</c:if>
 
-				<div class="col">
-					<button class="btn btn-primary mx-auto d-block" name="rechercher">Rechercher</button>
-				</div>
+		<div class="col">
+			<button class="btn btn-primary mx-auto d-block" name="rechercher">Rechercher</button>
 		</div>
-
-		</form>
-
-
-
-		<section class="container my-4">
 		
+		</form>
+	</div>
+
+	<section class="container my-4">
+
 		<c:if test="${ not empty noResult}">
 			<div class="alert alert-warning" role="alert">${noResult}</div>
 		</c:if>
 
-			<div class="card-columns">
+		<div class="card-columns">
 
-				<c:choose>
-					<c:when test="${ empty articlesFiltres }">
+			<c:choose>
+				<c:when test="${ empty articlesFiltres }">
 
-						<c:forEach var="article" items="${encheresEC}">
+					<c:forEach var="article" items="${encheresEC}">
 
-							<div class="card bg-light mb-3" style="width: 18rem;">
+						<div class="card bg-light mb-3" style="width: 18rem;">
 
-								<div class="card-header">
-									<h5 class="card-title">${article.nomArticle}</h5>
-								</div>
-
-								<div class="card-body">
-									<p class="card-text">Prix de vente initial : ${article.prixInitial} points</p>
-									<p class="card-text">Dernière enchère : ${article.prixVente} points</p>
-									<p class="card-text">Début des enchères : ${article.dateDebutEncheres}</p>
-									<p class="card-text">Clôture des enchères : ${article.dateFinEncheres}</p>
-									<p class="card-text">Vendeur : ${article.pseudoVendeur}</p>
-
-									<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
-								</div>
+							<div class="card-header">
+								<h5 class="card-title">${article.nomArticle}</h5>
 							</div>
 
-						</c:forEach>
+							<div class="card-body">
+								<p class="card-text">Prix de vente initial : ${article.prixInitial} points</p>
+								<p class="card-text">Début des enchères : ${article.dateDebutEncheres}</p>
+								<p class="card-text">Clôture des enchères : ${article.dateFinEncheres}</p>
+								<p class="card-text">Vendeur : ${article.vendeur.pseudo}</p>
+								<p class="card-text">Dernière enchère : ${article.prixVente} points</p>
 
-					</c:when>
 
-					<c:when test="${ not empty articlesFiltres }">
+								<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
+							</div>
+						</div>
 
-						<c:forEach var="article" items="${articlesFiltres}">
+					</c:forEach>
 
-							<div class="card bg-light mb-3" style="width: 18rem;">
+				</c:when>
 
-								<div class="card-header">
-									<h5 class="card-title">${article.nomArticle}</h5>
-								</div>
+				<c:when test="${ not empty articlesFiltres }">
 
-								<div class="card-body">
-									<p class="card-text">Prix de vente initial : ${article.prixInitial} points</p>
-									<p class="card-text">Dernière enchère : ${article.prixVente} points</p>
-									<p class="card-text">Début des enchères : ${article.dateDebutEncheres}</p>
-									<p class="card-text">Clôture des enchères : ${article.dateFinEncheres}</p>
-									<p class="card-text">Vendeur : ${article.pseudoVendeur}</p>
+					<c:forEach var="article" items="${articlesFiltres}">
 
-									<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
-								</div>
+						<div class="card bg-light mb-3" style="width: 18rem;">
+
+							<div class="card-header">
+								<h5 class="card-title">${article.nomArticle}</h5>
 							</div>
 
-						</c:forEach>
-					</c:when>
+							<div class="card-body">
+								<p class="card-text">Prix de vente initial : ${article.prixInitial} points</p>
+								<p class="card-text">Début des enchères : ${article.dateDebutEncheres}</p>
+								<p class="card-text">Clôture des enchères : ${article.dateFinEncheres}</p>
+								<p class="card-text">Vendeur : ${article.vendeur.pseudo}</p>
+								<p class="card-text">Dernière enchère : ${article.prixVente} points</p>
 
-				</c:choose>
+								<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
+							</div>
+						</div>
 
-			</div>
+					</c:forEach>
+				</c:when>
 
-		</section>
+			</c:choose>
+
+		</div>
+
+	</section>
 
 	</div>
 	</div>

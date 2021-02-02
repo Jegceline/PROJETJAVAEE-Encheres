@@ -73,6 +73,8 @@ public class ServletInscription extends HttpServlet {
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(request, response);
 
 		} else {
+			request.setAttribute("succesInscription", "Bienvenue " + utilisateur.getPrenom() + " !");
+			System.out.println("\nTEST SERVLET INSCRIPTION // Un attribut succesInscription a été créé.");
 			request.getSession().setAttribute("profilUtilisateur", utilisateur);
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 		}

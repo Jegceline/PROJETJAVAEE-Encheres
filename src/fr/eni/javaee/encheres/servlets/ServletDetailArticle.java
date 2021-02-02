@@ -72,11 +72,7 @@ public class ServletDetailArticle extends HttpServlet {
 			
 			/* Récupérer l'enchère et le numéro de l'article */
 			Integer montantEnchere = Integer.parseInt(request.getParameter("enchere_prix"));
-			// System.out.println("\nTEST SERVLET // Montant de l'enchère = " + enchere_prix);
-			
-//		System.out.println("\nTEST SERVLET // id de l'article : " + noArticle);
-//		System.out.println("\nTEST SERVLET // id de l'utilisateur : " + noUtilisateur);
-			
+
 			/* Créer un objet Enchere */
 			Enchere enchere = new Enchere(montantEnchere, noArticle, noUtilisateur);
 			
@@ -105,12 +101,9 @@ public class ServletDetailArticle extends HttpServlet {
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				System.out.println("JE SUIS PASSE PAR LA");
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
 				
 			}
-			
-			request.getServletContext().getRequestDispatcher("/accueil").forward(request, response);
 		
 		/* si l'utilisateur a cliqué sur le bouton modifier */
 		} else {

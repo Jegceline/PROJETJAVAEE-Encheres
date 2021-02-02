@@ -1,6 +1,7 @@
 package fr.eni.javaee.encheres.bll;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.eni.javaee.encheres.CodesErreurs;
@@ -98,12 +99,30 @@ public class ArticleManager {
 		}
 	}
 
-	public List<Article> recupereEncheresEnCours() throws ModelException {
+	public List<Article> recupereEncheresEnCoursPost(Trieur trieur) throws ModelException {
 
 		List<Article> listesEncheresEC = null;
 
 		try {
-			listesEncheresEC = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleArticles();
+			listesEncheresEC = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsWithFilter(trieur);
+
+		} catch (ModelException e) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CHARGEMENT_ENCHERES_EC,
+					"Une erreur est survenue lors du chargement des enchères en cours.");
+			e.printStackTrace();
+			throw e;
+		}
+
+		return listesEncheresEC;
+
+	}
+
+	public List<Article> recupereEncheresEnCoursGet() throws ModelException {
+
+		List<Article> listesEncheresEC = null;
+
+		try {
+			listesEncheresEC = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsGet();
 
 		} catch (ModelException e) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CHARGEMENT_ENCHERES_EC,
@@ -117,50 +136,71 @@ public class ArticleManager {
 	}
 
 	public List<Article> trieEtRecupereArticles(Trieur trieur) throws ModelException {
-		
-		List<Article> listeSelectionArticles = null;
 
-		/* Si la case "enchères en cours" est cochée */
-		if (trieur.getEncheresEC() != null || trieur.getCategorie() != 0 || !trieur.getKeyword().isEmpty()) {
+		List<Article> listeSelectionArticles = new ArrayList<Article>();
+
+		/* Si la case "mes enchères remportées" est cochée */
+		if (trieur.getEncheresUtilisateurG() != null) {
 
 			try {
-				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleArticlesWithFilter(trieur);
-				
+				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserPurchasedItems(trieur);
+				System.out.println("\nTEST MANAGER ARTICLE trieEtRecupereArticles // listeSelectionArticles = "  + listeSelectionArticles);
+
 			} catch (ModelException e) {
 				e.printStackTrace();
 				throw e;
 			}
 		}
-		
+
 		/* Si la case "mes enchères en cours" est cochée */
 		if (trieur.getEncheresUtilisateurEC() != null) {
 
 			try {
 				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserWishlistWithFilter(trieur);
-				
+
 			} catch (ModelException e) {
 				e.printStackTrace();
 				throw e;
 			}
 		}
-		
+
 		/* Si la case "mes enchères remportées" est cochée */
 		if (trieur.getEncheresUtilisateurG() != null) {
-			
-		}
-
-		/* Si une des cases "ventes" est cochée */
-		if (trieur.getVentesUtilisateurAttente() != null || trieur.getVentesUtilisateurEC() != null || trieur.getVentesUtilisateurT() != null) {
-
 			try {
-				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserSellsWithFilter(trieur);
-				
+				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserPurchasedItems(trieur);
+
 			} catch (ModelException e) {
 				e.printStackTrace();
 				throw e;
 			}
 		}
 
+			/* Si une des cases "ventes" est cochée */
+			if (trieur.getVentesUtilisateurAttente() != null || trieur.getVentesUtilisateurEC() != null
+					|| trieur.getVentesUtilisateurT() != null) {
+
+				try {
+					listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserSellsWithFilter(trieur);
+
+				} catch (ModelException e) {
+					e.printStackTrace();
+					throw e;
+				}
+			}
+
+			/* Si la case "enchères en cours" est cochée */
+			if (trieur.getEncheresEC() != null || trieur.getCategorie() != 0 || !trieur.getKeyword().isEmpty()) {
+
+				try {
+					listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsWithFilter(trieur);
+
+				} catch (ModelException e) {
+					e.printStackTrace();
+					throw e;
+				}
+			}
+
+		
 		return listeSelectionArticles;
 
 	}
@@ -262,7 +302,7 @@ public class ArticleManager {
 		Boolean premiereEnchere = false;
 
 		try {
-			prixInitial = ((ArticleDAO) articleDAO).selectInitialPrice(noArticle);
+			prixInitial = ((ArticleDAO) articleDAO).selectStartingPrice(noArticle);
 			// System.out.println("\nTEST MANAGER ARTICLE // Prix initial de l'objet : " +
 			// prixInitial);
 

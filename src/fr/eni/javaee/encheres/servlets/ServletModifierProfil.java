@@ -95,6 +95,7 @@ public class ServletModifierProfil extends HttpServlet {
 				request.setAttribute("echecSuppression", "Il n'a pas été possible de supprimer ce compte.");
 			}
 			
+			request.setAttribute("succesSupression", "Votre compte a bien été supprimé.");
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 		}
 		

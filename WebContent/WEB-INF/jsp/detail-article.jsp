@@ -51,7 +51,7 @@
 						</div>
 
 						<div class="mb-3">
-							<label for="vendeur">Vendeur : </label> <input id="vendeur" type="text" name="vendeur" value="${articleSelectionne.pseudoVendeur}"
+							<label for="vendeur">Vendeur : </label> <input id="vendeur" type="text" name="vendeur" value="${articleSelectionne.vendeur.pseudo}"
 								class="form-control" disabled />
 						</div>
 
@@ -83,7 +83,7 @@
 						<div class="mb-3">
 							<button class="btn btn-success " name="encherir">Enchérir</button>
 
-							<c:if test="${ profilUtilisateur.noUtilisateur == articleSelectionne.noUtilisateur}">
+							<c:if test="${ profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur}">
 								<button class="btn btn-success ml-4" name="modifier">Modifier</button>
 							</c:if>
 						</div>

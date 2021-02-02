@@ -69,7 +69,8 @@ public class UtilisateurManager {
 	 * 
 	 * @param identifiant
 	 *            (pseudo ou email)
-	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si l'utilisateur existe
+	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si
+	 *         l'utilisateur existe
 	 * @throws ModelException
 	 */
 	public Utilisateur rechercheUtilisateur(String identifiant) throws ModelException {
@@ -178,7 +179,7 @@ public class UtilisateurManager {
 		return credit;
 
 	}
-	
+
 	/**
 	 * Vérifie que le crédit de l'utilisateur est suffisant pour effectuer l'enchère
 	 * qu'il souhaite
@@ -218,12 +219,14 @@ public class UtilisateurManager {
 	 */
 	public void actualiseCredit(Enchere enchere, Enchere derniereEnchere) throws ModelException {
 
-		try {
-			((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, derniereEnchere);
+		if (derniereEnchere != null) {
+			try {
+				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, derniereEnchere);
 
-		} catch (ModelException e) {
-			e.printStackTrace();
-			throw e;
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
+			}
 		}
 	}
 
@@ -248,10 +251,9 @@ public class UtilisateurManager {
 
 		} else if (!motDePasseBdd.equals(motDePasse)) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_INCORRECT, "Le mot de passe est incorrect.");
-			System.out.println(modelBllException);
 			throw modelBllException;
 		}
-		
+
 		return motDePasseBdd;
 
 	}

@@ -8,11 +8,11 @@ import fr.eni.javaee.encheres.bo.Trieur;
 
 public interface ArticleDAO extends DAO<Article>{
 	
-	public List<Article> retrieveCurrentlyForSaleArticlesWithFilter(Trieur trieur) throws ModelException;
+	public List<Article> retrieveCurrentlyForSaleItemsWithFilter(Trieur trieur) throws ModelException;
 
 	public List<Article> selectByCriteria(Trieur trieur) throws ModelException;
 
-	public Integer selectInitialPrice(Integer noArticle) throws ModelException;
+	public Integer selectStartingPrice(Integer noArticle) throws ModelException;
 
 	public Integer selectCurrentPrice(Integer noArticle) throws ModelException;
 
@@ -20,5 +20,9 @@ public interface ArticleDAO extends DAO<Article>{
 
 	public List<Article> retrieveUserSellsWithFilter(Trieur trieur) throws ModelException;
 
-	public List<Article> retrieveCurrentlyForSaleArticles() throws ModelException;
+	public List<Article> retrieveCurrentlyForSaleItemsGet() throws ModelException;
+	
+	// public List<Article> retrieveCurrentlyForSaleItemsPost(Trieur trieur) throws ModelException;
+
+	public List<Article> retrieveUserPurchasedItems(Trieur trieur) throws ModelException;
 }

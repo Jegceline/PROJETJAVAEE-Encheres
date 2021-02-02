@@ -13,7 +13,9 @@ import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
 import fr.eni.javaee.encheres.bo.Adresse;
 import fr.eni.javaee.encheres.bo.Article;
+import fr.eni.javaee.encheres.bo.Categorie;
 import fr.eni.javaee.encheres.bo.Trieur;
+import fr.eni.javaee.encheres.bo.Utilisateur;
 
 public class ArticleDAOJdbcImpl implements ArticleDAO {
 
@@ -21,25 +23,58 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	/* Constantes */
 
-	private static final String INSERT_ARTICLE = "INSERT INTO Articles_Vendus(nom_article, description, date_debut_encheres, "
+	private static final String INSERT_ITEM = "INSERT INTO Articles_Vendus(nom_article, description, date_debut_encheres, "
 			+ "date_fin_encheres, prix_initial, no_utilisateur, no_categorie) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	private static final String INSERT_PICKUP_ADDRESS = "INSERT INTO Retraits (no_article, rue, code_postal, ville) VALUES (?, ?, ?, ?)";
 
-	private static final String SELECT_CURRENTLY_ON_SALE_ARTICLES = "SELECT * FROM Articles_vendus a "
+	// private static final String SELECT_USER = "SELECT pseudo FROM Utilisateurs WHERE no_utilisateur = ?";
+	private static final String SELECT_ARTICLE_BY_ID = "SELECT a.no_article, nom_article, description, date_debut_encheres, date_fin_encheres, "
+			+ "prix_initial, prix_vente, a.no_utilisateur, pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
+			+ "FROM Articles_vendus a "
 			+ "INNER JOIN Retraits r ON a.no_article = r.no_article "
-			+ "WHERE (date_debut_encheres <= GETDATE() AND date_fin_encheres > GETDATE())";
+			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur "
+			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie "
+			+ "WHERE a.no_article = ?";
+	
+	private static final String SELECT_ITEM_STARTING_PRICE = "SELECT prix_initial FROM Articles_vendus WHERE no_article = ?";
+	private static final String SELECT_ITEM_CURRENT_PRICE = "SELECT prix_vente FROM Articles_vendus WHERE no_article = ?";
+	// private static final String SELECT_ITEM_PICKUP_ADDRESS = "SELECT rue, code_postal, ville FROM Retraits WHERE no_article = ?";
 
-	private static final String SELECT_USER = "SELECT pseudo FROM Utilisateurs WHERE no_utilisateur = ?";
-	private static final String SELECT_ARTICLE_BY_ID = "SELECT * FROM Articles_vendus a INNER JOIN RETRAITS r ON a.no_article = r.no_article WHERE a.no_article = ?";
-	private static final String SELECT_ARTICLE_INITIAL_PRICE = "SELECT prix_initial FROM Articles_vendus WHERE no_article = ?";
-	private static final String SELECT_ARTICLE_CURRENT_PRICE = "SELECT prix_vente FROM Articles_vendus WHERE no_article = ?";
-	private static final String SELECT_ARTICLE_PICKUP_ADDRESS = "SELECT rue, code_postal, ville FROM Retraits WHERE no_article = ?";
+	private static final String SELECT_USER_SELLS = "SELECT a.no_article, nom_article, description, date_debut_encheres, "
+			+ "date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
+			+ "FROM Articles_vendus a "
+			+ "INNER JOIN Retraits r ON a.no_article = r.no_article "
+			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie " 
+			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur "
+			+ "WHERE a.no_utilisateur = ?";
 
-	private static final String SELECT_USER_SELLS = "SELECT * FROM ARTICLES_VENDUS a "
-			+ "INNER JOIN Retraits r ON a.no_article = r.no_article " + "WHERE no_utilisateur = ?";
-	private static final String SELECT_ARTICLES_USER_HAVE_BIDS_ON = "SELECT DISTINCT a.no_article, nom_article, description, date_debut_encheres, date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, a.no_article, r.rue, r.code_postal, r.ville "
-			+ "FROM ENCHERES e " + "INNER JOIN ARTICLES_VENDUS a on a.no_article = e.no_article "
-			+ "INNER JOIN Retraits r ON a.no_article = r.no_article " + "WHERE e.no_utilisateur = ?";
+	private static final String SELECT_ITEMS_USER_HAVE_BIDS_ON = "SELECT DISTINCT a.no_article, nom_article, description, "
+			+ "date_debut_encheres, date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
+			+ "FROM ENCHERES e "
+			+ "INNER JOIN Articles_vendus a on a.no_article = e.no_article "
+			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie "
+			+ "INNER JOIN Retraits r ON a.no_article = r.no_article "
+			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur "
+			+ "WHERE e.no_utilisateur = ?";
+
+	private static final String SELECT_USER_PURCHASED_ITEMS = "SELECT a.no_article, nom_article, description, date_debut_encheres, "
+			+ "date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, " + "a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
+			+ "FROM Articles_vendus a "
+			+ "INNER JOIN Encheres e on e.no_article = a.no_article "
+			+ "INNER JOIN RETRAITS r on a.no_article = r.no_article "
+			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie "
+			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur "
+			+ "WHERE e.no_utilisateur = ? "
+			+ "AND date_fin_encheres < getdate()";
+
+	private static final String SELECT_CURRENTLY_ON_SALE_ITEMS = "SELECT a.no_article, nom_article, description, date_debut_encheres, "
+			+ "date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
+			+ "FROM Articles_vendus a "
+			+ "INNER JOIN Retraits r ON a.no_article = r.no_article "
+			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie "
+			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur "
+			+ "WHERE (date_debut_encheres <= GETDATE() "
+			+ "AND date_fin_encheres > GETDATE()) ";
 
 	/* Constructeur */
 
@@ -57,7 +92,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 			try {
 				/* Préparation de la première requête */
-				PreparedStatement query = cnx.prepareStatement(INSERT_ARTICLE, Statement.RETURN_GENERATED_KEYS);
+				PreparedStatement query = cnx.prepareStatement(INSERT_ITEM, Statement.RETURN_GENERATED_KEYS);
 
 				// valorisation des paramètres
 				query.setString(1, article.getNomArticle());
@@ -130,15 +165,73 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	}
 
-	/* --------------- SELECT --------------- */
-	
+	/* --------------- Méthodes de tri --------------- */
+
+	/**
+	 * récupère et retourne les enchères remportées d'un utilisateur
+	 */
+	@Override
+	public List<Article> retrieveUserPurchasedItems(Trieur trieur) throws ModelException {
+
+		List<Article> listeEncheresRemportees = new ArrayList<Article>();
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				/* Préparation de la première requête */
+				PreparedStatement query = cnx.prepareStatement(SELECT_USER_PURCHASED_ITEMS);
+
+				/* valorisation du paramètre */
+				query.setInt(1, trieur.getUtilisateur().getNoUtilisateur());
+				
+				/* Exécution de la requête */
+				ResultSet rs = query.executeQuery();
+
+				while (rs.next()) {
+
+					Article article = articleBuilder(rs);
+
+					listeEncheresRemportees.add(article);
+				}
+
+				// System.out.println("\nTEST DAO Article retrieveUserPurchasedItems // Liste des articles remportés : " + listeEncheresRemportees);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
+						"L'exécution d'une des requêtes SELECT_USER_PURCHASED_ITEMS a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_USER_PURCHASED_ITEMS a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+
+		return listeEncheresRemportees;
+
+	}
 
 	/**
 	 * récupère et retourne les articles dont la vente est ouverte
 	 */
 	@Override
-	public List<Article> retrieveCurrentlyForSaleArticles() throws ModelException {
-		
+	public List<Article> retrieveCurrentlyForSaleItemsGet() throws ModelException {
+
 		List<Article> listeEncheresEnCours = new ArrayList<Article>();
 
 		try {
@@ -147,28 +240,26 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 			try {
 				/* Préparation de la première requête */
-				PreparedStatement query = cnx.prepareStatement(SELECT_CURRENTLY_ON_SALE_ARTICLES);
-				
+				PreparedStatement query = cnx.prepareStatement(SELECT_CURRENTLY_ON_SALE_ITEMS);
+
 				/* Exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				while (rs.next()) {
-					
-					Article article = articleBuilder(rs);
 
-					ajoutePseudoVendeur(cnx, article);
-					ajouteAdresseRetrait(cnx, article);
+					Article article = articleBuilder(rs);
 
 					listeEncheresEnCours.add(article);
 				}
-				
-				 // System.out.println("\nTEST DAO // Liste des enchères en cours : " + listeEncheresEnCours);
+
+				// System.out.println("\nTEST DAO // Liste des enchères en cours : " +
+				// listeEncheresEnCours);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
-						"L'exécution d'une des requêtes SELECT_CURRENTLY_ON_SALE_ARTICLES a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_CURRENTLY_ON_SALE_ARTICLES a échoué !");
+						"L'exécution de la requête SELECT_CURRENTLY_ON_SALE_ITEMS a échoué.");
+				System.out.println("L'exécution de la requête SELECT_CURRENTLY_ON_SALE_ITEMS a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -191,24 +282,26 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return listeEncheresEnCours;
 
 	}
-	
+
 	/**
 	 * récupère et retourne les articles dont la vente est ouverte avec filtre
 	 */
 	@Override
-	public List<Article> retrieveCurrentlyForSaleArticlesWithFilter(Trieur trieur) throws ModelException {
+	public List<Article> retrieveCurrentlyForSaleItemsWithFilter(Trieur trieur) throws ModelException {
 
 		List<Article> listeEncheresEnCours = new ArrayList<Article>();
-		String select_articles_filtres = SELECT_CURRENTLY_ON_SALE_ARTICLES;
+		String select_articles_filtres = SELECT_CURRENTLY_ON_SALE_ITEMS;
 
 		if (trieur.getCategorie() != 0) {
-			select_articles_filtres += " AND (no_categorie = ?)";
-			// System.out.println("\nTEST DAO // Requête SQL avec catégorie : " + select_articles_filtres);
+			select_articles_filtres += " AND (a.no_categorie = ?)";
+			// System.out.println("\nTEST DAO // Requête SQL avec catégorie : " +
+			// select_articles_filtres);
 		}
 
 		if (!trieur.getKeyword().isEmpty()) {
-			select_articles_filtres += " AND (no_categorie = ?)";
-			// System.out.println("\nTEST DAO // Requête SQL avec catégorie : " + select_articles_filtres);
+			select_articles_filtres += " AND (a.nom_article LIKE ?)";
+			// System.out.println("\nTEST DAO // Requête SQL avec catégorie : " +
+			// select_articles_filtres);
 		}
 
 		try {
@@ -236,25 +329,21 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 					System.out.println("toc"); // debug
 					query.setString(1, "%" + trieur.getKeyword() + "%");
 				}
-				
+
 				/* Exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				while (rs.next()) {
 
 					Article article = articleBuilder(rs);
-
-					ajoutePseudoVendeur(cnx, article);
-					ajouteAdresseRetrait(cnx, article);
-
 					listeEncheresEnCours.add(article);
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
-						"L'exécution d'une des requêtes SELECT_CURRENTLY_ON_SALE_ARTICLES a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_CURRENTLY_ON_SALE_ARTICLES a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CURRENTLY_ON_SALE_ITEMS,
+						"L'exécution de la requête SELECT_CURRENTLY_ON_SALE_ITEMS a échoué.");
+				System.out.println("L'exécution de la requête SELECT_CURRENTLY_ON_SALE_ITEMS a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -279,7 +368,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return listeEncheresEnCours;
 
 	}
-	
+
 	/**
 	 * récupère et retourne certains des articles mis en vente par l'utilisateur
 	 */
@@ -321,17 +410,15 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 					Article article = articleBuilder(rs);
 
-					ajoutePseudoVendeur(cnx, article);
-					ajouteAdresseRetrait(cnx, article);
-
 					listeArticlesFiltres.add(article);
 				}
+				
+				System.out.println("\nTEST DAO ARTICLE ArticleBuilder // listeArticlesFiltres : " + listeArticlesFiltres);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECTION_SQL,
-						"L'exécution de la requête SELECT_ARTICLES_CRITERIA_USER_FILTER a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLES_CRITERIA_USER_FILTER a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECTION_SQL, "L'exécution de la requête SELECT_USER_SELLS a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_USER_SELLS a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -363,7 +450,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 		List<Article> listeArticlesFiltres = new ArrayList<Article>();
 
-		String select_articles_filtres = SELECT_ARTICLES_USER_HAVE_BIDS_ON;
+		String select_articles_filtres = SELECT_ITEMS_USER_HAVE_BIDS_ON;
 
 		try {
 			/* Obtention d'un connexion */
@@ -392,17 +479,14 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 					Article article = articleBuilder(rs);
 
-					ajoutePseudoVendeur(cnx, article);
-					ajouteAdresseRetrait(cnx, article);
-
 					listeArticlesFiltres.add(article);
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECTION_SQL,
-						"L'exécution de la requête SELECT_ARTICLES_CRITERIA_USER_FILTER a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLES_CRITERIA_USER_FILTER a échoué !");
+						"L'exécution de la requête SELECT_ITEMS_USER_HAVE_BIDS_ON a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ITEMS_USER_HAVE_BIDS_ON a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -435,7 +519,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	public List<Article> selectByCriteria(Trieur trieur) throws ModelException {
 		List<Article> listeArticlesFiltres = new ArrayList<Article>();
 
-		String select_articles_filtres = SELECT_CURRENTLY_ON_SALE_ARTICLES;
+		String select_articles_filtres = SELECT_CURRENTLY_ON_SALE_ITEMS;
 
 		try {
 			/* Obtention d'un connexion */
@@ -485,17 +569,14 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 					Article article = articleBuilder(rs);
 
-					ajoutePseudoVendeur(cnx, article);
-					ajouteAdresseRetrait(cnx, article);
-
 					listeArticlesFiltres.add(article);
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECTION_SQL,
-						"L'exécution de la requête SELECT_ARTICLE_ENCHERES_EC a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLE_ENCHERES_EC a échoué !");
+						"L'exécution de la requête SELECT_CURRENTLY_ON_SALE_ITEMS a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_CURRENTLY_ON_SALE_ITEMS a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -520,6 +601,8 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 		return listeArticlesFiltres;
 	}
+
+	/* --------------- Méthodes de sélection --------------- */
 
 	/**
 	 * récupère et retourne un article
@@ -547,14 +630,12 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 					article = articleBuilder(rs);
 				}
 
-				ajoutePseudoVendeur(cnx, article);
-				ajouteAdresseRetrait(cnx, article);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
-						"L'exécution d'une des requêtes SELECT_ARTICLE_BYID a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLE_BYID a échoué !");
+						"L'exécution d'une des requêtes SELECT_ARTICLE_BY_ID a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ARTICLE_BY_ID a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -583,7 +664,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	 * @throws ModelException
 	 */
 	@Override
-	public Integer selectInitialPrice(Integer noArticle) throws ModelException {
+	public Integer selectStartingPrice(Integer noArticle) throws ModelException {
 
 		Integer prixInitial = null;
 
@@ -593,7 +674,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 			try {
 				/* Préparation de requête */
-				PreparedStatement query = cnx.prepareStatement(SELECT_ARTICLE_INITIAL_PRICE);
+				PreparedStatement query = cnx.prepareStatement(SELECT_ITEM_STARTING_PRICE);
 
 				/* Valorisation du paramètre */
 				query.setInt(1, noArticle);
@@ -608,8 +689,8 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_INITIAL_PRICE,
-						"L'exécution d'une de la requête SELECT_INITIAL_PRICE a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_INITIAL_PRICE a échoué !");
+						"L'exécution d'une de la requête SELECT_ITEM_STARTING_PRICE a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ITEM_STARTING_PRICE a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -647,7 +728,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			try {
 
 				/* Préparation de requête */
-				PreparedStatement query = cnx.prepareStatement(SELECT_ARTICLE_CURRENT_PRICE);
+				PreparedStatement query = cnx.prepareStatement(SELECT_ITEM_CURRENT_PRICE);
 
 				/* Valorisation du paramètre */
 				query.setInt(1, noArticle);
@@ -662,8 +743,8 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_CURRENT_PRICE,
-						"L'exécution d'une de la requête SELECT_CURRENT_PRICE a échoué.");
-				System.out.println("L'exécution d'une des requêtes SELECT_CURRENT_PRICE a échoué !");
+						"L'exécution d'une de la requête SELECT_ITEM_CURRENT_PRICE a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_ITEM_CURRENT_PRICE a échoué !");
 				throw modelDalException;
 
 			} finally {
@@ -686,8 +767,6 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return prixActuel;
 	}
 
-	
-	
 	/* -------------- BUILDERS -------------- */
 
 	/**
@@ -695,8 +774,10 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	 * 
 	 * @param rs
 	 * @return article
+	 * @throws ModelException
 	 */
-	private Article articleBuilder(ResultSet rs) {
+	private Article articleBuilder(ResultSet rs) throws ModelException {
+		
 		Article article = new Article();
 
 		try {
@@ -707,20 +788,33 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			article.setDateFinEncheres(rs.getDate(5).toLocalDate());
 			article.setPrixInitial(rs.getInt(6));
 			article.setPrixVente(rs.getInt(7));
-			article.setNoUtilisateur(rs.getInt(8));
-			article.setNoCategorie(rs.getInt(9));
+			
+			Utilisateur vendeur = new Utilisateur();
+			vendeur.setNoUtilisateur(rs.getInt(8));
+			vendeur.setPseudo(rs.getString(9));
+			
+			article.setVendeur(vendeur);
+
+			Categorie categorie = new Categorie();
+			categorie.setNoCategorie(rs.getInt(10));
+			categorie.setLibelle(rs.getString(11));
+
+			article.setCategorie(categorie);
 
 			Adresse adresseRetrait = new Adresse();
-			adresseRetrait.setRue(rs.getString(11));
-			adresseRetrait.setCodePostal(rs.getInt(12));
-			adresseRetrait.setVille(rs.getString(13));
+			adresseRetrait.setRue(rs.getString(12));
+			adresseRetrait.setCodePostal(rs.getInt(13));
+			adresseRetrait.setVille(rs.getString(14));
 
 			article.setAdresseRetrait(adresseRetrait);
 
-			// System.out.println("\nTEST DAO : Article actuellement en vente : " + article);
+			// System.out.println("\nTEST DAO ARTICLE ArticleBuilder // Article : " + article);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "Une erreur s'est produite dans la méthode articleBuilder.");
+			System.out.println("Une erreur s'est produite dans la méthode articleBuilder");
+			throw modelDalException;
 		}
 
 		return article;
@@ -733,52 +827,52 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	 * @param article
 	 * @throws SQLException
 	 */
-	private void ajoutePseudoVendeur(Connection cnx, Article article) throws SQLException {
-
-		/* Préparation de la requête */
-		PreparedStatement query = cnx.prepareStatement(SELECT_USER);
-
-		/* Valorisation du paramètre */
-		query.setInt(1, article.getNoUtilisateur());
-
-		/* Exécution de la requête */
-		ResultSet rs = query.executeQuery();
-
-		if (rs.next()) {
-			article.setPseudoVendeur(rs.getString(1));
-			// System.out.println("\n DEBUG DAO // Pseudo du vendeur = " +
-			// article.getPseudoVendeur());
-		}
-	}
-
-	/**
-	 * récupère l'adresse de retrait d'un article et le place dans l'objet article
-	 * 
-	 * @param cnx
-	 * @param article
-	 * @throws SQLException
-	 */
-	private void ajouteAdresseRetrait(Connection cnx, Article article) throws SQLException {
-
-		Adresse adresseRetrait = new Adresse();
-
-		/* Préparation de la requête */
-		PreparedStatement query = cnx.prepareStatement(SELECT_ARTICLE_PICKUP_ADDRESS);
-
-		/* Valorisation du paramètre */
-		query.setInt(1, article.getNoArticle());
-
-		/* Exécution de la requête */
-		ResultSet rs = query.executeQuery();
-
-		if (rs.next()) {
-			adresseRetrait.setRue(rs.getString(1));
-			adresseRetrait.setCodePostal(rs.getInt(2));
-			adresseRetrait.setVille(rs.getString(3));
-		}
-
-		// System.out.println("\nTEST DAO // Adresse de retrait = " + adresseRetrait);
-		article.setAdresseRetrait(adresseRetrait);
-	}
+//	private void ajoutePseudoVendeur(Connection cnx, Article article) throws SQLException {
+//
+//		/* Préparation de la requête */
+//		PreparedStatement query = cnx.prepareStatement(SELECT_USER);
+//
+//		/* Valorisation du paramètre */
+//		query.setInt(1, article.getNoUtilisateur());
+//
+//		/* Exécution de la requête */
+//		ResultSet rs = query.executeQuery();
+//
+//		if (rs.next()) {
+//			article.setPseudoVendeur(rs.getString(1));
+//			// System.out.println("\n DEBUG DAO // Pseudo du vendeur = " +
+//			// article.getPseudoVendeur());
+//		}
+//	}
+//
+//	/**
+//	 * récupère l'adresse de retrait d'un article et le place dans l'objet article
+//	 * 
+//	 * @param cnx
+//	 * @param article
+//	 * @throws SQLException
+//	 */
+//	private void ajouteAdresseRetrait(Connection cnx, Article article) throws SQLException {
+//
+//		Adresse adresseRetrait = new Adresse();
+//
+//		/* Préparation de la requête */
+//		PreparedStatement query = cnx.prepareStatement(SELECT_ITEM_PICKUP_ADDRESS);
+//
+//		/* Valorisation du paramètre */
+//		query.setInt(1, article.getNoArticle());
+//
+//		/* Exécution de la requête */
+//		ResultSet rs = query.executeQuery();
+//
+//		if (rs.next()) {
+//			adresseRetrait.setRue(rs.getString(1));
+//			adresseRetrait.setCodePostal(rs.getInt(2));
+//			adresseRetrait.setVille(rs.getString(3));
+//		}
+//
+//		// System.out.println("\nTEST DAO // Adresse de retrait = " + adresseRetrait);
+//		article.setAdresseRetrait(adresseRetrait);
+//	}
 
 }

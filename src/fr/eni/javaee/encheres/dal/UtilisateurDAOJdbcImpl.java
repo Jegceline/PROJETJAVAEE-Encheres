@@ -215,6 +215,10 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	
 	/* --------------- UPDATE --------------- */
 	
+	/**
+	 * actualise le crédit du nouvel enchérisseur en lui soustrayant le montant de son enchère
+	 * récrédite le crédit du précédent enchérisseur du montant de l'enchère qu'il avait faite 
+	 */
 	@Override
 	public void updateCredit(Enchere enchere, Enchere precedenteEnchere) throws ModelException {
 
@@ -243,7 +247,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 					Integer montantDerniereEnchere = precedenteEnchere.getMontant();
 					System.out.println("\nTEST DAO UTILISATEUR // Montant de l'enchère qu'avait fait le précédent enchérisseur : " + montantDerniereEnchere);
 					
-					Integer creditActuel2 = selectCredit(precedenteEnchere.getNoUtilisateur());
+					Integer creditActuel2 = selectCredit(precedenteEnchere.getEncherisseur().getNoUtilisateur());
 					System.out.println("\nTEST DAO UTILISATEUR // Crédit actuel du précédent enchérisseur : " + creditActuel2);
 					
 					Integer creditNouveau2 = creditActuel2 + montantDerniereEnchere;
@@ -254,7 +258,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 					
 					/* Valorisation des paramètres */
 					query2.setInt(1, creditNouveau2);
-					query2.setInt(2, precedenteEnchere.getNoUtilisateur());
+					query2.setInt(2, precedenteEnchere.getEncherisseur().getNoUtilisateur());
 					
 					/* exécution de la requête */
 					query2.executeUpdate();
@@ -449,7 +453,6 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 			throw modelDalException;
 		}
 
-		System.out.println(password);
 		return password;
 
 	}

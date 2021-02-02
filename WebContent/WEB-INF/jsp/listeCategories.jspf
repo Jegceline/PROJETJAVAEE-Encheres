@@ -1,8 +1,9 @@
 <label for="categorie">Catégorie : </label>
 <select name="no_categorie" id="categorie" class="form-control mb-4" aria-label=".form-select-lg example" required>
 				<option value="0">Sélectionnez une catégorie</option>
-				<option value="1">Informatique</option>
-				<option value="2">Ameublement</option>
-				<option value="3">Sports & Loisirs</option>
-				<option value="4">Vêtements</option>
+				<option value="1" <c:if test="${ article.categorie.noCategorie == 1}">selected</c:if> <c:if test="${param.categorie == 1}">selected</c:if> >Informatique</option>
+				<option value="2" <c:if test="${ article.categorie.noCategorie == 2}">selected</c:if> <c:if test="${param.categorie == 2}">selected</c:if> >Ameublement</option>
+				<option value="3" <c:if test="${ article.categorie.noCategorie == 3}">selected</c:if> <c:if test="${param.categorie == 3}">selected</c:if> >Sports & Loisirs</option>
+				<option value="4" <c:if test="${ article.categorie.noCategorie == 4}">selected</c:if> <c:if test="${param.categorie == 4}">selected</c:if> >Vêtements</option>
 			</select>
+			

@@ -19,6 +19,7 @@
 
 			<h2 class="my-4">Vendre un article</h2>
 			<hr>
+			
 
 			<c:if test="${ not empty erreurData}">
 				<div class="alert alert-danger" role="alert">${erreurData}</div>

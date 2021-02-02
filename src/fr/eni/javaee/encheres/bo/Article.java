@@ -3,7 +3,7 @@ package fr.eni.javaee.encheres.bo;
 import java.time.LocalDate;
 
 public class Article {
-	
+
 	private Integer noArticle;
 	private String nomArticle;
 	private String description;
@@ -12,18 +12,19 @@ public class Article {
 	private Integer prixInitial;
 	private Integer prixVente;
 	private String etatVente;
+	private Adresse adresseRetrait;
+	private Utilisateur vendeur;
+	private Categorie categorie;
+
 	private Integer noUtilisateur;
 	private Integer noCategorie;
-	private Adresse adresseRetrait;
-	private String pseudoVendeur;
+	// private String pseudoVendeur;
 
 	/* Constructeurs */
-	
 
 	public Article() {
 	}
 
-	
 	public Article(String nomArticle, String description, LocalDate dateDebutEncheres, LocalDate dateFinEncheres, Integer prixInitial,
 			String etatVente, Integer noUtilisateur, Integer noCategorie, Adresse adresseRetrait) {
 		super();
@@ -37,28 +38,6 @@ public class Article {
 		this.noCategorie = noCategorie;
 		this.adresseRetrait = adresseRetrait;
 	}
-	
-	
-
-
-	public Article(Integer noArticle, String nomArticle, String description, LocalDate dateDebutEncheres, LocalDate dateFinEncheres,
-			Integer prixInitial, Integer prixVente, String etatVente, Integer noUtilisateur, Integer noCategorie, Adresse adresseRetrait,
-			String pseudoVendeur) {
-		super();
-		this.noArticle = noArticle;
-		this.nomArticle = nomArticle;
-		this.description = description;
-		this.dateDebutEncheres = dateDebutEncheres;
-		this.dateFinEncheres = dateFinEncheres;
-		this.prixInitial = prixInitial;
-		this.prixVente = prixVente;
-		this.etatVente = etatVente;
-		this.noUtilisateur = noUtilisateur;
-		this.noCategorie = noCategorie;
-		this.adresseRetrait = adresseRetrait;
-		this.pseudoVendeur = pseudoVendeur;
-	}
-
 
 	public Integer getNoArticle() {
 		return noArticle;
@@ -140,7 +119,6 @@ public class Article {
 		this.noCategorie = noCategorie;
 	}
 
-
 	public Adresse getAdresseRetrait() {
 		return adresseRetrait;
 	}
@@ -149,25 +127,31 @@ public class Article {
 		this.adresseRetrait = adresseRetrait;
 	}
 
-
-	public String getPseudoVendeur() {
-		return pseudoVendeur;
+	public Utilisateur getVendeur() {
+		return vendeur;
 	}
 
-
-	public void setPseudoVendeur(String pseudoVendeur) {
-		this.pseudoVendeur = pseudoVendeur;
+	public void setVendeur(Utilisateur vendeur) {
+		this.vendeur = vendeur;
 	}
 
+	public Categorie getCategorie() {
+		return categorie;
+	}
 
+	public void setCategorie(Categorie categorie) {
+		this.categorie = categorie;
+	}
+
+	
+	
 	@Override
 	public String toString() {
 		return "Article [noArticle=" + noArticle + ", nomArticle=" + nomArticle + ", description=" + description + ", dateDebutEncheres="
 				+ dateDebutEncheres + ", dateFinEncheres=" + dateFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
-				+ ", etatVente=" + etatVente + ", noUtilisateur=" + noUtilisateur + ", noCategorie=" + noCategorie + ", adresseRetrait="
-				+ adresseRetrait + ", pseudoVendeur=" + pseudoVendeur + "]";
+				+ ", etatVente=" + etatVente + ", adresseRetrait=" + adresseRetrait + ", vendeur=" + vendeur + ", categorie=" + categorie
+				+ ", noUtilisateur=" + noUtilisateur + ", noCategorie=" + noCategorie + "]";
 	}
-	
-	
-	
+
+
 }
