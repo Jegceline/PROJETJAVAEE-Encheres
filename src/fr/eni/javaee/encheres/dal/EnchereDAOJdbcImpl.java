@@ -1,10 +1,10 @@
 package fr.eni.javaee.encheres.dal;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
@@ -44,7 +44,8 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				System.out.println("\nDEBUG DAO INSERT_BID // Numéro utilisateur " + enchere.getNoUtilisateur());
 
 				/* valorisation des paramètres */
-				query.setDate(1, Date.valueOf(enchere.getDate()));
+				query.setTimestamp(1, Timestamp.valueOf(enchere.getDate()));
+				// query.setDate(1, Date.valueOf(enchere.getDate()));
 				query.setInt(2, enchere.getMontant());
 				query.setInt(3, enchere.getNoArticle());
 				query.setInt(4, enchere.getNoUtilisateur());;
@@ -108,7 +109,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				//System.out.println("\nDEBUG DAO UPDATE_BID // Numéro utilisateur " + enchere.getNoUtilisateur());
 
 				/* valorisation des paramètres */
-				query.setDate(1, Date.valueOf(enchere.getDate()));
+				query.setTimestamp(1, Timestamp.valueOf(enchere.getDate()));
 				query.setInt(2, enchere.getMontant());
 				query.setInt(3, enchere.getNoArticle());
 				query.setInt(4, enchere.getNoUtilisateur());
@@ -196,15 +197,15 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* Récupération du résultat et création d'un objet Enchere*/
 				if(rs.next()) {
 					
-					System.out.println("\nTEST DAO ENCHERE // rs.getInt(3) =  " + rs.getInt(3));
-					
-					derniereEnchere.setDate(rs.getDate(2).toLocalDate());
+					//result.getTimestamp("value").toLocalDateTime()
+										
+					derniereEnchere.setDate(rs.getDate(2).toLocalDate().atStartOfDay());
 					derniereEnchere.setMontant(rs.getInt(3));
 					derniereEnchere.setNoArticle(rs.getInt(4));
 					derniereEnchere.setNoUtilisateur(rs.getInt(5));
 				}
 				
-				// System.out.println("\nTEST DAO ENCHERE // La dernière enchère sur l'article était celle-ci : " + derniereEnchere);
+				 System.out.println("\nTEST DAO ENCHERE // La dernière enchère sur l'article était celle-ci : " + derniereEnchere);
 				
 
 			} catch (SQLException e) {
@@ -240,27 +241,27 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 	
 	/* -------------- BUILDERS -------------- */
 	
-	private Enchere BidBuilder(ResultSet rs) throws SQLException {
-
-		Enchere derniereEnchere = new Enchere();
-
-		if (rs.next()) {
-
-			try {
-				
-				// System.out.println("\nDEBUG DAO ENCHERE BidBuilder // Valeur de la deuxième colonne = " + rs.getInt(2));
-				
-				derniereEnchere.setMontant(rs.getInt(2));
-				derniereEnchere.setNoArticle(rs.getInt(3));
-				derniereEnchere.setNoUtilisateur(rs.getInt(4));
-				derniereEnchere.setDate(rs.getDate(1).toLocalDate());
-
-			} catch (SQLException e) {
-				e.getMessage();
-			}
-
-		}
-		return derniereEnchere;
-	}
+//	private Enchere BidBuilder(ResultSet rs) throws SQLException {
+//
+//		Enchere derniereEnchere = new Enchere();
+//
+//		if (rs.next()) {
+//
+//			try {
+//				
+//				// System.out.println("\nDEBUG DAO ENCHERE BidBuilder // Valeur de la deuxième colonne = " + rs.getInt(2));
+//				
+//				derniereEnchere.setMontant(rs.getInt(2));
+//				derniereEnchere.setNoArticle(rs.getInt(3));
+//				derniereEnchere.setNoUtilisateur(rs.getInt(4));
+//				derniereEnchere.setDate(rs.getDate(1).toLocalDate());
+//
+//			} catch (SQLException e) {
+//				e.getMessage();
+//			}
+//
+//		}
+//		return derniereEnchere;
+//	}
 
 }

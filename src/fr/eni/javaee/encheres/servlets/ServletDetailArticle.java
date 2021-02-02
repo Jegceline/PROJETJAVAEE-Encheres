@@ -62,45 +62,60 @@ public class ServletDetailArticle extends HttpServlet {
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
 		
-		/* Récupérer l'enchère, l'identifiant de l'utilisateur et le numéro de l'article */
-		Integer montantEnchere = Integer.parseInt(request.getParameter("enchere_prix"));
-		// System.out.println("\nTEST SERVLET // Montant de l'enchère = " + enchere_prix);
-		
+		/* Récupérer le numéro de l'utilisateur en session */
 		Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 		Integer noUtilisateur = utilisateur.getNoUtilisateur();
 		Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
+		
+		/* si l'utilisateur a cliqué sur le bouton enchérir */
+		if(request.getParameter("encherir") != null) {
+			
+			/* Récupérer l'enchère et le numéro de l'article */
+			Integer montantEnchere = Integer.parseInt(request.getParameter("enchere_prix"));
+			// System.out.println("\nTEST SERVLET // Montant de l'enchère = " + enchere_prix);
+			
 //		System.out.println("\nTEST SERVLET // id de l'article : " + noArticle);
 //		System.out.println("\nTEST SERVLET // id de l'utilisateur : " + noUtilisateur);
+			
+			/* Créer un objet Enchere */
+			Enchere enchere = new Enchere(montantEnchere, noArticle, noUtilisateur);
+			
+			/* Appeler les managers */
+			ArticleManager articleManager = new ArticleManager();
+			UtilisateurManager utilisateurManager = new UtilisateurManager();
+			
+			try {
+				/* récupération de la précédente enchère s'il y en avait une */
+				precedenteEnchere = articleManager.recoitEnchere(enchere);
+				
+				/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y en avait un */
+				utilisateurManager.actualiseCredit(enchere, precedenteEnchere);
+				
+				/* récupération des infos mises à jour de l'utilisateur et mise à jour de ses infos dans la session */
+				Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
+				request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
+				System.out.println("\nTEST SERVLET // Crédit en session : " + utilisateurMaj.getCredit());
+				
+				request.setAttribute("succesEnchere", "Votre enchère a bien été prise en compte.");
+				System.out.println("\nDEBUG SERVLET // Un attribut succesEnchere a été créé.");
+				
+				// response.sendRedirect(request.getContextPath() + "/accueil");
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+				
+			} catch (ModelException e) {
+				e.printStackTrace();
+				request.setAttribute("mapErreurs", e.getMapErreurs());
+				System.out.println("JE SUIS PASSE PAR LA");
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article").forward(request, response);
+				
+			}
+			
+			request.getServletContext().getRequestDispatcher("/accueil").forward(request, response);
 		
-		/* Créer un objet Enchere */
-		Enchere enchere = new Enchere(montantEnchere, noArticle, noUtilisateur);
-		
-		/* Appeler les managers */
-		ArticleManager articleManager = new ArticleManager();
-		UtilisateurManager utilisateurManager = new UtilisateurManager();
-
-		try {
-			/* récupération de la précédente enchère s'il y en avait une */
-			precedenteEnchere = articleManager.recoitEnchere(enchere);
+		/* si l'utilisateur a cliqué sur le bouton modifier */
+		} else {
 			
-			/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y en avait un */
-			utilisateurManager.actualiseCredit(enchere, precedenteEnchere);
-			
-			/* récupération des infos mises à jour de l'utilisateur et mise à jour de ses infos dans la session */
-			Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
-			request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
-			System.out.println("\nTEST SERVLET // Crédit en session : " + utilisateurMaj.getCredit());
-			
-			request.setAttribute("succesEnchere", "Votre enchère a bien été prise en compte.");
-			System.out.println("\nDEBUG SERVLET // Un attribut succesEnchere a été créé.");
-
-			// response.sendRedirect(request.getContextPath() + "/accueil");
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
-			
-		} catch (ModelException e) {
-			e.printStackTrace();
-			request.setAttribute("mapErreurs", e.getMapErreurs());
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
+			request.getServletContext().getRequestDispatcher("/vente").forward(request, response);
 		}
 
 	}

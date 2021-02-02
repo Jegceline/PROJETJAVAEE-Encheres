@@ -478,7 +478,10 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				// exécution de la requête
 				ResultSet rs = query.executeQuery();
 
-				utilisateur = utilisateurBuilder(rs);
+				
+				while (rs.next()) {
+					utilisateur = utilisateurBuilder(rs);				
+				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -527,7 +530,9 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				// exécution de la requête
 				ResultSet rs = query.executeQuery();
 
-				utilisateur = utilisateurBuilder(rs);
+				if(rs.next()) {
+					utilisateur = utilisateurBuilder(rs);					
+				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -617,8 +622,8 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	 */
 	private Utilisateur utilisateurBuilder(ResultSet rs) throws SQLException {
 
-		Utilisateur utilisateur = new Utilisateur();
-		while (rs.next()) {
+			Utilisateur utilisateur = new Utilisateur();
+			
 			utilisateur.setNoUtilisateur(rs.getInt(1));
 			utilisateur.setPseudo(rs.getString(2));
 			utilisateur.setNom(rs.getString(3));
@@ -631,7 +636,6 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 			utilisateur.setMotDePasse(rs.getString(10));
 			utilisateur.setCredit(rs.getInt(11));
 			utilisateur.setAdministrateur(rs.getBoolean(12));
-		}
 
 		// System.out.println("\nTEST // TEST DAO : Utilisateur créé par utilisateurBuilder : " + utilisateur);
 

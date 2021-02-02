@@ -46,7 +46,7 @@
 
 			<c:if test="${not empty sessionScope.profilUtilisateur }">
 
-	<li class="nav-item active"><a class="nav-link" href="">Enchères</a></li>
+	<li class="nav-item active"><a class="nav-link" href="">Mes ventes</a></li>
 	<li class="nav-item active"><a class="nav-link" href="vente">Vendre un article</a></li>
 	<li class="nav-item active"><a class="nav-link" href="profil">Mon Profil</a></li>  
 	<li class="nav-item active"><a class="nav-link" href="">Mon crédit : ${profilUtilisateur.credit }</a></li>  

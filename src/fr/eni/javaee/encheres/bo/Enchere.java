@@ -1,13 +1,13 @@
 package fr.eni.javaee.encheres.bo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Enchere {
 	
 	/* Attributs */
 	
 	private Integer noEnchere;
-	private LocalDate date;
+	private LocalDateTime date;
 	private Integer montant;
 	private Integer noArticle;
 	private Integer noUtilisateur;
@@ -15,7 +15,7 @@ public class Enchere {
 	/* Constructeurs */
 	
 	public Enchere() {
-		this.date = LocalDate.now();
+		this.date = LocalDateTime.now();
 	}
 	
 	
@@ -37,11 +37,11 @@ public class Enchere {
 		this.noEnchere = noEnchere;
 	}
 
-	public LocalDate getDate() {
+	public LocalDateTime getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDate date) {
+	public void setDate(LocalDateTime date) {
 		this.date = date;
 	}
 

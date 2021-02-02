@@ -21,6 +21,19 @@
 
 
 			<h2 class="my-4 text-center">Se connecter</h2>
+			
+			<c:forEach var="couple" items="${ mapErreurs }">
+				<div class="alert alert-danger" role="alert">${couple.value}</div>
+			</c:forEach>
+
+			
+			<c:if test="${ not empty utilisateurInconnu}">
+				<div class="alert alert-danger" role="alert">${utilisateurInconnu}</div>
+			</c:if>
+			
+			<c:if test="${ not empty erreurMotDePasse}">
+				<div class="alert alert-danger" role="alert">${erreurMotDePasse}</div>
+			</c:if>
 
 
 			<div class="card card-signin flex-row m-auto col-sm-8 col-xs-12">

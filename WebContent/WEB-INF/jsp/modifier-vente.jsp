@@ -1,15 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-
 <!DOCTYPE html>
 <html class="html-100">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Détail vente</title>
+<title>Modifier vente</title>
 
 <%@ include file="css.jspf"%>
-
 </head>
 
 <body class="body-flex">
@@ -19,8 +16,7 @@
 	<div class="content">
 		<div class="container my-4 pt-5">
 
-
-			<h2 class="my-4">Fiche Article</h2>
+			<h2 class="my-4">Modifier votre article en vente</h2>
 			<hr>
 
 			<c:if test="${ not empty succesEnchere}">

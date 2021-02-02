@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import fr.eni.javaee.encheres.ModelException;
 import fr.eni.javaee.encheres.bll.ArticleManager;
 import fr.eni.javaee.encheres.bo.Article;
+import fr.eni.javaee.encheres.bo.Trieur;
+import fr.eni.javaee.encheres.bo.Utilisateur;
 
 /**
  * Servlet implementation class ServletAccueil
@@ -33,6 +35,7 @@ public class ServletAccueil extends HttpServlet {
 		/* Appeler le manager pour récupérer la liste des articles en cours de vente */
 		ArticleManager articleManager = new ArticleManager();
 		List<Article> listesEncheresEC = null;
+		
 		try {
 			listesEncheresEC = articleManager.recupereEncheresEnCours();
 			request.setAttribute("encheresEC", listesEncheresEC);
@@ -56,27 +59,42 @@ public class ServletAccueil extends HttpServlet {
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
 		
-		Integer noCategorie = Integer.parseInt(request.getParameter("no_categorie"));
+		/* Récupérer les paramètres de tri */
 		String keyword = request.getParameter("keyword");
-		// System.out.println("\nDEBUG SERVLET // Valeur de keyword = " + keyword);
-
-		/* Récupérer les paramètres de tri et les placer dans une map */
+		Integer noCategorie = Integer.parseInt(request.getParameter("no_categorie"));
+		String encheresEC = request.getParameter("encheres_ec");
+		String encheresUtilisateurEC = request.getParameter("mes_encheres");
+		String encheresUtilisateurT = request.getParameter("mes_encheres_remportees");
+		String ventesUtilisateurAttente = request.getParameter("ventes_attente");
+		String ventesUtilisateurEC = request.getParameter("ventes_ouvertes");
+		String ventesUtilisateurT = request.getParameter("ventes_terminees");
 		
-//		Map<String, String> mapCritères = new HashMap<String, String>();
-//		mapCritères.put("noCategorie", request.getParameter("no_categorie"));
-//		mapCritères.put("keyword", request.getParameter("keyword"));
+		// System.out.println("\n TEST SERVLET ACCUEIL // ventes_terminees = " + ventesUtilisateurT);
+		
+		Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
+		
+		/* Créer un objet Trieur */
+		Trieur trieur = new Trieur(utilisateur, keyword, noCategorie, encheresEC, encheresUtilisateurEC, encheresUtilisateurT, ventesUtilisateurAttente, ventesUtilisateurEC, ventesUtilisateurT);
+		
+		// System.out.println("\nTEST SERVLET ACCUEIL // Valeur de mes_encheres = " + encheresUtilisateur);
+		// System.out.println("\nTEST SERVLET ACCUEIL // Valeur de keyword = " + keyword);
 
 		/* Appeler le manager */
 		
 		ArticleManager articleManager = new ArticleManager();
 		List<Article> listeArticlesFiltres = new ArrayList<Article>();
 		try {
-			listeArticlesFiltres = articleManager.trieEtRecupereArticles(noCategorie, keyword);
+			listeArticlesFiltres = articleManager.trieEtRecupereArticles(trieur);
 			request.setAttribute("articlesFiltres", listeArticlesFiltres);
-			System.out.println("\nTEST SERVLET // Un attribut articlesFiltres a été créé.");
+			// System.out.println("\nTEST SERVLET // Un attribut articlesFiltres a été créé.");
 			
 		} catch (ModelException e) {
 			e.printStackTrace();
+		}
+		
+		if(listeArticlesFiltres.isEmpty()) {
+			request.setAttribute("noResult", "Votre recherche n'a retourné aucun résultat.");
+			System.out.println("\nTEST SERVLET ACCUEIL // Un arttribut noResult a été créé.");
 		}
 
 		/* Rediriger vers la page accueil.jsp */

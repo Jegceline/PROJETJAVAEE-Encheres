@@ -69,7 +69,7 @@ public class UtilisateurManager {
 	 * 
 	 * @param identifiant
 	 *            (pseudo ou email)
-	 * @return
+	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si l'utilisateur existe
 	 * @throws ModelException
 	 */
 	public Utilisateur rechercheUtilisateur(String identifiant) throws ModelException {
@@ -231,7 +231,7 @@ public class UtilisateurManager {
 	/* ------- Méthodes de vérification -------- */
 	/* ----------------------------------------- */
 
-	public void verifieExistenceUtilisateur(String identifiant, String motDePasse) throws ModelException {
+	public String recupereEtVerifieMdp(String identifiant, String motDePasse) throws ModelException {
 		String motDePasseBdd = null;
 
 		try {
@@ -248,8 +248,11 @@ public class UtilisateurManager {
 
 		} else if (!motDePasseBdd.equals(motDePasse)) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_INCORRECT, "Le mot de passe est incorrect.");
+			System.out.println(modelBllException);
 			throw modelBllException;
 		}
+		
+		return motDePasseBdd;
 
 	}
 
