@@ -9,9 +9,6 @@ public class Enchere {
 	private Integer noEnchere;
 	private LocalDateTime date;
 	private Integer montant;
-	private Integer noArticle;
-	private Integer noUtilisateur;
-	
 	private Utilisateur encherisseur;
 	private Article article;
 	
@@ -21,13 +18,15 @@ public class Enchere {
 		this.date = LocalDateTime.now();
 	}
 	
-	public Enchere(Integer montant, Integer noArticle, Integer noUtilisateur) {
+	
+	
+	public Enchere(Integer montant, Utilisateur encherisseur, Article article) {
 		this();
 		this.montant = montant;
-		this.noArticle = noArticle;
-		this.noUtilisateur = noUtilisateur;
+		this.encherisseur = encherisseur;
+		this.article = article;
 	}
-	
+
 	
 	public Enchere(LocalDateTime date, Integer montant, Utilisateur encherisseur, Article article) {
 		super();
@@ -64,25 +63,6 @@ public class Enchere {
 		this.montant = montant;
 	}
 
-	public Integer getNoArticle() {
-		return noArticle;
-	}
-
-	public void setNoArticle(Integer noArticle) {
-		this.noArticle = noArticle;
-	}
-
-	public Integer getNoUtilisateur() {
-		return noUtilisateur;
-	}
-
-	public void setNoUtilisateur(Integer noUtilisateur) {
-		this.noUtilisateur = noUtilisateur;
-	}
-	
-	
-	
-
 	/* Méthode toString */
 	
 	public Utilisateur getEncherisseur() {
@@ -104,10 +84,12 @@ public class Enchere {
 		this.article = article;
 	}
 
+
 	@Override
 	public String toString() {
-		return "Enchere [noEnchere=" + noEnchere + ", date=" + date + ", montant=" + montant + ", noArticle=" + noArticle
-				+ ", noUtilisateur=" + noUtilisateur + ", encherisseur=" + encherisseur + ", article=" + article + "]";
+		return "Enchere [noEnchere=" + noEnchere + ", date=" + date + ", montant=" + montant + ", encherisseur=" + encherisseur
+				+ ", article=" + article + "]";
 	}
+
 
 }

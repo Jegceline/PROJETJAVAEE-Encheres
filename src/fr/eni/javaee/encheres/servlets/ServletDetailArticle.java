@@ -72,9 +72,17 @@ public class ServletDetailArticle extends HttpServlet {
 			
 			/* Récupérer l'enchère et le numéro de l'article */
 			Integer montantEnchere = Integer.parseInt(request.getParameter("enchere_prix"));
+			
+			/* Créer un objet Article pour le donner à l'objet Enchere */
+			Article article = new Article();
+			article.setNoArticle(noArticle);
+			
+			/* Créer un objet Utilisateur pour le donner à l'objet Enchere */
+			Utilisateur encherisseur = new Utilisateur();
+			encherisseur.setNoUtilisateur(noUtilisateur);
 
 			/* Créer un objet Enchere */
-			Enchere enchere = new Enchere(montantEnchere, noArticle, noUtilisateur);
+			Enchere enchere = new Enchere(montantEnchere, encherisseur, article);
 			
 			/* Appeler les managers */
 			ArticleManager articleManager = new ArticleManager();
@@ -82,7 +90,7 @@ public class ServletDetailArticle extends HttpServlet {
 			
 			try {
 				/* récupération de la précédente enchère s'il y en avait une */
-				precedenteEnchere = articleManager.recoitEnchere(enchere);
+				precedenteEnchere = articleManager.recoitEtAjouteEnchere(enchere);
 				
 				/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y en avait un */
 				utilisateurManager.actualiseCredit(enchere, precedenteEnchere);

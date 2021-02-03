@@ -227,6 +227,15 @@ public class UtilisateurManager {
 				e.printStackTrace();
 				throw e;
 			}
+		} else {
+			
+			try {
+				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, null);
+
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
+			}
 		}
 	}
 

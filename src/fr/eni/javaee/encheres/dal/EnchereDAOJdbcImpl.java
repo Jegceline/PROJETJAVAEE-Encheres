@@ -55,10 +55,13 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				// enchere.getNoUtilisateur());
 
 				/* valorisation des paramètres */
+				
+				System.out.println("\nTEST DAO ENCHERE insert // enchere = " + enchere);
+				
 				query.setTimestamp(1, Timestamp.valueOf(enchere.getDate()));
 				query.setInt(2, enchere.getMontant());
-				query.setInt(3, enchere.getNoArticle());
-				query.setInt(4, enchere.getNoUtilisateur());
+				query.setInt(3, enchere.getArticle().getNoArticle());
+				query.setInt(4, enchere.getEncherisseur().getNoUtilisateur());
 
 				/* exécution de la requête */
 				query.executeUpdate();
@@ -68,7 +71,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 				/* valorisation des paramètres */
 				query2.setInt(1, enchere.getMontant());
-				query2.setInt(2, enchere.getNoArticle());
+				query2.setInt(2, enchere.getArticle().getNoArticle());
 
 				/* exécution de la requête */
 				query2.executeUpdate();
@@ -122,9 +125,9 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* valorisation des paramètres */
 				query.setTimestamp(1, Timestamp.valueOf(enchere.getDate()));
 				query.setInt(2, enchere.getMontant());
-				query.setInt(3, enchere.getNoArticle());
-				query.setInt(4, enchere.getNoUtilisateur());
-				query.setInt(5, enchere.getNoArticle());
+				query.setInt(3, enchere.getArticle().getNoArticle());
+				query.setInt(4, enchere.getEncherisseur().getNoUtilisateur());
+				query.setInt(5, enchere.getArticle().getNoArticle());
 
 				/* exécution de la requête */
 				query.executeQuery();
@@ -134,7 +137,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 				/* valorisation des paramètres */
 				query2.setInt(1, enchere.getMontant());
-				query2.setInt(2, enchere.getNoArticle());
+				query2.setInt(2, enchere.getArticle().getNoArticle());
 
 				/* exécution de la requête */
 				query2.executeUpdate();

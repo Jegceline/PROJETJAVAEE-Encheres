@@ -217,7 +217,7 @@ public class ArticleManager {
 
 	}
 
-	public Enchere recoitEnchere(Enchere enchere) throws ModelException {
+	public Enchere recoitEtAjouteEnchere(Enchere enchere) throws ModelException {
 
 		Boolean premiereEnchere;
 		Enchere precedenteEnchere = null;
@@ -227,7 +227,7 @@ public class ArticleManager {
 
 			/* vérifier que l'enchère est bien supérieure à la précédente enchère */
 			/* déterminer si c'est la première enchère proposée pour l'article */
-			premiereEnchere = verifieMontantEnchere(enchere.getMontant(), enchere.getNoArticle());
+			premiereEnchere = verifieMontantEnchere(enchere.getMontant(), enchere.getArticle().getNoArticle());
 
 		} catch (ModelException e2) {
 			e2.printStackTrace();
@@ -239,7 +239,7 @@ public class ArticleManager {
 
 			try {
 				/* vérifier que l'utilisateur a bien un crédit suffisant */
-				utilisateurManager.verifieSoldeCredits(enchere.getNoUtilisateur(), enchere.getMontant());
+				utilisateurManager.verifieSoldeCredits(enchere.getEncherisseur().getNoUtilisateur(), enchere.getMontant());
 
 			} catch (ModelException e1) {
 				e1.printStackTrace();
@@ -271,7 +271,7 @@ public class ArticleManager {
 
 				try {
 					/* récupérer le numéro du dernier enchérisseur */
-					precedenteEnchere = ((EnchereDAO) enchereDAO).returnLastBid(enchere.getNoArticle());
+					precedenteEnchere = ((EnchereDAO) enchereDAO).returnLastBid(enchere.getArticle().getNoArticle());
 
 					/* créer l'enchère dans la base de données */
 					enchereDAO.insert(enchere);

@@ -223,7 +223,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	public void updateCredit(Enchere enchere, Enchere precedenteEnchere) throws ModelException {
 
 		/* Crédit du nouvel enchérisseur */
-		Integer creditActuel = selectCredit(enchere.getNoUtilisateur());
+		Integer creditActuel = selectCredit(enchere.getEncherisseur().getNoUtilisateur());
 		Integer creditNouveau = creditActuel - enchere.getMontant();
 		System.out.println("\nTEST DAO UTILISATEUR // Crédit de l'enchérisseur après enchere : " + creditNouveau);
 
@@ -237,7 +237,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 				/* Valorisation des paramètres */
 				query.setInt(1, creditNouveau);
-				query.setInt(2, enchere.getNoUtilisateur());
+				query.setInt(2, enchere.getEncherisseur().getNoUtilisateur());
 
 				/* Exécution de la requête */
 				query.executeUpdate();
