@@ -18,7 +18,16 @@
 		<div class="container my-4 pt-5">
 
 			<h2 class="my-4">Mon profil</h2>
-							<hr>
+			<hr>
+
+			<!-- Messages conditionnels  -->
+
+			<c:if test="${not empty succesModifProfil}">
+				<!-- attribut envoyé par la servlet Modifier profil -->
+				<div class="alert alert-success" role="alert">${succesModifProfil}</div>
+			</c:if>
+
+			<!-- fin des messages conditionnels -->
 
 			<form action="profil" method="POST">
 
@@ -83,6 +92,8 @@
 					<div class="col">
 						<button class="btn btn-success ">Modifier</button>
 					</div>
+
+
 				</div>
 
 				<!--  
@@ -90,6 +101,10 @@
 				<input type="submit" value="Modifier" />
 			</p>
 			 -->
+			</form>
+
+			<form action="accueil" method="GET">
+				<input type="submit" value="Retour à l'accueil" name="reset" id="reset" class="btn btn-secondary" />
 			</form>
 
 		</div>

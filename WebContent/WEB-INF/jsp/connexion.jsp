@@ -42,31 +42,31 @@
 
 					<div class="mb-3 col-sm-12 col-xs-12">
 							<p>
-								<label for="identifiant" class="form-label">Identifiant : </label> <input id="identifiant" type="text" value="" name="identifiant"
+								<label for="identifiant" class="form-label">Identifiant : </label> <input id="identifiant" type="text" value="${cookie.cookieUserId.value}" name="identifiant"
 									class="form-control" required />
 							</p>
 					</div>
 
 					<div class="mb-3 col-sm-12 col-xs-12">
 						<p>
-							<label for="motdepasse" class="form-label">Mot de passe : </label> <input id="motdepasse" type="text" value="" name="motdepasse"
+							<label for="motdepasse" class="form-label">Mot de passe : </label> <input id="motdepasse" type="password" value="${cookie.cookieUserPassword.value}" name="motdepasse"
 								class="form-control" required />
 						</p>
 					</div>
 
 					<div class="mb-3 col-sm-12 col-xs-12">
 						<p>
-							<input id="memoriserUtilisateur" type="checkbox" name="memoriserUtilisateur" /> <label for="memoriserUtilisateur" class="form-label">Se
+							<input id="memoriserUtilisateur" type="checkbox" name="memoriserUtilisateur"/> <label for="memoriserUtilisateur" class="form-label">Se
 								souvenir de moi</label>
 						</p>
 						
 						<p>
-						<a href="">Mot de passe oublié</a>
+						<a href="" class="disabled">Mot de passe oublié</a>
 					</p>
 					</div>
 
 					<div class="mb-3 col-sm-12 col-xs-12">
-						<button class="btn btn-primary ">Connexion</button>
+						<button class="btn btn-success ">Connexion</button>
 					</div>
 
 					</form>
@@ -76,7 +76,7 @@
 					<form action="inscription" method="get">
 
 						<div class="mb-3 col-sm-12 col-xs-12">
-							<button class="btn btn-primary">Créer un compte</button>
+							<button class="btn btn-success">Créer un compte</button>
 						</div>
 
 					</form>

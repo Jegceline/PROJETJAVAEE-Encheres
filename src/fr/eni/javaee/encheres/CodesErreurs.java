@@ -15,19 +15,19 @@ public abstract class CodesErreurs {
 	public static int ERREUR_ADRESSE_CPO = 108;
 	public static int ERREUR_EMAIL_EXISTANT = 109;
 	public static int ERREUR_MOTDEPASSE_INCORRECT = 110;
-	public static int ARTICLE_DATE_DEBUT_ENCHERES_INVALIDE = 113;
-	public static int ARTICLE_DATE_FIN_ENCHERES_INVALIDE = 114;
-	public static int ARTICLE_NOM_LONGUEUR = 115;
-	public static int ARTICLE_DESCRIPTION_LONGUEUR = 116;
-	public static int ARTICLE_CATEGORIE_INEXISTANTE = 117;
-	public static int ARTICLE_PRIX_INVALIDE = 118;
+	public static int ERREUR_ARTICLE_DATE_DEBUT_ENCHERES_INVALIDE = 113;
+	public static int ERREUR_ARTICLE_DATE_FIN_ENCHERES_INVALIDE = 114;
+	public static int ERREUR_ARTICLE_NOM_LONGUEUR = 115;
+	public static int ERREUR_ARTICLE_DESCRIPTION_LONGUEUR = 116;
+	public static int ERREUR_ARTICLE_CATEGORIE_INEXISTANTE = 117;
+	public static int ERREUR_ARTICLE_PRIX_INVALIDE = 118;
 	public static int ERREUR_CHARGEMENT_ENCHERES_EC = 119;
 	public static int ERREUR_PSEUDO_FORMAT = 120;
 	public static int ERREUR_EMAIL_FORMAT = 121;
 	public static int ERREUR_CHARGEMENT_TRI_ARTICLES = 122;
 	public static int ERREUR_CREDIT_INSUFFISANT = 123;
 	public static int ERREUR_MONTANT_ENCHERE = 124;
-
+	public static int ERREUR_ARTICLE_HEURE_DEBUT_ENCHERES_INVALIDE = 125;
 
 
 	// Erreurs de la DAL (entre 0 et 99)
@@ -52,6 +52,8 @@ public abstract class CodesErreurs {
 	public static int ERREUR_ENCHEREBUILDER = 17;
 	public static int ERREUR_ARTICLEBUILDER = 18;
 	public static int ERREUR_CURRENTLY_ON_SALE_ITEMS = 19;
+	public static int ERREUR_SELECT_BID_STARTING_DATETIME = 20;
+	public static int ERREUR_UPDATE_ITEM = 21;
 
 		
 }

@@ -35,8 +35,14 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 	public EnchereDAOJdbcImpl() {
 	}
 
-	/* ----------- Méthodes CRUD ------------ */
+	/* ----------------------------------------- */
+	/* ------------- Méthodes CRUD ------------- */
+	/* ----------------------------------------- */
 
+	/**
+	 * insère une ligne dans la table Encheres
+	 * met à jour le prix de vente de l'article dans la table Articles_vendus
+	 */
 	@Override
 	public void insert(Enchere enchere) throws ModelException {
 
@@ -48,15 +54,9 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* Préparation de la première requête */
 				PreparedStatement query = cnx.prepareStatement(INSERT_BID);
 
-				/* DEBUG */
-				// System.out.println("\nDEBUG DAO INSERT_BID // Numéro de l'article " +
-				// enchere.getNoArticle());
-				// System.out.println("\nDEBUG DAO INSERT_BID // Numéro utilisateur " +
-				// enchere.getNoUtilisateur());
-
 				/* valorisation des paramètres */
 				
-				System.out.println("\nTEST DAO ENCHERE insert // enchere = " + enchere);
+//				System.out.println("\nTEST DAO ENCHERE insert // enchere = " + enchere);
 				
 				query.setTimestamp(1, Timestamp.valueOf(enchere.getDate()));
 				query.setInt(2, enchere.getMontant());
@@ -116,12 +116,6 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* Préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(UPDATE_BID);
 
-				/* DEBUG */
-				// System.out.println("\nDEBUG DAO UPDATE_BID // Numéro de l'article " +
-				// enchere.getNoArticle());
-				// System.out.println("\nDEBUG DAO UPDATE_BID // Numéro utilisateur " +
-				// enchere.getNoUtilisateur());
-
 				/* valorisation des paramètres */
 				query.setTimestamp(1, Timestamp.valueOf(enchere.getDate()));
 				query.setInt(2, enchere.getMontant());
@@ -148,8 +142,8 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				e.printStackTrace();
 
 				cnx.rollback();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_BID, "L'exécution de la requête UPDATE_BID a échoué.");
-				System.out.println("L'exécution de la requête UPDATE_BID a échoué !");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_BID, "L'exécution de la requête UPDATE_BID ou UPDATE_ARTICLE_PRICE a échoué.");
+				System.out.println("L'exécution de la requête UPDATE_BID ou UPDATE_ARTICLE_PRICE a échoué !");
 
 				throw modelDalException;
 
@@ -177,19 +171,25 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 	}
 
-	/* --------------- SELECT --------------- */
-
 	@Override
 	public Enchere selectById(Integer number) throws ModelException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
+	
+	/* ----------------------------------------- */
+	/* --------------- Méthodes ---------------- */
+	/* ----------------------------------------- */
+	
+	/**
+	 * récupère et retourne la dernière enchère effectuée sur un article
+	 * s'il n'existe pas de précédente enchère, la valeur retournée sera null
+	 */
 	@Override
-	public Enchere returnLastBid(Integer noArticle) throws ModelException {
+	public Enchere retrieveItemLastBid(Integer noArticle) throws ModelException {
 
 		Enchere derniereEnchere = null;
-		// System.out.println("\nTEST DAO ENCHERE // Numéro de l'article = " + noArticle);
+//		System.out.println("\nTEST DAO ENCHERE // Numéro de l'article = " + noArticle);
 
 		try {
 			/* Obtention d'un connexion */
@@ -209,7 +209,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				if (rs.next()) {
 					// System.out.println(rs);
 					derniereEnchere = EnchereBuilder(rs);
-					System.out.println("\nTEST DAO ENCHERE // La dernière enchère sur l'article était celle-ci : " + derniereEnchere);
+//					System.out.println("\nTEST DAO ENCHERE // La dernière enchère sur l'article était celle-ci : " + derniereEnchere);
 				}
 
 			} catch (SQLException e) {
@@ -241,8 +241,17 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 		return derniereEnchere;
 	}
 
+	
 	/* -------------- BUILDERS -------------- */
 
+	/**
+	 * créé un objet de type Enchere avec le jeu d'enregistrement remonté par la requête SQL
+	 * pour utiliser cette méthode, il faut impérativement que la requête SQL projette les noms de colonnes suivants dans cet ordre précis :
+	 * date_enchere, montant_enchere, no_utilisateur, pseudo, no_article, nom_article, no_categorie, et libelle
+	 * @param rs
+	 * @return derniereEnchere
+	 * @throws SQLException
+	 */
 	private Enchere EnchereBuilder(ResultSet rs) throws SQLException {
 
 		Enchere derniereEnchere = new Enchere();

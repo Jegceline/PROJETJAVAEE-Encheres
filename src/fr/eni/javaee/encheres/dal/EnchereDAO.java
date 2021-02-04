@@ -5,6 +5,6 @@ import fr.eni.javaee.encheres.bo.Enchere;
 
 public interface EnchereDAO extends DAO<Enchere>{
 	
-	public Enchere returnLastBid(Integer noArticle) throws ModelException;
+	public Enchere retrieveItemLastBid(Integer noArticle) throws ModelException;
 
 }

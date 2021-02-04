@@ -1,6 +1,7 @@
 package fr.eni.javaee.encheres.bo;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Article {
 
@@ -8,37 +9,66 @@ public class Article {
 	private String nomArticle;
 	private String description;
 	private LocalDate dateDebutEncheres;
+	private LocalTime heureDebutEncheres;
 	private LocalDate dateFinEncheres;
+	private LocalTime heureFinEncheres;
 	private Integer prixInitial;
 	private Integer prixVente;
-	private String etatVente;
 	private Adresse adresseRetrait;
 	private Utilisateur vendeur;
 	private Categorie categorie;
 
-	private Integer noUtilisateur;
-	private Integer noCategorie;
-	// private String pseudoVendeur;
 
 	/* Constructeurs */
 
 	public Article() {
 	}
 
-	public Article(String nomArticle, String description, LocalDate dateDebutEncheres, LocalDate dateFinEncheres, Integer prixInitial,
-			String etatVente, Integer noUtilisateur, Integer noCategorie, Adresse adresseRetrait) {
-		super();
+	public Article(String nomArticle, String description, LocalDate dateDebutEncheres, LocalDate dateFinEncheres, Integer prixInitial, Categorie categorie, Utilisateur vendeur, Adresse adresseRetrait) {
 		this.nomArticle = nomArticle;
 		this.description = description;
 		this.dateDebutEncheres = dateDebutEncheres;
 		this.dateFinEncheres = dateFinEncheres;
 		this.prixInitial = prixInitial;
-		this.etatVente = etatVente;
-		this.noUtilisateur = noUtilisateur;
-		this.noCategorie = noCategorie;
+		this.categorie = categorie;
+		this.vendeur = vendeur;
 		this.adresseRetrait = adresseRetrait;
 	}
+	
 
+	public Article(String nomArticle, String description, LocalDate dateDebutEncheres, LocalTime heureDebutEncheres,
+			LocalDate dateFinEncheres, LocalTime heureFinEncheres, Integer prixInitial, Categorie categorie, Utilisateur vendeur, Adresse adresseRetrait) {
+		super();
+		this.nomArticle = nomArticle;
+		this.description = description;
+		this.dateDebutEncheres = dateDebutEncheres;
+		this.heureDebutEncheres = heureDebutEncheres;
+		this.dateFinEncheres = dateFinEncheres;
+		this.heureFinEncheres = heureFinEncheres;
+		this.prixInitial = prixInitial;
+		this.adresseRetrait = adresseRetrait;
+		this.vendeur = vendeur;
+		this.categorie = categorie;
+	}
+	
+	public Article(Integer noArticle, String nomArticle, String description, LocalDate dateDebutEncheres, LocalTime heureDebutEncheres,
+			LocalDate dateFinEncheres, LocalTime heureFinEncheres, Integer prixInitial, Categorie categorie, Utilisateur vendeur, Adresse adresseRetrait) {
+		super();
+		this.noArticle = noArticle;
+		this.nomArticle = nomArticle;
+		this.description = description;
+		this.dateDebutEncheres = dateDebutEncheres;
+		this.heureDebutEncheres = heureDebutEncheres;
+		this.dateFinEncheres = dateFinEncheres;
+		this.heureFinEncheres = heureFinEncheres;
+		this.prixInitial = prixInitial;
+		this.adresseRetrait = adresseRetrait;
+		this.vendeur = vendeur;
+		this.categorie = categorie;
+	}
+
+	/* Getters & Setters */
+	
 	public Integer getNoArticle() {
 		return noArticle;
 	}
@@ -52,7 +82,7 @@ public class Article {
 	}
 
 	public void setNomArticle(String nomArticle) {
-		this.nomArticle = nomArticle;
+		this.nomArticle = nomArticle.trim();
 	}
 
 	public String getDescription() {
@@ -60,7 +90,7 @@ public class Article {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = description.trim();
 	}
 
 	public LocalDate getDateDebutEncheres() {
@@ -95,30 +125,6 @@ public class Article {
 		this.prixVente = prixVente;
 	}
 
-	public String getEtatVente() {
-		return etatVente;
-	}
-
-	public void setEtatVente(String etatVente) {
-		this.etatVente = etatVente;
-	}
-
-	public Integer getNoUtilisateur() {
-		return noUtilisateur;
-	}
-
-	public void setNoUtilisateur(Integer noUtilisateur) {
-		this.noUtilisateur = noUtilisateur;
-	}
-
-	public Integer getNoCategorie() {
-		return noCategorie;
-	}
-
-	public void setNoCategorie(Integer noCategorie) {
-		this.noCategorie = noCategorie;
-	}
-
 	public Adresse getAdresseRetrait() {
 		return adresseRetrait;
 	}
@@ -142,16 +148,33 @@ public class Article {
 	public void setCategorie(Categorie categorie) {
 		this.categorie = categorie;
 	}
+	
+	public LocalTime getHeureDebutEncheres() {
+		return heureDebutEncheres;
+	}
 
-	
-	
+	public void setHeureDebutEncheres(LocalTime heureDebutEncheres) {
+		this.heureDebutEncheres = heureDebutEncheres;
+	}
+
+	public LocalTime getHeureFinEncheres() {
+		return heureFinEncheres;
+	}
+
+	public void setHeureFinEncheres(LocalTime heureFinEncheres) {
+		this.heureFinEncheres = heureFinEncheres;
+	}
+
+	/* Méthode toString() */
 	@Override
 	public String toString() {
 		return "Article [noArticle=" + noArticle + ", nomArticle=" + nomArticle + ", description=" + description + ", dateDebutEncheres="
-				+ dateDebutEncheres + ", dateFinEncheres=" + dateFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
-				+ ", etatVente=" + etatVente + ", adresseRetrait=" + adresseRetrait + ", vendeur=" + vendeur + ", categorie=" + categorie
-				+ ", noUtilisateur=" + noUtilisateur + ", noCategorie=" + noCategorie + "]";
+				+ dateDebutEncheres + ", heureDebutEncheres=" + heureDebutEncheres + ", dateFinEncheres=" + dateFinEncheres
+				+ ", heureFinEncheres=" + heureFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
+				+ ", adresseRetrait=" + adresseRetrait + ", vendeur=" + vendeur + ", categorie=" + categorie + "]";
 	}
+
+
 
 
 }

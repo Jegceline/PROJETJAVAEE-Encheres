@@ -50,16 +50,16 @@ public class ServletInscription extends HttpServlet {
 		String motdepasse = request.getParameter("motDePasse");
 		String confirmation = request.getParameter("motDePasseBis");
 
-		// Création de l'objet Utilisateur
+		/* Création de l'objet Utilisateur */
 		Utilisateur utilisateur = new Utilisateur(pseudo, nom, prenom, email, telephone, rue, codepostal, ville, motdepasse);
-		System.out.println("\nTEST // Utilisateur créé dans la servlet  : " + utilisateur);
+//		System.out.println("\nTEST SERVLET INSCRIPTION // Utilisateur créé dans la servlet  : " + utilisateur);
 
 		// appeler le manager pour qu'il vérifie l'intégrité des données
 		UtilisateurManager inscriptionManager = new UtilisateurManager();
 
 		try {
 			utilisateur = inscriptionManager.ajouteUtilisateur(utilisateur, confirmation);
-			System.out.println("\nTEST // Utilisateur retourné par le manager : " + utilisateur);
+//			System.out.println("\nTEST  SERVLET INSCRIPTION // Utilisateur retourné par le manager : " + utilisateur);
 
 		} catch (ModelException e) {
 			e.printStackTrace();
@@ -73,8 +73,8 @@ public class ServletInscription extends HttpServlet {
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(request, response);
 
 		} else {
-			request.setAttribute("succesInscription", "Bienvenue " + utilisateur.getPrenom() + " !");
-			System.out.println("\nTEST SERVLET INSCRIPTION // Un attribut succesInscription a été créé.");
+			request.setAttribute("succesInscription", "Bienvenue " + utilisateur.getPrenom() + ", vous avez été crédité de 100 points !");
+//			System.out.println("\nTEST SERVLET INSCRIPTION // Un attribut succesInscription a été créé.");
 			request.getSession().setAttribute("profilUtilisateur", utilisateur);
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 		}

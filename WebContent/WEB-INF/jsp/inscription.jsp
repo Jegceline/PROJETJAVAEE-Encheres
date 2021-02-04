@@ -37,7 +37,7 @@
 					<div class="row">
 						<div class="col">
 							<label for="pseudo" class="form-label">Pseudo : </label> <input id="pseudo" type="text" value="${ param.pseudo }" name="pseudo"
-								class="form-control" placeholder="Seuls les caractères alphanumériques sont autorisés" required />
+								class="form-control" placeholder="Votre pseudo ne doit contenir que des caractères alphanumériques" required />
 						</div>
 
 						<div class="col">
@@ -94,23 +94,18 @@
 
 					<div class="row my-4">
 						<div class="col">
-							<button class="btn btn-success ">Créer un compte</button>
+							<button class="btn btn-success">Créer un compte</button>
 						</div>
 					</div>
 
 				</form>
 
-				<form action="accueil" method="get">
-					<input type="submit" value="Annuler" name="reset" id="reset" />
+				<form action="accueil" method="GET">
+					<input type="submit" value="Annuler" name="reset" id="reset" class="btn btn-secondary"/>
 				</form>
 
 			</div>
 		</div>
-
-		<!-- <div class="mb-3 col-sm-12 col-xs-12">
-					<input type="submit" value="Créer" />
-				</div>
-				  -->
 
 	</div>
 

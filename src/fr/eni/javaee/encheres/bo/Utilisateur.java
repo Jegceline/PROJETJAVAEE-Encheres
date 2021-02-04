@@ -21,15 +21,15 @@ public class Utilisateur {
 	public Utilisateur(String pseudo, String nom, String prenom, String email, String telephone, String rue, String codePostal,
 			String ville, String motDePasse) {
 		this();
-		this.pseudo = pseudo;
-		this.nom = nom;
+		this.pseudo = pseudo.trim();
+		this.nom = nom.toUpperCase();
 		this.prenom = prenom;
-		this.email = email;
+		this.email = email.trim();
 		this.telephone = telephone;
-		this.rue = rue;
-		this.codePostal = codePostal;
-		this.ville = ville;
-		this.motDePasse = motDePasse;
+		this.rue = rue.trim();
+		this.codePostal = codePostal.trim();
+		this.ville = ville.trim();
+		this.motDePasse = motDePasse.trim();
 	}
 
 	// constructeur avec id
@@ -82,7 +82,7 @@ public class Utilisateur {
 	}
 
 	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
+		this.pseudo = pseudo.trim();
 	}
 
 	public String getNom() {
@@ -90,7 +90,7 @@ public class Utilisateur {
 	}
 
 	public void setNom(String nom) {
-		this.nom = nom;
+		this.nom = nom.trim().toUpperCase();
 	}
 
 	public String getPrenom() {
@@ -98,7 +98,10 @@ public class Utilisateur {
 	}
 
 	public void setPrenom(String prenom) {
-		this.prenom = prenom;
+		String firstLetter = prenom.substring(0, 1);
+		String othersLetters = prenom.substring(1, prenom.length());
+		firstLetter.toUpperCase();
+		this.prenom = (firstLetter+othersLetters).trim();
 	}
 
 	public String getEmail() {
@@ -106,7 +109,7 @@ public class Utilisateur {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = email.trim();
 	}
 
 	public String getTelephone() {
@@ -114,7 +117,7 @@ public class Utilisateur {
 	}
 
 	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+		this.telephone = telephone.trim();
 	}
 
 	public String getRue() {
@@ -122,7 +125,7 @@ public class Utilisateur {
 	}
 
 	public void setRue(String rue) {
-		this.rue = rue;
+		this.rue = rue.trim();
 	}
 
 	public String getCodePostal() {
@@ -130,7 +133,7 @@ public class Utilisateur {
 	}
 
 	public void setCodePostal(String codePostal) {
-		this.codePostal = codePostal;
+		this.codePostal = codePostal.trim();
 	}
 
 	public String getVille() {
@@ -138,7 +141,7 @@ public class Utilisateur {
 	}
 
 	public void setVille(String ville) {
-		this.ville = ville;
+		this.ville = ville.trim();
 	}
 
 	public String getMotDePasse() {
@@ -146,7 +149,7 @@ public class Utilisateur {
 	}
 
 	public void setMotDePasse(String motDePasse) {
-		this.motDePasse = motDePasse;
+		this.motDePasse = motDePasse.trim();
 	}
 
 	public Integer getCredit() {

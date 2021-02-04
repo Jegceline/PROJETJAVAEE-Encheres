@@ -18,33 +18,46 @@
 
 		<div class="container pt-5 mb-4">
 
-
 			<h2 class="my-4">Liste des enchères</h2>
 			<hr>
 			
-			<!-- Messages conditionnels  -->
+			<c:if test="${trieur.ventesUtilisateurAttente == 'ventes_attente'}">checked</c:if>
+			
+			<!--  div à l'affichage conditionnel -->
+			
+			<c:if test="${not empty succesSuppressionArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+				<div class="alert alert-success" role="alert">${succesSuppressionArticle}</div>
+			</c:if>
+			
+			<c:if test="${not empty succesModificationsArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+				<div class="alert alert-success" role="alert">${succesModificationsArticle}</div>
+			</c:if>
 
-			<c:if test="${ not empty succesEnchere}">
+			<c:if test="${ not empty succesEnchere}"> <!-- attribut envoyé par la servlet DetailArticle -->
 				<div class="alert alert-success" role="alert">${succesEnchere}</div>
 			</c:if>
 			
-			<c:if test="${ not empty succesInscription}">
+			<c:if test="${ not empty succesInscription}"> <!-- attribut envoyé par la servlet Inscription -->
 				<div class="alert alert-success" role="alert">${succesInscription}</div>
 			</c:if>
 
-			<c:if test="${ not empty succesAjoutVente}">
+			<c:if test="${ not empty succesAjoutVente}"> <!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-success" role="alert">${succesAjoutVente}</div>
 			</c:if>
 			
-			<c:if test="${ not empty succesSupression}">
-				<div class="alert alert-success" role="alert">${succesSupression}</div>
+			<c:if test="${ not empty succesSupressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
+				<div class="alert alert-success" role="alert">${succesSupressionUtilisateur}</div>
 			</c:if>
 			
-			<c:forEach var="couple" items="${ mapErreurs }">
+			<c:if test="${ not empty echecSuppressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
+				<div class="alert alert-danger" role="alert">${echecSuppressionUtilisateur}</div>
+			</c:if>
+			
+			<c:forEach var="couple" items="${ mapErreurs }"> <!-- attribut envoyé par toutes les servlets -->
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
 			
-			<!-- Fin des messages conditionnels -->
+			<!-- Fin des div à afficage conditionnel -->
 
 
 			<h4 class="my-4">Filtres</h4>
@@ -60,9 +73,11 @@
 
 				<div class="row">
 					<div class="col-sm">
-						<%@ include file="listeCategories.jspf"%>
+						<%@ include file="liste-categories.jspf"%>
 					</div>
 				</div>
+
+<!-- La div suivante ne s'affiche que s'il existe un attribut profilUtilisateur dans la session -->
 
 				<c:if test="${ not empty profilUtilisateur }">
 
@@ -78,7 +93,7 @@
 								</p>
 
 								<p>
-									<input type="checkbox" class="form-check-input" id="achats1" name="encheres_ec" value="encheres_ec"> <label for="encheres_ec"
+									<input type="checkbox" class="form-check-input" id="achats1" name="encheres_ec" value="encheres_ec"><label for="encheres_ec"
 										class="form-check-label">enchères en cours</label>
 								</p>
 								<p>
@@ -121,41 +136,45 @@
 
 					</div>
 				</c:if>
+				
+<!-- fin de la div à l'affichage conditionnée par l'existence d'un attribut profilUtilisateur dans la session -->
 
 		<div class="col">
-			<button class="btn btn-primary mx-auto d-block" name="rechercher">Rechercher</button>
+			<button class="btn btn-primary mx-auto my-4 d-block" name="rechercher">Rechercher</button>
 		</div>
 		
 		</form>
 	</div>
 
 	<section class="container my-4">
-
+	
+	<!-- la div suivante ne s'affiche que s'il existe un attribut noResult dans un des objets de contexte -->
 		<c:if test="${ not empty noResult}">
 			<div class="alert alert-warning" role="alert">${noResult}</div>
 		</c:if>
+	<!-- fin de la div à l'affichage conditionnel -->
 
-		<div class="card-columns">
+		<div class="card-columns my-4">
+
+<!-- La div suivante ne s'affiche que s'il n'existe pas d'attribut selectionArticles dans l'un des objets de contexte -->
 
 			<c:choose>
-				<c:when test="${ empty articlesFiltres }">
+				<c:when test="${ empty selectionArticles }">
 
-					<c:forEach var="article" items="${encheresEC}">
+					<c:forEach var="article" items="${encheresOuvertes}">
 
-						<div class="card bg-light mb-3" style="width: 18rem;">
+						<div class="card bg-light my-4" style="width: 22rem;">
 
 							<div class="card-header">
 								<h5 class="card-title">${article.nomArticle}</h5>
 							</div>
 
 							<div class="card-body">
-								<p class="card-text">Prix de vente initial : ${article.prixInitial} points</p>
-								<p class="card-text">Début des enchères : ${article.dateDebutEncheres}</p>
-								<p class="card-text">Clôture des enchères : ${article.dateFinEncheres}</p>
-								<p class="card-text">Vendeur : ${article.vendeur.pseudo}</p>
-								<p class="card-text">Dernière enchère : ${article.prixVente} points</p>
-
-
+								<p class="card-text">Prix de vente initial : <b>${article.prixInitial} points</b></p>
+								<p class="card-text">Début des enchères : <b>${article.dateDebutEncheres}</b> (${article.heureDebutEncheres})</p>
+								<p class="card-text">Clôture des enchères : <b>${article.dateFinEncheres}</b> (${article.heureFinEncheres})</p>
+								<p class="card-text">Vendeur : <b>${article.vendeur.pseudo}</b></p>
+								<p class="card-text">Dernière enchère : <b>${article.prixVente} points</b></p>
 								<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
 							</div>
 						</div>
@@ -164,38 +183,39 @@
 
 				</c:when>
 
-				<c:when test="${ not empty articlesFiltres }">
+				<c:when test="${ not empty selectionArticles }">
 
-					<c:forEach var="article" items="${articlesFiltres}">
+					<c:forEach var="article" items="${selectionArticles}">
 
-						<div class="card bg-light mb-3" style="width: 18rem;">
+						<div class="card bg-light my-4" style="width: 22rem;">
 
 							<div class="card-header">
 								<h5 class="card-title">${article.nomArticle}</h5>
 							</div>
 
 							<div class="card-body">
-								<p class="card-text">Prix de vente initial : ${article.prixInitial} points</p>
-								<p class="card-text">Début des enchères : ${article.dateDebutEncheres}</p>
-								<p class="card-text">Clôture des enchères : ${article.dateFinEncheres}</p>
-								<p class="card-text">Vendeur : ${article.vendeur.pseudo}</p>
-								<p class="card-text">Dernière enchère : ${article.prixVente} points</p>
-
+								<p class="card-text">Prix de vente initial : <b>${article.prixInitial} points</b></p>
+								<p class="card-text">Début des enchères : <b>${article.dateDebutEncheres}</b> (${article.heureDebutEncheres})</p>
+								<p class="card-text">Clôture des enchères : <b>${article.dateFinEncheres}</b> (${article.heureFinEncheres})</p>
+								<p class="card-text">Vendeur : <b>${article.vendeur.pseudo}</b></p>
+								<p class="card-text">Dernière enchère : <b>${article.prixVente} points</b></p>
 								<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
 							</div>
 						</div>
 
 					</c:forEach>
 				</c:when>
-
+			
 			</c:choose>
+			
+<!-- fin de la div à l'affichage conditionnel -->
 
 		</div>
 
 	</section>
 
 	</div>
-	</div>
+	
 
 	<%@ include file="footer.jspf"%>
 

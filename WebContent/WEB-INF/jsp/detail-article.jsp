@@ -73,7 +73,7 @@
 
 						<div class="mb-3">
 							<label for="date_fin_encheres">Fin des enchères :</label> <input id="date_fin_encheres" type="text" name="date_fin_encheres"
-								value="${articleSelectionne.dateFinEncheres}" class="form-control" disabled />
+								value="${articleSelectionne.dateFinEncheres} (${articleSelectionne.heureFinEncheres})" class="form-control" disabled />
 						</div>
 
 						<div class="mb-3">
@@ -83,10 +83,15 @@
 						<div class="mb-3">
 							<button class="btn btn-success " name="encherir">Enchérir</button>
 
-							<c:if test="${ profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur}">
-								<button class="btn btn-success ml-4" name="modifier">Modifier</button>
+							<c:if test="${ profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur && empty encheresOuvertes}">
+								<button class="btn btn-info ml-4" name="modifier">Modifier</button>
 							</c:if>
+
 						</div>
+					</form>
+					
+					<form action="accueil" method="GET">
+						<input type="submit" value="Retour à la page d'accueil" name="reset" id="reset" class="btn btn-secondary" />
 					</form>
 				</div>
 			</div>

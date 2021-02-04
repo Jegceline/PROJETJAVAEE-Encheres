@@ -1,5 +1,6 @@
 package fr.eni.javaee.encheres.dal;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import fr.eni.javaee.encheres.ModelException;
@@ -10,11 +11,13 @@ public interface ArticleDAO extends DAO<Article>{
 	
 	public List<Article> retrieveCurrentlyForSaleItemsWithFilter(Trieur trieur) throws ModelException;
 
+	public List<Article> retrieveCurrentlyForSaleItemsAndSalesToComeWithFilter(Trieur trieur) throws ModelException;
+	
 	public List<Article> selectByCriteria(Trieur trieur) throws ModelException;
 
-	public Integer selectStartingPrice(Integer noArticle) throws ModelException;
+	public Integer retrieveItemStartingPrice(Integer noArticle) throws ModelException;
 
-	public Integer selectCurrentPrice(Integer noArticle) throws ModelException;
+	public Integer retrieveItemCurrentPrice(Integer noArticle) throws ModelException;
 
 	public List<Article> retrieveUserWishlistWithFilter(Trieur trieur) throws ModelException;
 
@@ -25,4 +28,6 @@ public interface ArticleDAO extends DAO<Article>{
 	// public List<Article> retrieveCurrentlyForSaleItemsPost(Trieur trieur) throws ModelException;
 
 	public List<Article> retrieveUserPurchasedItems(Trieur trieur) throws ModelException;
+
+	public LocalDateTime retrieveBidStartingDateTime(Article article) throws ModelException;
 }

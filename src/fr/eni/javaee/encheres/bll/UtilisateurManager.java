@@ -15,12 +15,17 @@ import fr.eni.javaee.encheres.dal.UtilisateurDAO;
 
 public class UtilisateurManager {
 
+	/* Variables */
+	
 	private ModelException modelBllException = new ModelException();
 	private DAO<Utilisateur> utilisateurDAO = DAOFactory.getUtilisateurDAO();
 
+	/* Constructeur */
+	
 	public UtilisateurManager() {
 	}
 
+	
 	/* ----------------------------------------- */
 	/* ------------- Méthodes CRUD ------------- */
 	/* ----------------------------------------- */
@@ -60,29 +65,6 @@ public class UtilisateurManager {
 		// System.out.println("\nTEST // Utilisateur après insertion dans la BDD : " +
 		// utilisateur);
 
-		return utilisateur;
-	}
-
-	/**
-	 * recherche un hypothétique utilisateur dans la base de donnée méthode appelée
-	 * lors de la connexion
-	 * 
-	 * @param identifiant
-	 *            (pseudo ou email)
-	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si
-	 *         l'utilisateur existe
-	 * @throws ModelException
-	 */
-	public Utilisateur rechercheUtilisateur(String identifiant) throws ModelException {
-		Utilisateur utilisateur = null;
-
-		try {
-			utilisateur = ((UtilisateurDAO) utilisateurDAO).retrieveUserInfo(identifiant);
-
-		} catch (ModelException e) {
-			e.printStackTrace();
-			throw e;
-		}
 		return utilisateur;
 	}
 
@@ -136,10 +118,11 @@ public class UtilisateurManager {
 		valideAdresse(utilisateurAvecModif.getRue(), utilisateurAvecModif.getCodePostal());
 		valideMdp(utilisateurAvecModif.getMotDePasse(), confirmationMdp);
 
-		// si les paramères sont intègres, appeler le DAO
+		/* si les paramètres sont intègres, appeler le DAO */
+		
 		if (!modelBllException.contientErreurs()) {
 
-			System.out.println("\nMANAGER // Les paramètres sont ok, le DAO va être appelé.");
+//			System.out.println("\nTEST MANAGER UILITSATEUR // Les paramètres sont ok, le DAO va être appelé.");
 
 			try {
 				utilisateurAvecModif.setCredit(utilisateurSession.getCredit());
@@ -153,101 +136,33 @@ public class UtilisateurManager {
 				throw e;
 			}
 
-		} else {
-			// si un des paramètres n'est pas valide
+		} else { /* si un des paramètres n'est pas valide */
 			utilisateurAvecModif = null;
 			throw modelBllException;
 		}
 
-		System.out.println("\nTEST // Utilisateur après insertion dans la BDD :  " + utilisateurAvecModif);
+//		System.out.println("\nTEST MANAGER UTILISATEUR // Utilisateur après insertion dans la BDD :  " + utilisateurAvecModif);
 
 		return utilisateurAvecModif;
 	}
 
-	/*
-	 * récupère le crédit d'un utilisateur
-	 */
-	public Integer recupereCredit(Integer noUtilisateur) throws ModelException {
-		Integer credit;
-		try {
-			credit = ((UtilisateurDAO) utilisateurDAO).selectCredit(noUtilisateur);
-
-		} catch (ModelException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		return credit;
-
-	}
-
-	/**
-	 * Vérifie que le crédit de l'utilisateur est suffisant pour effectuer l'enchère
-	 * qu'il souhaite
-	 * 
-	 * @param noUtilisateur
-	 * @param montantEnchere
-	 * @return
-	 * @throws ModelException
-	 */
-	public Integer verifieSoldeCredits(Integer noUtilisateur, Integer montantEnchere) throws ModelException {
-
-		Integer credit;
-		UtilisateurManager utilisateurManager = new UtilisateurManager();
-
-		try {
-			credit = utilisateurManager.recupereCredit(noUtilisateur);
-
-		} catch (ModelException e) {
-			e.printStackTrace();
-			throw e;
-		}
-
-		if (credit < montantEnchere) {
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CREDIT_INSUFFISANT, "Votre crédit est insuffisant !");
-			throw modelBllException;
-		}
-
-		return credit;
-	}
-
-	/**
-	 * Déduit le montant de l'enchère de l'enchérisseur
-	 * 
-	 * @param enchere
-	 * @param derniereEnchere
-	 * @throws ModelException
-	 */
-	public void actualiseCredit(Enchere enchere, Enchere derniereEnchere) throws ModelException {
-
-		if (derniereEnchere != null) {
-			try {
-				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, derniereEnchere);
-
-			} catch (ModelException e) {
-				e.printStackTrace();
-				throw e;
-			}
-		} else {
-			
-			try {
-				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, null);
-
-			} catch (ModelException e) {
-				e.printStackTrace();
-				throw e;
-			}
-		}
-	}
-
+	
 	/* ----------------------------------------- */
 	/* ------- Méthodes de vérification -------- */
 	/* ----------------------------------------- */
 
-	public String recupereEtVerifieMdp(String identifiant, String motDePasse) throws ModelException {
+	/**
+	 * récupère le mot de passe d'un utilisateur et le compare à celui qu'il a renseigné pour se connecter
+	 * @param identifiant
+	 * @param motDePasse
+	 * @return motDePasseBdd
+	 * @throws ModelException
+	 */
+	public void recupereEtControleMdp(String identifiant, String motDePasse) throws ModelException {
 		String motDePasseBdd = null;
 
 		try {
-			motDePasseBdd = ((UtilisateurDAO) utilisateurDAO).selectPassword(identifiant);
+			motDePasseBdd = ((UtilisateurDAO) utilisateurDAO).retrieveUserPassword(identifiant);
 
 		} catch (ModelException e) {
 			e.printStackTrace();
@@ -263,13 +178,11 @@ public class UtilisateurManager {
 			throw modelBllException;
 		}
 
-		return motDePasseBdd;
-
 	}
 
 	/**
-	 * Vérifie que le mot de passe ne fait pas plus de 30 caractères Vérifie que les
-	 * deux mots de passe sont identiques
+	 * vérifie que le mot de passe ne fait pas plus de 30 caractères 
+	 * vérifie que les deux mots de passe renseignées sont identiques
 	 * 
 	 * @param mdp
 	 * @param mdp2
@@ -290,25 +203,25 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * Vérifie que l'adresse ne fait pas plus de 50 caractères Vérifie que le code
-	 * postale ne fait pas plus de 5 caractères
+	 * vérifie que l'adresse ne fait pas plus de 30 caractères 
+	 * vérifie que le code postal ne fait pas plus de 10 caractères
 	 * 
 	 * @param rue
 	 * @param cpo
 	 */
 	private void valideAdresse(String rue, String cpo) {
-		if (rue.length() > 50) {
+		if (rue.length() > 30) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ADRESSE_LONGUEUR, "L'intitulé de la rue est trop long.");
 			System.out.println("\nTEST // L'intitulé de la rue est trop long.");
 		}
-		if (cpo.trim().length() > 5) {
+		if (cpo.trim().length() > 10) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ADRESSE_CPO, "Le code postal n'est pas valide.");
 			System.out.println("\nTEST // Le code postal n'est pas valide.");
 		}
 	}
 
 	/**
-	 * Vérifie que le numéro de téléphone ne fait pas plus de 15 caractères
+	 * vérifie que le numéro de téléphone ne fait pas plus de 15 caractères
 	 * 
 	 * @param telephone
 	 */
@@ -321,9 +234,9 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * Vérifie que l'adresse mail ne fait pas plus de 50 caractères Vérifie que
-	 * l'adresse mail n'est pas déjà utilisée vérifie que l'adresse mail comporte
-	 * un @
+	 * vérifie que l'adresse mail ne fait pas plus de 50 caractères 
+	 * vérifie que l'adresse mail n'est pas déjà utilisée 
+	 * vérifie que l'adresse mail comporte un @
 	 * 
 	 * @param email
 	 * @throws ModelException
@@ -337,15 +250,15 @@ public class UtilisateurManager {
 			System.out.println("\nTEST // L'adresse email n'est pas valide.");
 		}
 
-		// récupérer une liste de tous les emails de la base de données
+		/* récupérer une liste de tous les emails de la base de données */
 		try {
-			listeEmails = ((UtilisateurDAO) utilisateurDAO).selectAllEmails();
+			listeEmails = ((UtilisateurDAO) utilisateurDAO).retrieveUsersEmails();
 			// System.out.println("\nTEST // Liste des emails : " + listeEmails);
 		} catch (ModelException e) {
 			throw e;
 		}
 
-		// vérifier que l'adresse email n'est pas déjà utilisée
+		/* vérifier que l'adresse email n'est pas déjà utilisée */
 		for (String emailCourant : listeEmails) {
 			if (emailCourant.equals(email)) {
 				modelBllException.ajouterErreur(CodesErreurs.ERREUR_EMAIL_EXISTANT, "Cette adresse mail est déjà utilisée.");
@@ -364,9 +277,9 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * Vérifie que le pseudo ne fait pas plus de 30 caractères Vérifie que le pseudo
-	 * n'est pas déjà utilisé vérifie que le pseudo ne contient que des caractères
-	 * alphanumériques
+	 * vérifie que le pseudo ne fait pas plus de 30 caractères 
+	 * vérifie que le pseudo n'est pas déjà utilisé 
+	 * vérifie que le pseudo ne contient que des caractères alphanumériques
 	 * 
 	 * @param pseudo
 	 * @throws ModelException
@@ -381,7 +294,7 @@ public class UtilisateurManager {
 		}
 
 		try {
-			listePseudo = ((UtilisateurDAO) utilisateurDAO).selectAllPseudo();
+			listePseudo = ((UtilisateurDAO) utilisateurDAO).retrieveUsersAlias();
 
 		} catch (ModelException e) {
 			e.printStackTrace();
@@ -408,7 +321,7 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * Vérifie que le nom et le prénom ne font pas plus de 30 caractères
+	 * vérifie que le nom et le prénom ne font pas plus de 30 caractères
 	 * 
 	 * @param nom
 	 * @param prenom
@@ -423,6 +336,106 @@ public class UtilisateurManager {
 			System.out.println("\nTEST // Le prénom est trop long.");
 		}
 
+	}
+
+	
+	/* ----------------------------------------- */
+	/* ------------- Méthodes CRUD ------------- */
+	/* ----------------------------------------- */
+	
+	/**
+	 * recherche un hypothétique utilisateur dans la base de donnée par son pseudo ou son email
+	 * 
+	 * @param identifiant (pseudo ou email)
+	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si l'utilisateur existe
+	 * @throws ModelException
+	 */
+	public Utilisateur rechercheUtilisateur(String identifiant) throws ModelException {
+		Utilisateur utilisateur = null;
+
+		try {
+			utilisateur = ((UtilisateurDAO) utilisateurDAO).retrieveUserInfo(identifiant);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return utilisateur;
+	}
+
+	/**
+	 * récupère et vérifie que le crédit de l'utilisateur est suffisant pour effectuer l'enchère
+	 * qu'il souhaite
+	 * 
+	 * @param noUtilisateur
+	 * @param montantEnchere
+	 * @return credit
+	 * @throws ModelException
+	 */
+	public Integer recupereEtControleSoldeCredits(Integer noUtilisateur, Integer montantEnchere) throws ModelException {
+
+		Integer credit;
+		UtilisateurManager utilisateurManager = new UtilisateurManager();
+
+		try {
+			credit = utilisateurManager.recupereCredit(noUtilisateur);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		if (credit < montantEnchere) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CREDIT_INSUFFISANT, "Votre crédit est insuffisant !");
+			throw modelBllException;
+		}
+
+		return credit;
+	}
+	
+	/*
+	 * récupère le crédit d'un utilisateur
+	 */
+	public Integer recupereCredit(Integer noUtilisateur) throws ModelException {
+		Integer credit;
+		try {
+			credit = ((UtilisateurDAO) utilisateurDAO).retrieveUserCredit(noUtilisateur);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return credit;
+
+	}
+
+	/**
+	 * déduit le montant de l'enchère du crédit de l'enchérisseur
+	 * 
+	 * @param enchere
+	 * @param derniereEnchere
+	 * @throws ModelException
+	 */
+	public void actualiseCredit(Enchere enchere, Enchere derniereEnchere) throws ModelException {
+
+		if (derniereEnchere != null) {
+			try {
+				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, derniereEnchere);
+
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
+			}
+		} else {
+			
+			try {
+				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, null);
+
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
 	}
 
 }

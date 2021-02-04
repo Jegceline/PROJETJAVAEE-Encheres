@@ -93,11 +93,15 @@
 
 				<div class="row my-4">
 					<div class="col">
-						<button class="btn btn-success" name="enregistrer">Modifier</button>
-						<button class="btn ml-4 btn-success" name="supprimer">Supprimer mon compte</button>
+						<button class="btn btn-info" name="enregistrer">Enregistrer les modifications</button>
+						<button class="btn ml-4 btn-danger" name="supprimer">Supprimer mon compte</button>
 					</div>
 				</div>
 			</form>
+			
+							<form action="profil" method="GET">
+					<input type="submit" value="Annuler" name="reset" id="reset" class="btn btn-secondary"/>
+				</form>
 
 		</div>
 	</div>

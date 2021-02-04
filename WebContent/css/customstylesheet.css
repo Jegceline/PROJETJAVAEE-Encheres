@@ -22,6 +22,15 @@
   flex-shrink: 0;
 }
 
-/* Other Classes for Page Styling */
+a.disabled {
+	pointer-events: none;
+	cursor: default;
+}
+
+textarea {
+   resize: none;
+}
+
+
 
 

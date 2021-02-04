@@ -19,7 +19,6 @@ public class Enchere {
 	}
 	
 	
-	
 	public Enchere(Integer montant, Utilisateur encherisseur, Article article) {
 		this();
 		this.montant = montant;

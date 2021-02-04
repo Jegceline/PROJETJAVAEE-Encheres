@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,67 +20,78 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
 public class ServletConnexion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	public static final String COOKIE_UTILISATEUR_IDENTIFIANT = "cookieUserId";
+	public static final String COOKIE_UTILISATEUR_MDP = "cookieUserPassword";
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * méthode appelée depuis le bouton Connexion de la pahe connexion.jsp
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		//Map<Integer, String> mapErreurs = new HashMap<Integer, String>();
 
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
 
 		/* Récupérer les paramètres du formulaire */
 		String identifiant = request.getParameter("identifiant");
-		// System.out.println("\nSERVLET // Identifiant récupéré qui sera envoyé au
-		// Manager : " + identifiant);
 		String motDePasse = request.getParameter("motdepasse");
+//		System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
 
 		/* Appeler le manager */
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		Utilisateur utilisateur = null;
-		String mdpBdd = null;
 
 		try {
 			utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);
-			// System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
-			
-			if(utilisateur != null) {
-				mdpBdd = utilisateurManager.recupereEtVerifieMdp(identifiant, motDePasse);	
-				
+//			System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
+
+			/* si l'utilisateur existe */
+			if (utilisateur != null) {
+				utilisateurManager.recupereEtControleMdp(identifiant, motDePasse);
+
 			} else {
 				request.setAttribute("utilisateurInconnu", "Utilisateur inexistant.");
-				doGet(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 			}
 
 		} catch (ModelException e) {
 			e.printStackTrace();
 			request.setAttribute("mapErreurs", e.getMapErreurs());
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 		}
-
-		if (mdpBdd == null) {
-			doGet(request, response);
-
-		} else {
 
 			/* On place l'objet utilisateur dans la session */
 			request.getSession().setAttribute("profilUtilisateur", utilisateur);
-			request.getSession().setAttribute("succesConnexion", "Connexion réussie !");
-			response.sendRedirect(request.getContextPath() + "/accueil");
-			// remarque : on veut appeler la méthode doGet() de la servlet Accueil et non sa
-			// méthode doPost() donc on ne peut pas utiliser de RequestDispatcher
 
-		}
+			/* si l'utilisateur a coché la case "se souvenir de moi", on enregistre son id et son mdp dans deux cookies qu'on envoie au navigateur */
+			if (request.getParameter("memoriserUtilisateur") != null) {
+				
+				Cookie cookieIdentifiant = new Cookie(COOKIE_UTILISATEUR_IDENTIFIANT, identifiant);
+				cookieIdentifiant.setMaxAge(60 * 60 * 24 * 365 * 10); // bricolage pour spécifier une durée de vie très longue
+				
+				Cookie cookieMdp = new Cookie(COOKIE_UTILISATEUR_MDP, motDePasse);
+				cookieMdp.setMaxAge(60 * 60 * 24 * 365 * 10);
+				
+				response.addCookie(cookieIdentifiant);
+				response.addCookie(cookieMdp);
+			}
+
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+			
+//			Rq : si le RequestDispatcher étant appelé depuis la méthode doPost, il va appeler la méthode doPost() de la servlet Accueil et non sa méthode doGet()
+//			De plus les cookies ne seront pas envoyés au navigateur
+// 			response.sendRedirect(request.getContextPath() + "/accueil");
 
 	}
+	
+	
 
 }

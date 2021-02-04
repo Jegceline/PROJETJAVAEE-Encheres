@@ -23,12 +23,12 @@
 
 -->
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark  bg-dark text-white">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark text-white">
 	<a class="navbar-brand" href="accueil"><strong>ENI Encheres</strong></a>
 	
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
 		aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
+		
 	</button>
 	
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -46,9 +46,9 @@
 
 			<c:if test="${not empty sessionScope.profilUtilisateur }">
 
+	<li class="nav-item active"><a class="nav-link disabled" href="#">Bonjour ${profilUtilisateur.prenom}, vous avez ${profilUtilisateur.credit } crédit(s)  -</a></li> 
 	<li class="nav-item active"><a class="nav-link" href="vente">Vendre un article</a></li>
-	<li class="nav-item active"><a class="nav-link" href="profil">Mon Profil</a></li>  
-	<li class="nav-item active"><a class="nav-link" href="">Mon crédit : ${profilUtilisateur.credit }</a></li>  
+	<li class="nav-item active"><a class="nav-link" href="profil">Mon Profil</a></li>   
 	<li class="nav-item active"><a class="nav-link" href="deconnexion">Déconnexion</a></li> 
 
 			</c:if>

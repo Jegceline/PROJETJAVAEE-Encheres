@@ -1,6 +1,8 @@
 package fr.eni.javaee.encheres.bll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,28 +14,44 @@ import fr.eni.javaee.encheres.bo.Trieur;
 import fr.eni.javaee.encheres.dal.ArticleDAO;
 import fr.eni.javaee.encheres.dal.DAO;
 import fr.eni.javaee.encheres.dal.DAOFactory;
-import fr.eni.javaee.encheres.dal.EnchereDAO;
 
 public class ArticleManager {
 
+	/* Variables */
+
 	private ModelException modelBllException = new ModelException();
 	private DAO<Article> articleDAO = DAOFactory.getArticleDAO();
-	private DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
+
+	/* Constructeur */
 
 	public ArticleManager() {
 	}
 
+	/* ----------------------------------------- */
+	/* ------------- Méthodes CRUD ------------- */
+	/* ----------------------------------------- */
+
+	/**
+	 * contrôle le respect des contraintes imposées par la BDD sur les champs de
+	 * colonne appelle le DAO si toutes les contraintes sont respectées returne null
+	 * si au moins une contrainte n'a pas été respectée
+	 * 
+	 * @param article
+	 * @return article
+	 * @throws ModelException
+	 */
 	public Article ajouteArticle(Article article) throws ModelException {
 
 		/* vérifier que les contraintes imposées par la database sont respectées */
 
 		valideNomArticle(article.getNomArticle());
 		valideDescriptionArticle(article.getDescription());
-		valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres());
-		valideCategorie(article.getNoCategorie());
+		valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres(), article.getHeureDebutEncheres(),
+				article.getHeureFinEncheres());
+		valideCategorie(article.getCategorie().getNoCategorie());
 		validePrixInitial(article.getPrixInitial());
 
-		/* si les étapes de valisation ont été passées avec succès, appeler le DAO */
+		/* si tous les paramètres sont ok, appeler le DAO */
 
 		if (!modelBllException.contientErreurs()) {
 			try {
@@ -44,7 +62,7 @@ public class ArticleManager {
 				throw e;
 			}
 
-		} else { // si une des étapes de validation a échoué
+		} else { /* si un des paramètres n'est pas ok */
 
 			article = null;
 			throw modelBllException;
@@ -54,52 +72,244 @@ public class ArticleManager {
 
 	}
 
+	public void metAJourArticle(Article article) throws ModelException {
+
+		valideNomArticle(article.getNomArticle());
+		valideDescriptionArticle(article.getDescription());
+		valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres(), article.getHeureDebutEncheres(),
+				article.getHeureFinEncheres());
+		valideCategorie(article.getCategorie().getNoCategorie());
+		validePrixInitial(article.getPrixInitial());
+
+		/* si tous les paramètres sont ok */
+		if (!modelBllException.contientErreurs()) {
+			try {
+				articleDAO.update(article);
+
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
+			}
+		} else { /* si est des paramètres n'est pas ok */
+
+			article = null;
+			throw modelBllException;
+		}
+
+	}
+
+	public Article recupereArticle(Integer noArticle) {
+		Article article = null;
+		try {
+			article = articleDAO.selectById(noArticle);
+		} catch (ModelException e) {
+			e.printStackTrace();
+
+		}
+		return article;
+
+	}
+
+	public void supprimerArticle(Integer noArticle) throws ModelException {
+
+		try {
+			articleDAO.delete(noArticle);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+	}
+
+	/* ----------------------------------------- */
+	/* ------- Méthodes de vérification -------- */
+	/* ----------------------------------------- */
+
+	/**
+	 * vérifie que le prix est positif (inutile en indiquant un minimum requis avec
+	 * du html)
+	 * 
+	 * @param prixInitial
+	 */
 	private void validePrixInitial(Integer prixInitial) {
 		if (prixInitial < 0) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_PRIX_INVALIDE, "Le prix ne peut pas être négatif.");
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_PRIX_INVALIDE, "Le prix ne peut pas être négatif.");
 		}
 	}
 
+	/*
+	 * vérifie qu'une catégorie a bien été sélectionnée (valeur différente de zéro)
+	 */
 	private void valideCategorie(Integer noCategorie) {
 		if (noCategorie == 0) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_CATEGORIE_INEXISTANTE, "Veuillez sélectionner une catégorie.");
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_CATEGORIE_INEXISTANTE, "Veuillez sélectionner une catégorie.");
 		}
 
 	}
 
-	private void valideDatesEncheres(LocalDate dateDebutEncheres, LocalDate dateFinEncheres) {
+	/**
+	 * vérifie que les dates d'ouverture et de fin des enchères sont cohérentes
+	 * 
+	 * @param dateDebutEncheres
+	 * @param dateFinEncheres
+	 * @param heureDebutEncheres
+	 * @param heureFinEncheres
+	 */
+	private void valideDatesEncheres(LocalDate dateDebutEncheres, LocalDate dateFinEncheres, LocalTime heureDebutEncheres,
+			LocalTime heureFinEncheres) {
 
 		if (dateDebutEncheres.isBefore(LocalDate.now())) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_DATE_DEBUT_ENCHERES_INVALIDE,
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DATE_DEBUT_ENCHERES_INVALIDE,
 					"La date d'ouverture des enchères ne peut être antérieure à la date du jour.");
 		}
 
 		if (dateFinEncheres.isBefore(dateFinEncheres)) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_DATE_FIN_ENCHERES_INVALIDE,
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DATE_FIN_ENCHERES_INVALIDE,
 					"La date de fin des enchères ne peut être antérieure à la date d'ouverture des enchères.");
 		}
 
 		if (dateFinEncheres.isBefore(LocalDate.now())) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_DATE_FIN_ENCHERES_INVALIDE,
-					"La date de fin des enchères ne peut être antérieure à la date du jour");
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DATE_FIN_ENCHERES_INVALIDE,
+					"La date de fin des enchères ne peut être antérieure à la date du jour.");
+		}
+
+		if (dateDebutEncheres.isEqual(LocalDate.now()) && heureDebutEncheres.isBefore(LocalTime.now())) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_HEURE_DEBUT_ENCHERES_INVALIDE,
+					"L'heure de début des enchères ne peut pas être antérieure à l'heure actuelle.");
+		}
+		
+		if (dateFinEncheres.isEqual(LocalDate.now()) && heureFinEncheres.isBefore(LocalTime.now())) {
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_HEURE_DEBUT_ENCHERES_INVALIDE,
+					"L'heure de fin des enchères ne peut pas être antérieure à l'heure actuelle.");
 		}
 
 	}
 
+	/**
+	 * vérifie que le nom de l'article ne comporte pas plus de 30 caractères
+	 * (contrainte de la BDD)
+	 * 
+	 * @param nomArticle
+	 */
 	private void valideNomArticle(String nomArticle) {
 
 		if (nomArticle.trim().length() > 30) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_NOM_LONGUEUR, "Le nom de l'article est trop long.");
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_NOM_LONGUEUR, "Le nom de l'article est trop long.");
 		}
 	}
 
+	/**
+	 * vérifie que la description ne comporte pas plus de 300 caractères (contrainte
+	 * de la BDD) (inutile en spécifiant un nombre max de caractères avec du html)
+	 * 
+	 * @param description
+	 */
 	private void valideDescriptionArticle(String description) {
 		if (description.trim().length() > 300) {
-			modelBllException.ajouterErreur(CodesErreurs.ARTICLE_DESCRIPTION_LONGUEUR, "La description est trop longue.");
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DESCRIPTION_LONGUEUR, "La description est trop longue.");
 		}
 	}
 
-	public List<Article> recupereEncheresEnCoursPost(Trieur trieur) throws ModelException {
+	/*
+	 * vérifie que l'enchère est supérieure au prix de vente actuel de l'article
+	 * détermine si c'est la première enchère effectuée sur l'objet
+	 * 
+	 * @param noArticle
+	 * 
+	 * @throws ModelException
+	 */
+	private boolean controleMontantEnchere(Integer montantEnchere, Integer noArticle) throws ModelException {
+
+		Integer prixInitial = null;
+		Integer prixActuel = null;
+		Boolean premiereEnchere = false;
+
+		try {
+
+			prixActuel = ((ArticleDAO) articleDAO).retrieveItemCurrentPrice(noArticle);
+			// // System.out.println("\nTEST MANAGER ARTICLE // Prix actuel de l'objet : " +
+			// prixActuel);
+
+			if (prixActuel == null || prixActuel == 0) {
+				premiereEnchere = true;
+			}
+
+			prixInitial = ((ArticleDAO) articleDAO).retrieveItemStartingPrice(noArticle);
+			// System.out.println("\nTEST MANAGER ARTICLE // Prix initial de l'objet : " +
+			// prixInitial);
+
+			if (premiereEnchere) {
+
+				if (montantEnchere <= prixInitial) {
+					modelBllException.ajouterErreur(CodesErreurs.ERREUR_MONTANT_ENCHERE,
+							"Votre enchère doit être supérieure au prix de vente initial !");
+					System.out.println("\n TEST MANAGER // Le montant de l'enchère est invalide.");
+					throw modelBllException;
+				}
+
+			} else {
+
+				if (montantEnchere <= prixActuel) {
+					modelBllException.ajouterErreur(CodesErreurs.ERREUR_MONTANT_ENCHERE,
+							"Votre enchère doit être supérieure à la dernière enchère !");
+					System.out.println("\n TEST MANAGER // Le montant de l'enchère est invalide.");
+					throw modelBllException;
+				}
+
+			}
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return premiereEnchere;
+
+	}
+
+	/**
+	 * vérifie que les enchères ne sont pas ouvertes sur un article passé en
+	 * paramètre
+	 * 
+	 * @param article
+	 * @return encheresOuvertes
+	 * @throws ModelException
+	 */
+	public boolean controleDateDebutOuvertureEncheres(Article article) throws ModelException {
+
+		LocalDateTime dateHeureDebutEnchere = null;
+		boolean encheresOuvertes = false;
+
+		try {
+			dateHeureDebutEnchere = ((ArticleDAO) articleDAO).retrieveBidStartingDateTime(article);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		if (dateHeureDebutEnchere.isBefore(LocalDateTime.now()) || dateHeureDebutEnchere.isEqual(LocalDateTime.now())) {
+			encheresOuvertes = true;
+		}
+
+		return encheresOuvertes;
+	}
+
+	
+	/* ----------------------------------------- */
+	/* -------------- Méthodes DAO ------------- */
+	/* ----------------------------------------- */
+
+	/**
+	 * récupère et retourne les articles pour lesquels les enchères sont ouvertes
+	 * cette méthode sera appelée depuis la méthode doGet() de la servlet Accueil
+	 * 
+	 * @param trieur
+	 * @return listesEncheresEC
+	 * @throws ModelException
+	 */
+	public List<Article> recupereArticlesEncheresOuvertesPost(Trieur trieur) throws ModelException {
 
 		List<Article> listesEncheresEC = null;
 
@@ -117,7 +327,14 @@ public class ArticleManager {
 
 	}
 
-	public List<Article> recupereEncheresEnCoursGet() throws ModelException {
+	/**
+	 * rérécupère et retourne les articles pour lesquels les enchères sont ouvertes
+	 * cette méthode sera appelée depuis la méthode doGet() de la servlet Accueil
+	 * 
+	 * @return listesEncheresEC
+	 * @throws ModelException
+	 */
+	public List<Article> recupereArticlesEncheresOuvertesGet() throws ModelException {
 
 		List<Article> listesEncheresEC = null;
 
@@ -126,7 +343,7 @@ public class ArticleManager {
 
 		} catch (ModelException e) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_CHARGEMENT_ENCHERES_EC,
-					"Une erreur est survenue lors du chargement des enchères en cours.");
+					"Une erreur est survenue lors du chargement des enchères ouvertes.");
 			e.printStackTrace();
 			throw e;
 		}
@@ -135,6 +352,13 @@ public class ArticleManager {
 
 	}
 
+	/**
+	 * tri et récupère les articles selon la case cochée par l'utilisateur
+	 * 
+	 * @param trieur
+	 * @return
+	 * @throws ModelException
+	 */
 	public List<Article> trieEtRecupereArticles(Trieur trieur) throws ModelException {
 
 		List<Article> listeSelectionArticles = new ArrayList<Article>();
@@ -144,7 +368,8 @@ public class ArticleManager {
 
 			try {
 				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserPurchasedItems(trieur);
-				System.out.println("\nTEST MANAGER ARTICLE trieEtRecupereArticles // listeSelectionArticles = "  + listeSelectionArticles);
+				// System.out.println("\nTEST MANAGER ARTICLE trieEtRecupereArticles //
+				// listeSelectionArticles = " + listeSelectionArticles);
 
 			} catch (ModelException e) {
 				e.printStackTrace();
@@ -175,49 +400,60 @@ public class ArticleManager {
 			}
 		}
 
-			/* Si une des cases "ventes" est cochée */
-			if (trieur.getVentesUtilisateurAttente() != null || trieur.getVentesUtilisateurEC() != null
-					|| trieur.getVentesUtilisateurT() != null) {
+		/* Si une des cases "ventes" est cochée */
+		if (trieur.getVentesUtilisateurAttente() != null || trieur.getVentesUtilisateurEC() != null
+				|| trieur.getVentesUtilisateurT() != null) {
 
-				try {
-					listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserSellsWithFilter(trieur);
+			try {
+				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserSellsWithFilter(trieur);
 
-				} catch (ModelException e) {
-					e.printStackTrace();
-					throw e;
-				}
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
 			}
+		}
 
-			/* Si la case "enchères en cours" est cochée */
-			if (trieur.getEncheresEC() != null || trieur.getCategorie() != 0 || !trieur.getKeyword().isEmpty()) {
+		/* Si la case "enchères en cours" est cochée */
+		if (trieur.getEncheresEC() != null || trieur.getCategorie() != 0 || !trieur.getKeyword().isEmpty()) {
 
-				try {
-					listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsWithFilter(trieur);
+			try {
+				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsWithFilter(trieur);
 
-				} catch (ModelException e) {
-					e.printStackTrace();
-					throw e;
-				}
+			} catch (ModelException e) {
+				e.printStackTrace();
+				throw e;
 			}
+		}
 
-		
+		/* Si aucune case n'est cochée */
+		// if (trieur.getCategorie() != 0 || !trieur.getKeyword().isEmpty()) {
+		//
+		// System.out.println("JE SUIS PASSE PAR LA");
+		// try {
+		// listeSelectionArticles = ((ArticleDAO)
+		// articleDAO).retrieveCurrentlyForSaleItemsAndSalesToComeWithFilter(trieur);
+		//
+		// } catch (ModelException e) {
+		// e.printStackTrace();
+		// throw e;
+		// }
+		// }
+		//
 		return listeSelectionArticles;
 
 	}
 
-	public Article recupereArticle(Integer noArticle) {
-		Article article = null;
-		try {
-			article = articleDAO.selectById(noArticle);
-		} catch (ModelException e) {
-			e.printStackTrace();
-
-		}
-		return article;
-
-	}
-
-	public Enchere recoitEtAjouteEnchere(Enchere enchere) throws ModelException {
+	/**
+	 * détermine si c'est la première enchère sur l'article passé en paramètre
+	 * vérifie que l'enchère est supérieure à la précédente enchère vérfie que
+	 * l'utilisateur a un crédit suffisant appelle le DAO pour ajouter l'enchère
+	 * dans la BDD
+	 * 
+	 * @param enchere
+	 * @return
+	 * @throws ModelException
+	 */
+	public Enchere controleEtAjouteEnchereSurArticle(Enchere enchere) throws ModelException {
 
 		Boolean premiereEnchere;
 		Enchere precedenteEnchere = null;
@@ -225,9 +461,9 @@ public class ArticleManager {
 
 		try {
 
-			/* vérifier que l'enchère est bien supérieure à la précédente enchère */
 			/* déterminer si c'est la première enchère proposée pour l'article */
-			premiereEnchere = verifieMontantEnchere(enchere.getMontant(), enchere.getArticle().getNoArticle());
+			/* vérifier que l'enchère est bien supérieure à la précédente enchère */
+			premiereEnchere = controleMontantEnchere(enchere.getMontant(), enchere.getArticle().getNoArticle());
 
 		} catch (ModelException e2) {
 			e2.printStackTrace();
@@ -239,7 +475,7 @@ public class ArticleManager {
 
 			try {
 				/* vérifier que l'utilisateur a bien un crédit suffisant */
-				utilisateurManager.verifieSoldeCredits(enchere.getEncherisseur().getNoUtilisateur(), enchere.getMontant());
+				utilisateurManager.recupereEtControleSoldeCredits(enchere.getEncherisseur().getNoUtilisateur(), enchere.getMontant());
 
 			} catch (ModelException e1) {
 				e1.printStackTrace();
@@ -248,99 +484,59 @@ public class ArticleManager {
 		}
 
 		/*
-		 * si l'enchère est bien supérieure à l'énchère précédente et si l'utilisateur a
-		 * un crédit suffisant
+		 * si l'enchère est bien supérieure à l'enchère précédente et si l'utilisateur a
+		 * un crédit suffisant, on appelle le manager des enchères
 		 */
+
 		if (!modelBllException.contientErreurs()) {
 
-			/* Si l'objet n'avait jamais fait l'objet d'une enchère */
-			if (premiereEnchere) {
-				System.out.println("\nTEST Manager // Il s'agit d'une première enchère sur cet article.");
+			EnchereManager enchereManager = new EnchereManager();
+			try {
+				precedenteEnchere = enchereManager.ajouteEnchere(enchere, precedenteEnchere, premiereEnchere);
 
-				try {
-					/* créer l'enchère dans la base de données */
-					enchereDAO.insert(enchere);
-
-				} catch (ModelException e) {
-					e.printStackTrace();
-					throw e;
-				}
-
-				/* s'il y a déjà eu des enchères sur l'article */
-			} else {
-
-				try {
-					/* récupérer le numéro du dernier enchérisseur */
-					precedenteEnchere = ((EnchereDAO) enchereDAO).returnLastBid(enchere.getArticle().getNoArticle());
-
-					/* créer l'enchère dans la base de données */
-					enchereDAO.insert(enchere);
-
-				} catch (ModelException e) {
-					e.printStackTrace();
-					throw e;
-				}
-
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
 			}
+
 		}
+
+		// if (!modelBllException.contientErreurs()) {
+		//
+		// /* Si l'objet n'avait jamais fait l'objet d'une enchère */
+		// if (premiereEnchere) {
+		// System.out.println("\nTEST Manager // Il s'agit d'une première enchère sur
+		// cet article.");
+		//
+		// try {
+		// /* créer l'enchère dans la base de données */
+		// enchereDAO.insert(enchere);
+		//
+		// } catch (ModelException e) {
+		// e.printStackTrace();
+		// throw e;
+		// }
+		//
+		// /* s'il y a déjà eu des enchères sur l'article */
+		// } else {
+		//
+		// try {
+		// /* récupérer le numéro du dernier enchérisseur */
+		// precedenteEnchere = ((EnchereDAO)
+		// enchereDAO).returnLastBid(enchere.getArticle().getNoArticle());
+		//
+		// /* créer l'enchère dans la base de données */
+		// enchereDAO.insert(enchere);
+		//
+		// } catch (ModelException e) {
+		// e.printStackTrace();
+		// throw e;
+		// }
+		//
+		// }
+		// }
 
 		return precedenteEnchere;
-	}
-
-	/*
-	 * vérifie que l'enchère est supérieure au prix de vente actuel détermine si
-	 * c'est la première enchère effectuée sur l'objet
-	 * 
-	 * @param noArticle
-	 * 
-	 * @throws ModelException
-	 */
-	private boolean verifieMontantEnchere(Integer montantEnchere, Integer noArticle) throws ModelException {
-
-		Integer prixInitial = null;
-		Integer prixActuel = null;
-		Boolean premiereEnchere = false;
-
-		try {
-			prixInitial = ((ArticleDAO) articleDAO).selectStartingPrice(noArticle);
-			// System.out.println("\nTEST MANAGER ARTICLE // Prix initial de l'objet : " +
-			// prixInitial);
-
-			prixActuel = ((ArticleDAO) articleDAO).selectCurrentPrice(noArticle);
-			// System.out.println("\nTEST MANAGER ARTICLE // Prix actuel de l'objet : " +
-			// prixActuel);
-
-			if (prixActuel == null || prixActuel == 0) {
-				premiereEnchere = true;
-			}
-
-			if (premiereEnchere) {
-
-				if (montantEnchere <= prixInitial) {
-					modelBllException.ajouterErreur(CodesErreurs.ERREUR_MONTANT_ENCHERE,
-							"Votre enchère doit être supérieure au prix de vente initial !");
-					System.out.println("\n TEST MANAGER // Le montant de l'enchère est invalide.");
-					throw modelBllException;
-				}
-
-			} else {
-
-				if (montantEnchere <= prixActuel) {
-					modelBllException.ajouterErreur(CodesErreurs.ERREUR_MONTANT_ENCHERE,
-							"Votre enchère doit être supérieure à la dernière enchère !");
-					System.out.println("\n TEST MANAGER // Le montant de l'enchère est invalide.");
-					throw modelBllException;
-				}
-
-			}
-
-		} catch (ModelException e) {
-			e.printStackTrace();
-			throw e;
-		}
-
-		return premiereEnchere;
-
 	}
 
 }

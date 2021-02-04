@@ -2,6 +2,7 @@ package fr.eni.javaee.encheres.servlets;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletException;
@@ -14,6 +15,7 @@ import fr.eni.javaee.encheres.ModelException;
 import fr.eni.javaee.encheres.bll.ArticleManager;
 import fr.eni.javaee.encheres.bo.Adresse;
 import fr.eni.javaee.encheres.bo.Article;
+import fr.eni.javaee.encheres.bo.Categorie;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
 /**
@@ -40,10 +42,10 @@ public class ServletVenteArticle extends HttpServlet {
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
 
-		/*
-		 * si la méthode doPost de la servlet a été appelée par le bouton "Enregistrer"
-		 * de la page vente.jsp
-		 */
+		/* ------------------------------------------------------------ */
+		/* Si la méthode doPost a été appelée par le bouton enregistrer */
+		/* ------------------------------------------------------------ */
+		
 		if (request.getParameter("enregistrer") != null) {
 
 			/* Récupérer les paramètres du formulaire */
@@ -53,14 +55,16 @@ public class ServletVenteArticle extends HttpServlet {
 			Integer prixInitial = Integer.parseInt(request.getParameter("prix_initial"));
 			LocalDate dateDebutEncheres = null;
 			LocalDate dateFinEncheres = null;
+			LocalTime heureDebutEncheres = null;
+			LocalTime heureFinEncheres = null;
 			String rue = request.getParameter("rue");
-			Integer codePostal = Integer.parseInt(request.getParameter("code_postal".trim()));
+			Integer codePostal = Integer.parseInt(request.getParameter("code_postal").trim());
 			String ville = request.getParameter("ville");
 
 			/* Récupérer l'objet Uilisateur présent en session */
 
 			Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
-			System.out.println("\n TEST SERVLET // L'utilisateur qui met en vente l'article : " + utilisateur);
+//			System.out.println("\nTEST SERVLET VENTE ARTICLE // L'utilisateur qui met en vente l'article = " + utilisateur);
 			Integer noUtilisateur = utilisateur.getNoUtilisateur();
 
 			try {
@@ -68,20 +72,32 @@ public class ServletVenteArticle extends HttpServlet {
 				dateDebutEncheres = LocalDate.parse(request.getParameter("date_debut_encheres"), dtf);
 				dateFinEncheres = LocalDate.parse(request.getParameter("date_fin_encheres"), dtf);
 
+				DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("HH:mm");
+				heureDebutEncheres = LocalTime.parse(request.getParameter("heure_debut_encheres"), dtf2);
+				heureFinEncheres = LocalTime.parse(request.getParameter("heure_fin_encheres"), dtf2);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			/* Création d'un objet Adresse */
+			/* Création d'un objet Adresse à donner à l'objet Article */
 
 			Adresse adresseRetrait = new Adresse(rue, codePostal, ville);
-			// System.out.println("\n TEST SERVLET // L'adresse de retrait est : " + adresseRetrait);
+//			System.out.println("\nTEST SERVLET VENTE ARTICLE // L'adresse de retrait est : " + adresseRetrait);
+
+			/* Création d'un objet utilisateur à donner à l'objet Article */
+			Utilisateur vendeur = new Utilisateur();
+			vendeur.setNoUtilisateur(noUtilisateur);
+
+			/* Création d'un objet catégorie à donner à l'objet Article */
+			Categorie categorie = new Categorie();
+			categorie.setNoCategorie(noCategorie);
 
 			/* Création d'un objet Article */
 
-			Article article = new Article(nomArticle, description, dateDebutEncheres, dateFinEncheres, prixInitial, "EC", noUtilisateur,
-					noCategorie, adresseRetrait);
-			// System.out.println("\n TEST SERVLET // L'article à vendre est : " + article);
+			Article article = new Article(nomArticle, description, dateDebutEncheres, heureDebutEncheres, dateFinEncheres, heureFinEncheres,
+					prixInitial, categorie, vendeur, adresseRetrait);
+//			System.out.println("\nTEST SERVLET ARTICLE // L'article à vendre est : " + article);
 
 			/* Appeler le manager */
 
@@ -107,10 +123,9 @@ public class ServletVenteArticle extends HttpServlet {
 
 		}
 
-		/*
-		 * si la méthode doPost de la servlet a été appelée par le bouton "Modifier" de
-		 * la page detail-article.jsp
-		 */
+		/* ---------------------------------------------------------- */
+		/* Si la méthode doPost a été appelée par le bouton modifier  */
+		/* ---------------------------------------------------------- */
 
 		if (request.getParameter("modifier") != null) {
 
@@ -118,17 +133,17 @@ public class ServletVenteArticle extends HttpServlet {
 			ArticleManager articleManager = new ArticleManager();
 			Article article = articleManager.recupereArticle(noArticle);
 
-			System.out.println(article);
+//			System.out.println("\TEST SERVLET VENTE ARTICLE // article après modification : " + article);
 			request.setAttribute("article", article);
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
 		}
 
-		/*
-		 * si la méthode doPost de la servlet a été appelée par le bouton
-		 * "Enregistrer les modififications" de la page vente.jsp
-		 */
-		if (request.getParameter("enregistrerModif") != null) {
-			
+		/* ------------------------------------------------------------------------------- */
+		/* Si la méthode doPost a été appelée par le bouton enregistrer les modifications  */
+		/* ------------------------------------------------------------------------------- */
+		
+		if (request.getParameter("enregistrerModifications") != null) {
+
 			/* Récupérer les paramètres du formulaire */
 			String nomArticle = request.getParameter("nom_article");
 			String description = request.getParameter("description");
@@ -136,35 +151,87 @@ public class ServletVenteArticle extends HttpServlet {
 			Integer prixInitial = Integer.parseInt(request.getParameter("prix_initial"));
 			LocalDate dateDebutEncheres = null;
 			LocalDate dateFinEncheres = null;
+			LocalTime heureDebutEncheres = null;
+			LocalTime heureFinEncheres = null;
 			String rue = request.getParameter("rue");
-			Integer codePostal = Integer.parseInt(request.getParameter("code_postal"));
+			Integer codePostal = Integer.parseInt(request.getParameter("code_postal".trim()));
 			String ville = request.getParameter("ville");
-			
-			/* Récupérer l'objet Uilisateur présent en session */
 
-			Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
-			System.out.println("\n TEST SERVLET // L'utilisateur qui met en vente l'article : " + utilisateur);
-			Integer noUtilisateur = utilisateur.getNoUtilisateur();
-			
-			/* Récupérer le numéro de l'article affiché */
-			
 			Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
-			System.out.println("\nTEST SERVLET VENTE // Numéro de l'article = " + noArticle);
-			// article = articleManager.actualiseArticle(noArticle);
-			
-			/* Création d'un objet Adresse */
 
+			/* Récupérer l'objet Uilisateur présent en session */
+			Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
+//			System.out.println("\nTEST SERVLET VENTE ARTICLE // L'utilisateur qui met en vente l'article = " + utilisateur);
+			Integer noUtilisateur = utilisateur.getNoUtilisateur();
+
+			/* Formatage des dates */
+			try {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				dateDebutEncheres = LocalDate.parse(request.getParameter("date_debut_encheres"), dtf);
+				dateFinEncheres = LocalDate.parse(request.getParameter("date_fin_encheres"), dtf);
+
+				DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("HH:mm");
+				heureDebutEncheres = LocalTime.parse(request.getParameter("heure_debut_encheres"), dtf2);
+				heureFinEncheres = LocalTime.parse(request.getParameter("heure_fin_encheres"), dtf2);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			/* Création d'un objet Adresse à donner à l'objet Article */
 			Adresse adresseRetrait = new Adresse(rue, codePostal, ville);
-			// System.out.println("\n TEST SERVLET // L'adresse de retrait est : " + adresseRetrait);
+//			System.out.println("\nTEST SERVLET VENTE ARTICLE // L'adresse de retrait est : " + adresseRetrait);
+
+			/* Création d'un objet utilisateur à donner à l'objet Article */
+			Utilisateur vendeur = new Utilisateur();
+			vendeur.setNoUtilisateur(noUtilisateur);
+
+			/* Création d'un objet catégorie à donner à l'objet Article */
+			Categorie categorie = new Categorie();
+			categorie.setNoCategorie(noCategorie);
 
 			/* Création d'un objet Article */
 
-			Article article = new Article(nomArticle, description, dateDebutEncheres, dateFinEncheres, prixInitial, "EC", noUtilisateur,
-					noCategorie, adresseRetrait);
-			// System.out.println("\n TEST SERVLET // L'article à vendre est : " + article);
+			Article article = new Article(noArticle, nomArticle, description, dateDebutEncheres, heureDebutEncheres, dateFinEncheres,
+					heureFinEncheres, prixInitial, categorie, vendeur, adresseRetrait);
+//			System.out.println("\nTEST SERVLET ARTICLE // L'article à vendre est : " + article);
+
+			/* Appeler le manager */
+			ArticleManager articleManager = new ArticleManager();
+			
+			try {
+				articleManager.metAJourArticle(article);
+				request.setAttribute("succesModificationsArticle", "Vos modifications ont bien été prises en compte.");
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+
+			} catch (ModelException e) {
+				e.printStackTrace();
+				request.setAttribute("mapErreurs", e.getMapErreurs());
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+			}
+		}
+
+		/* ----------------------------------------------------------- */
+		/* Si la méthode doPost a été appelée par le bouton supprimer  */
+		/* ----------------------------------------------------------- */
+		
+		if (request.getParameter("supprimer") != null) {
+			Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
 			
 			/* Appeler le manager */
 			ArticleManager articleManager = new ArticleManager();
+			
+			try {
+				articleManager.supprimerArticle(noArticle);
+				request.setAttribute("succesSuppressionArticle", "L'article a bien été supprimé.");
+//				System.out.println("\nTEST SERVLET VENTE ARTICLE // Un attribut succesSuppressionArticle a été créé.");
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+				
+			} catch (ModelException e) {
+				e.printStackTrace();
+				request.setAttribute("mapErreurs", e.getMapErreurs());
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+			}
 		}
 
 	}
