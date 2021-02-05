@@ -97,14 +97,14 @@ public class ServletVenteArticle extends HttpServlet {
 
 			Article article = new Article(nomArticle, description, dateDebutEncheres, heureDebutEncheres, dateFinEncheres, heureFinEncheres,
 					prixInitial, categorie, vendeur, adresseRetrait);
-//			System.out.println("\nTEST SERVLET ARTICLE // L'article à vendre est : " + article);
+//			System.out.println("\nTEST SERVLET ARTICLE // L'article à ajouter aux articles à vendre est : " + article);
 
 			/* Appeler le manager */
 
 			ArticleManager articleManager = new ArticleManager();
 
 			try {
-				article = articleManager.ajouteArticle(article);
+				articleManager.ajouteArticle(article);
 
 			} catch (ModelException e) {
 				e.printStackTrace();
@@ -112,15 +112,8 @@ public class ServletVenteArticle extends HttpServlet {
 				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
 			}
 
-			if (article == null) {
-				request.setAttribute("erreurData", "La mise en vente de votre article a échoué.");
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
-
-			} else {
 				request.setAttribute("succesAjoutVente", "La mise en vente de votre article a bien été prise en compte.");
 				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
-			}
-
 		}
 
 		/* ---------------------------------------------------------- */

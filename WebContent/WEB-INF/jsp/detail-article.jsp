@@ -90,9 +90,12 @@
 						</div>
 					</form>
 					
-					<form action="accueil" method="GET">
-						<input type="submit" value="Retour à la page d'accueil" name="reset" id="reset" class="btn btn-secondary" />
-					</form>
+									<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Fiche Article</li>
+					</ol>
+				</nav>
 				</div>
 			</div>
 

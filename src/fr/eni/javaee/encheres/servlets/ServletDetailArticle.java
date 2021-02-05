@@ -76,7 +76,7 @@ public class ServletDetailArticle extends HttpServlet {
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
 
 		} else {
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(request, response);
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 		}
 	}
 
@@ -140,7 +140,7 @@ public class ServletDetailArticle extends HttpServlet {
 				request.setAttribute("succesEnchere", "Votre enchère a bien été prise en compte.");
 //				System.out.println("\nTEST SERVLET DETAIL ARTICLE // Un attribut succesEnchere a été créé.");
 
-				// response.sendRedirect(request.getContextPath() + "/accueil");
+//				response.sendRedirect(request.getContextPath() + "/accueil");
 				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 
 			} catch (ModelException e) {

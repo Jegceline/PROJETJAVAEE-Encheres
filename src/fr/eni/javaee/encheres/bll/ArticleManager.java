@@ -40,7 +40,7 @@ public class ArticleManager {
 	 * @return article
 	 * @throws ModelException
 	 */
-	public Article ajouteArticle(Article article) throws ModelException {
+	public void ajouteArticle(Article article) throws ModelException {
 
 		/* vérifier que les contraintes imposées par la database sont respectées */
 
@@ -64,11 +64,8 @@ public class ArticleManager {
 
 		} else { /* si un des paramètres n'est pas ok */
 
-			article = null;
 			throw modelBllException;
 		}
-
-		return article;
 
 	}
 
@@ -194,7 +191,7 @@ public class ArticleManager {
 	 */
 	private void valideNomArticle(String nomArticle) {
 
-		if (nomArticle.trim().length() > 30) {
+		if (nomArticle.length() > 30) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_NOM_LONGUEUR, "Le nom de l'article est trop long.");
 		}
 	}

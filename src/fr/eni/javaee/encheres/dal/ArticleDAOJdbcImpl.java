@@ -251,7 +251,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 				query.setString(1, article.getNomArticle());
 				query.setString(2, article.getDescription());
 				query.setTimestamp(3, Timestamp.valueOf(article.getDateDebutEncheres().atTime(article.getHeureDebutEncheres())));
-				query.setTimestamp(4, Timestamp.valueOf(article.getDateDebutEncheres().atTime(article.getHeureDebutEncheres())));
+				query.setTimestamp(4, Timestamp.valueOf(article.getDateFinEncheres().atTime(article.getHeureFinEncheres())));
 				query.setInt(5, article.getPrixInitial());
 				query.setInt(6, article.getCategorie().getNoCategorie());
 				query.setInt(7, article.getNoArticle());

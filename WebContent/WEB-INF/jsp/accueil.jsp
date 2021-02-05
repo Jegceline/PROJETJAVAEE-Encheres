@@ -25,35 +25,35 @@
 			
 			<!--  div à l'affichage conditionnel -->
 			
-			<c:if test="${not empty succesSuppressionArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+			<c:if test="${not empty requestScope.succesSuppressionArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-success" role="alert">${succesSuppressionArticle}</div>
 			</c:if>
 			
-			<c:if test="${not empty succesModificationsArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+			<c:if test="${not empty requestScope.succesModificationsArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-success" role="alert">${succesModificationsArticle}</div>
 			</c:if>
 
-			<c:if test="${ not empty succesEnchere}"> <!-- attribut envoyé par la servlet DetailArticle -->
+			<c:if test="${ not empty requestScope.succesEnchere}"> <!-- attribut envoyé par la servlet DetailArticle -->
 				<div class="alert alert-success" role="alert">${succesEnchere}</div>
 			</c:if>
 			
-			<c:if test="${ not empty succesInscription}"> <!-- attribut envoyé par la servlet Inscription -->
+			<c:if test="${ not empty requestScope.succesInscription}"> <!-- attribut envoyé par la servlet Inscription -->
 				<div class="alert alert-success" role="alert">${succesInscription}</div>
 			</c:if>
 
-			<c:if test="${ not empty succesAjoutVente}"> <!-- attribut envoyé par la servlet VenteArticle -->
+			<c:if test="${ not empty requestScope.succesAjoutVente}"> <!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-success" role="alert">${succesAjoutVente}</div>
 			</c:if>
 			
-			<c:if test="${ not empty succesSupressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
+			<c:if test="${ not empty requestScope.succesSupressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
 				<div class="alert alert-success" role="alert">${succesSupressionUtilisateur}</div>
 			</c:if>
 			
-			<c:if test="${ not empty echecSuppressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
+			<c:if test="${ not empty requestScope.echecSuppressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
 				<div class="alert alert-danger" role="alert">${echecSuppressionUtilisateur}</div>
 			</c:if>
 			
-			<c:forEach var="couple" items="${ mapErreurs }"> <!-- attribut envoyé par toutes les servlets -->
+			<c:forEach var="couple" items="${ requestScope.mapErreurs }"> <!-- attribut envoyé par toutes les servlets -->
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
 			
@@ -79,7 +79,7 @@
 
 <!-- La div suivante ne s'affiche que s'il existe un attribut profilUtilisateur dans la session -->
 
-				<c:if test="${ not empty profilUtilisateur }">
+				<c:if test="${ not empty sessionScope.profilUtilisateur }">
 
 					<div class="row">
 
@@ -149,7 +149,7 @@
 	<section class="container my-4">
 	
 	<!-- la div suivante ne s'affiche que s'il existe un attribut noResult dans un des objets de contexte -->
-		<c:if test="${ not empty noResult}">
+		<c:if test="${ not empty requestScope.noResult}">
 			<div class="alert alert-warning" role="alert">${noResult}</div>
 		</c:if>
 	<!-- fin de la div à l'affichage conditionnel -->
@@ -159,7 +159,7 @@
 <!-- La div suivante ne s'affiche que s'il n'existe pas d'attribut selectionArticles dans l'un des objets de contexte -->
 
 			<c:choose>
-				<c:when test="${ empty selectionArticles }">
+				<c:when test="${ empty requestScope.selectionArticles }">
 
 					<c:forEach var="article" items="${encheresOuvertes}">
 
@@ -183,7 +183,7 @@
 
 				</c:when>
 
-				<c:when test="${ not empty selectionArticles }">
+				<c:when test="${ not empty requestScope.selectionArticles }">
 
 					<c:forEach var="article" items="${selectionArticles}">
 

@@ -41,14 +41,14 @@
 						</div>
 
 						<div class="col">
-							<label for="nom" class="form-label">Nom : </label> <input id="nom" type="text" value="${ param.nom }" name="nom" class="form-control" placeholder="Ce champ est obligatoire" required />
+							<label for="nom" class="form-label">Nom : </label> <input id="nom" type="text" value="${ param.nom }" name="nom" class="form-control" placeholder="Ce champ est obligatoire (30 caractères max)" required />
 						</div>
 					</div>
 
 					<div class="row my-2">
 						<div class="col">
 							<label for="prenom" class="form-label">Prénom : </label> <input id="prenom" type="text" value="${ param.prenom }" name="prenom"
-								class="form-control" placeholder="Ce champ est obligatoire" required />
+								class="form-control" placeholder="Ce champ est obligatoire (30 caractères max)" required />
 						</div>
 
 						<div class="col">
@@ -64,7 +64,7 @@
 						</div>
 
 						<div class="col">
-							<label for="rue" class="form-label">Rue : </label> <input id="rue" type="text" name="rue" value="${ param.rue }" class="form-control" placeholder="Ce champ est obligatoire" required />
+							<label for="rue" class="form-label">Rue : </label> <input id="rue" type="text" name="rue" value="${ param.rue }" class="form-control" placeholder="Ce champ est obligatoire  (50 caractères max)" required />
 						</div>
 					</div>
 

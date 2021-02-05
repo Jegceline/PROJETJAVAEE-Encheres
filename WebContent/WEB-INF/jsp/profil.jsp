@@ -17,7 +17,8 @@
 
 		<div class="container my-4 pt-5">
 
-			<h2 class="my-4">Mon profil</h2>
+			<h2 class="mt-4">Mon profil</h2>
+
 			<hr>
 
 			<!-- Messages conditionnels  -->
@@ -103,9 +104,15 @@
 			 -->
 			</form>
 
-			<form action="accueil" method="GET">
-				<input type="submit" value="Retour à l'accueil" name="reset" id="reset" class="btn btn-secondary" />
-			</form>
+
+			<div class="my-4">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Profil</li>
+					</ol>
+				</nav>
+			</div>
 
 		</div>
 	</div>

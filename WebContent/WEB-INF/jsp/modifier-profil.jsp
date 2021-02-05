@@ -15,7 +15,7 @@
 
 		<div class="container my-4 pt-5">
 
-			<h2 class="my-4">Modifier mon profil</h2>
+			<h2 class="mt-4">Modifier mon profil</h2>
 			<hr>
 
 			<c:if test="${ not empty succesModif}">
@@ -98,11 +98,16 @@
 					</div>
 				</div>
 			</form>
-			
-							<form action="profil" method="GET">
-					<input type="submit" value="Annuler" name="reset" id="reset" class="btn btn-secondary"/>
-				</form>
 
+			<div>
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
+						<li class="breadcrumb-item"><a href="profil">Profil</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Modifier mon profil</li>
+					</ol>
+				</nav>
+			</div>
 		</div>
 	</div>
 

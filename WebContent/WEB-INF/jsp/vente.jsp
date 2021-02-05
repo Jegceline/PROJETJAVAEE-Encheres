@@ -22,19 +22,23 @@
 
 			<!--  div à l'affichage conditionnel -->
 
-			<c:if test="${not empty encheresOuvertes}"> <!-- attribut envoyé par la servlet DetailArticle -->
+			<c:if test="${not empty encheresOuvertes}">
+				<!-- attribut envoyé par la servlet DetailArticle -->
 				<div class="alert alert-warning" role="alert">${encheresOuvertes}</div>
 			</c:if>
 
-			<c:if test="${ not empty erreurData}"> <!-- attribut envoyé par la servlet VenteArticle -->
+			<c:if test="${ not empty erreurData}">
+				<!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-danger" role="alert">${erreurData}</div>
 			</c:if>
-			
-			<c:if test="${ not empty echecSuppressionArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+
+			<c:if test="${ not empty echecSuppressionArticle}">
+				<!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-danger" role="alert">${echecSuppressionArticle}</div>
 			</c:if>
 
-			<c:forEach var="couple" items="${ mapErreurs }"> <!-- attribut envoyé par la servlet VenteArticle -->
+			<c:forEach var="couple" items="${ mapErreurs }">
+				<!-- attribut envoyé par la servlet VenteArticle -->
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
 
@@ -49,8 +53,8 @@
 						<label for="libelle" class="form-label my-2">Article : </label> <input id="libelle" type="text"
 							value="${ param.nom_article } ${article.nomArticle}" name="nom_article" class="form-control" required
 							<c:if test="${not empty encheresOuvertes}">disabled</c:if> /> <label for="description" class="form-label my-2">Description : </label>
-						<textarea id="description" cols="50" name="description" rows="4" cols="50" class="form-control" maxlength="300" placeholder="Pas plus de 300 caractères" required
-							<c:if test="${not empty encheresOuvertes}">disabled</c:if>>${ param.description } ${article.description}</textarea>
+						<textarea id="description" cols="50" name="description" rows="4" cols="50" class="form-control" maxlength="300"
+							placeholder="Pas plus de 300 caractères" required <c:if test="${not empty encheresOuvertes}">disabled</c:if>>${ param.description } ${article.description}</textarea>
 
 						<%@ include file="liste-categories.jspf"%>
 
@@ -113,21 +117,21 @@
 				<div class="row">
 					<div class="col">
 
-				<!-- ces deux boutons ne s'affichent que s'il existe un attribut article dans les objets de contexte -->
-				<!-- (cet attribut existe uniquement si la servlet VenteArticle a été appelée par la Servlet DetailArticle) -->
-				
+						<!-- ces deux boutons ne s'affichent que s'il existe un attribut article dans les objets de contexte -->
+						<!-- (cet attribut existe uniquement si la servlet VenteArticle a été appelée par la Servlet DetailArticle) -->
+
 						<c:if test="${ not empty article}">
 							<button class="btn btn-info ml-3" name="enregistrerModifications">Enregistrer les modifications</button>
 							<button class="btn btn-danger ml-3" name="supprimer">Supprimer</button>
 						</c:if>
-				
-				<!-- ce bouton ne s'affiche que s'il n'existe pas d'attribut article dans les objets de contexte -->
-				<!-- (autrement dit, il s'affiche si ce n'est pas la servlet DetailArticle qui a appelé la Servlet VenteArticle -->
+
+						<!-- ce bouton ne s'affiche que s'il n'existe pas d'attribut article dans les objets de contexte -->
+						<!-- (autrement dit, il s'affiche si ce n'est pas la servlet DetailArticle qui a appelé la Servlet VenteArticle -->
 
 						<c:if test="${ empty article}">
 							<button class="btn btn-primary ml-3" name="enregistrer">Enregistrer</button>
 						</c:if>
-						
+
 					</div>
 
 					<div class="col"></div>
@@ -136,7 +140,18 @@
 
 
 			</form>
+			
+						<div class="my-4">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Vendre un article</li>
+					</ol>
+				</nav>
+			</div>
+
 		</div>
+		
 
 	</div>
 

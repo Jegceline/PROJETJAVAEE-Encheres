@@ -84,11 +84,13 @@ public class ServletConnexion extends HttpServlet {
 				response.addCookie(cookieMdp);
 			}
 
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+//			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 			
-//			Rq : si le RequestDispatcher étant appelé depuis la méthode doPost, il va appeler la méthode doPost() de la servlet Accueil et non sa méthode doGet()
-//			De plus les cookies ne seront pas envoyés au navigateur
-// 			response.sendRedirect(request.getContextPath() + "/accueil");
+//			Rq : le RequestDispatcher étant appelé depuis la méthode doPost, il va appeler la méthode doPost() de la servlet Accueil et non sa méthode doGet()
+//			Par conséquent, les articles pour lesquels les enchères sont onvertes ne seront pas automatiquement affichés. C'est pourquoi on utilise une redirection
+//			La redirection appelle la méthode doGet par défaut.
+
+ 			response.sendRedirect(request.getContextPath() + "/accueil");
 
 	}
 	
