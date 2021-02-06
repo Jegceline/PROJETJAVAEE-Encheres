@@ -166,21 +166,22 @@ public class Article {
 		this.heureFinEncheres = heureFinEncheres;
 	}
 
+	public Utilisateur getDernierEncherisseur() {
+		return dernierEncherisseur;
+	}
+	
+	public void setDernierEncherisseur(Utilisateur dernierEncherisseur) {
+		this.dernierEncherisseur = dernierEncherisseur;
+	}
+	
 	/* Méthode toString() */
+	
 	@Override
 	public String toString() {
 		return "Article [noArticle=" + noArticle + ", nomArticle=" + nomArticle + ", description=" + description + ", dateDebutEncheres="
 				+ dateDebutEncheres + ", heureDebutEncheres=" + heureDebutEncheres + ", dateFinEncheres=" + dateFinEncheres
 				+ ", heureFinEncheres=" + heureFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
 				+ ", adresseRetrait=" + adresseRetrait + ", vendeur=" + vendeur + ", categorie=" + categorie + "]";
-	}
-
-	public Utilisateur getDernierEncherisseur() {
-		return dernierEncherisseur;
-	}
-
-	public void setDernierEncherisseur(Utilisateur dernierEncherisseur) {
-		this.dernierEncherisseur = dernierEncherisseur;
 	}
 
 

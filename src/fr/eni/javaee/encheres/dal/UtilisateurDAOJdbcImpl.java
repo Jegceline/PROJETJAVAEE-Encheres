@@ -10,6 +10,7 @@ import java.util.List;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
+import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
@@ -223,16 +224,18 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	@Override
 	public void updateCredit(Enchere enchere, Enchere precedenteEnchere) throws ModelException {
 
-		/* Crédit du nouvel enchérisseur */
-		Integer creditActuel = retrieveUserCredit(enchere.getEncherisseur().getNoUtilisateur());
-		Integer creditNouveau = creditActuel - enchere.getMontant();
-		System.out.println("\nTEST DAO UTILISATEUR // Crédit de l'enchérisseur après enchere : " + creditNouveau);
 
 		try {
 			/* obtention d'un connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
+				
+				/* Crédit du nouvel enchérisseur */
+				Integer creditActuel = retrieveUserCredit(enchere.getEncherisseur().getNoUtilisateur());
+				Integer creditNouveau = creditActuel - enchere.getMontant();
+//				System.out.println("\nTEST DAO UTILISATEUR // Crédit de l'enchérisseur après enchere : " + creditNouveau);
+				
 				/* Préparation de la requête pour diminuer le solde de l'enchérisseur */
 				PreparedStatement query = cnx.prepareStatement(UPDATE_CREDIT);
 
@@ -293,6 +296,58 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 			throw modelDalException;
 		}
 
+	}
+	
+	/* crédite un vendeur après une vente */
+	public void updateCredit(Integer noUtilisateur, Integer montantDerniereEnchere) throws ModelException {
+		
+		try {
+			
+			/* obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				
+				/* Crédit du actuel du vendeur */
+				Integer creditActuel = retrieveUserCredit(noUtilisateur);
+				
+				/* Préparation de la requête pour diminuer le solde de l'enchérisseur */
+				PreparedStatement query = cnx.prepareStatement(UPDATE_CREDIT);
+
+				/* Valorisation des paramètres */
+				query.setInt(1, creditActuel + montantDerniereEnchere);
+				query.setInt(2, noUtilisateur);
+
+				/* Exécution de la requête */
+				query.executeUpdate();
+				
+				cnx.commit();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_CREDIT, "L'exécution de la requête UPDATE_CREDIT a échoué.");
+				System.out.println("L'exécution de la requête UPDATE_CREDIT a échoué !");
+
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+		
 	}
 	
 	
@@ -647,5 +702,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 		return utilisateur;
 	}
+
+
 
 }

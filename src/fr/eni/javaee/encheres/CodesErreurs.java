@@ -54,6 +54,7 @@ public abstract class CodesErreurs {
 	public static int ERREUR_CURRENTLY_ON_SALE_ITEMS = 19;
 	public static int ERREUR_SELECT_BID_STARTING_DATETIME = 20;
 	public static int ERREUR_UPDATE_ITEM = 21;
+	public static int ERREUR_SELECT_ARTICLE_BY_ID = 22;
 
 		
 }

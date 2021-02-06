@@ -1,6 +1,8 @@
 package fr.eni.javaee.encheres.servlets;
 
+import java.util.List;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,7 +25,13 @@ public class ServletFicheArticle extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * demande au manager si les enchères sont ouvertes sur l'article sélectionné
+	 * demande au manager si les enchères sont ouvertes ou clôturées (l'état des
+	 * enchères va conditionner l'affichage des boutons Modifier et Enchérir sur la
+	 * page fiche-article.jsp)
+	 * 
+	 * Si les enchères sont clôturées et si l'utilisateur est le vendeur de
+	 * l'article, vérifie s'il y a eu une enchère et, si c'est le cas, le crédite du
+	 * montant de la dernière enchère
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -36,7 +44,8 @@ public class ServletFicheArticle extends HttpServlet {
 		 */
 		Integer noArticle = Integer.parseInt(request.getParameter("noArticle"));
 		request.getSession().setAttribute("noArticle", noArticle);
-//		System.out.println("\nTEST SERVLET DETAIL ARTICLE // Numéro de l'objet = " + noArticle);
+		// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Numéro de l'objet = " +
+		// noArticle);
 
 		/* Appeler le manager pour récupérer les infos de l'objet */
 		ArticleManager articleManager = new ArticleManager();
@@ -47,29 +56,24 @@ public class ServletFicheArticle extends HttpServlet {
 		 * méthode doPoset
 		 */
 		request.getSession().setAttribute("articleSelectionne", article);
-
-		request.setAttribute("articleSelectionne", article); // ?
+		request.setAttribute("articleSelectionne", article);
 
 		boolean encheresOuvertes;
 		boolean encheresCloturees;
 
 		/* regarder si les enchères sont ouvertes OU si elles sont clôturées */
+
 		try {
 			encheresOuvertes = articleManager.controleDateDebutOuvertureEncheres(article);
 			encheresCloturees = articleManager.controleDateFinClotureEncheres(article);
 
-			/*
-			 * si elles le sont, envoyer un attribut nePasAfficherBoutonEncherir à la page
-			 * detail-article.jsp l'affichage d'un bouton modifier sera conditionné par
-			 * l'absence de cet attribut
-			 */
-
 			if (encheresOuvertes) {
-				request.setAttribute("encheresOuvertes", "Le bouton Modifier ne doit pas s'afficher");
+				request.setAttribute("encheresOuvertes", "La JSP n'affichera pas le bouton Modifier");
 			}
-			
-			if(encheresCloturees) {
-				request.setAttribute("encheresCloturees", "Le bouton Enchérir ne doit pas s'afficher");
+
+			if (encheresCloturees) {
+				request.setAttribute("encheresCloturees", "La JSP n'affichera pas le bouton Enchérir");
+				// crediteVendeur(article.getVendeur().getNoUtilisateur(), article, request);
 			}
 
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
@@ -78,6 +82,35 @@ public class ServletFicheArticle extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("mapErreurs", e.getMapErreurs());
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
+		}
+
+	}
+
+	private void crediteVendeur(Integer noVendeur, Article article, HttpServletRequest request) throws ModelException {
+
+		List<Object> valeursRetournees = new ArrayList<>();
+
+		UtilisateurManager utilisateurManager = new UtilisateurManager();
+		try {
+
+			valeursRetournees = utilisateurManager.crediteVendeur(noVendeur, article);
+
+			if ((boolean) valeursRetournees.get(1)) {
+
+				request.setAttribute("auMoinsUneEnchere", "un message");
+
+				Enchere derniereEnchere = (Enchere) valeursRetournees.get(0);
+				request.setAttribute("nomDernierEncherisseur", derniereEnchere.getEncherisseur().getPseudo());
+//				System.out.println("\nTEST SERVLET FICHE ARTICLE // Les attributs aucuneEnchere et auMoinsUneEnchere ont été créés.");
+
+			} else {
+				request.setAttribute("aucuneEnchere", "un message");
+//				System.out.println("\nTEST SERVLET FICHE ARTICLE // Un attribut aucuneEnchere a été créé.");
+			}
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
 		}
 
 	}

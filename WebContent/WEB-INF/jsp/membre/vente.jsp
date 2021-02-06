@@ -142,13 +142,12 @@
 
 				</div>
 
-
 			</form>
 			
-						<div class="my-4">
+			<div class="my-4">
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
+						<li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/accueil">Accueil</a></li>
 						<li class="breadcrumb-item active" aria-current="page">Vendre un article</li>
 					</ol>
 				</nav>

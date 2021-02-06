@@ -314,14 +314,25 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
-
+				
 				if (rs.next()) {
 					article = articleBuilder(rs);
+					
+					/* on récupère la dernière enchére effectuée sur l'article */
+					if (article.getNoArticle() != null) {
+						DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
+						Enchere enchere = ((EnchereDAO) enchereDAO).retrieveItemLastBid(article.getNoArticle());
+
+						/* s'il y avait bien eu une enchère */
+						if (enchere != null) {
+							article.setDernierEncherisseur(enchere.getEncherisseur());
+						}
+					}
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL,
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_ARTICLE_BY_ID,
 						"L'exécution de la requête SELECT_ARTICLE_BY_ID a échoué.");
 				System.out.println("L'exécution de la requête SELECT_ARTICLE_BY_ID a échoué !");
 				throw modelDalException;
@@ -346,6 +357,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return article;
 	}
 
+	
 	/* ------ Méthodes de tri qui retournent des listes d'articles -------- */
 
 	/**

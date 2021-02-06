@@ -7,25 +7,27 @@ import java.util.regex.Pattern;
 
 import fr.eni.javaee.encheres.CodesErreurs;
 import fr.eni.javaee.encheres.ModelException;
+import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 import fr.eni.javaee.encheres.dal.DAO;
 import fr.eni.javaee.encheres.dal.DAOFactory;
+import fr.eni.javaee.encheres.dal.EnchereDAO;
 import fr.eni.javaee.encheres.dal.UtilisateurDAO;
 
 public class UtilisateurManager {
 
 	/* Variables */
-	
+
 	private ModelException modelBllException = new ModelException();
 	private DAO<Utilisateur> utilisateurDAO = DAOFactory.getUtilisateurDAO();
+	private DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
 
 	/* Constructeur */
-	
+
 	public UtilisateurManager() {
 	}
 
-	
 	/* ----------------------------------------- */
 	/* ------------- Méthodes CRUD ------------- */
 	/* ----------------------------------------- */
@@ -119,16 +121,18 @@ public class UtilisateurManager {
 		valideMdp(utilisateurAvecModif.getMotDePasse(), confirmationMdp);
 
 		/* si les paramètres sont intègres, appeler le DAO */
-		
+
 		if (!modelBllException.contientErreurs()) {
 
-//			System.out.println("\nTEST MANAGER UILITSATEUR // Les paramètres sont ok, le DAO va être appelé.");
+			// System.out.println("\nTEST MANAGER UILITSATEUR // Les paramètres sont ok, le
+			// DAO va être appelé.");
 
 			try {
 				utilisateurAvecModif.setCredit(utilisateurSession.getCredit());
 				utilisateurAvecModif.setAdministrateur(utilisateurSession.isAdministrateur());
 
-//				System.out.println("\nTEST MANAGER // Utilisateur modifié qui va être envoyé au DAO : + " + utilisateurAvecModif);
+				// System.out.println("\nTEST MANAGER // Utilisateur modifié qui va être envoyé
+				// au DAO : + " + utilisateurAvecModif);
 				utilisateurDAO.update(utilisateurAvecModif);
 
 			} catch (ModelException e) {
@@ -141,18 +145,20 @@ public class UtilisateurManager {
 			throw modelBllException;
 		}
 
-//		System.out.println("\nTEST MANAGER UTILISATEUR // Utilisateur après insertion dans la BDD :  " + utilisateurAvecModif);
+		// System.out.println("\nTEST MANAGER UTILISATEUR // Utilisateur après insertion
+		// dans la BDD : " + utilisateurAvecModif);
 
 		return utilisateurAvecModif;
 	}
 
-	
 	/* ----------------------------------------- */
 	/* ------- Méthodes de vérification -------- */
 	/* ----------------------------------------- */
 
 	/**
-	 * récupère le mot de passe d'un utilisateur et le compare à celui qu'il a renseigné pour se connecter
+	 * récupère le mot de passe d'un utilisateur et le compare à celui qu'il a
+	 * renseigné pour se connecter
+	 * 
 	 * @param identifiant
 	 * @param motDePasse
 	 * @return motDePasseBdd
@@ -181,8 +187,8 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * vérifie que le mot de passe ne fait pas plus de 30 caractères 
-	 * vérifie que les deux mots de passe renseignées sont identiques
+	 * vérifie que le mot de passe ne fait pas plus de 30 caractères vérifie que les
+	 * deux mots de passe renseignées sont identiques
 	 * 
 	 * @param mdp
 	 * @param mdp2
@@ -203,8 +209,8 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * vérifie que l'adresse ne fait pas plus de 30 caractères 
-	 * vérifie que le code postal ne fait pas plus de 10 caractères
+	 * vérifie que l'adresse ne fait pas plus de 30 caractères vérifie que le code
+	 * postal ne fait pas plus de 10 caractères
 	 * 
 	 * @param rue
 	 * @param cpo
@@ -234,9 +240,9 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * vérifie que l'adresse mail ne fait pas plus de 50 caractères 
-	 * vérifie que l'adresse mail n'est pas déjà utilisée 
-	 * vérifie que l'adresse mail comporte un @
+	 * vérifie que l'adresse mail ne fait pas plus de 50 caractères vérifie que
+	 * l'adresse mail n'est pas déjà utilisée vérifie que l'adresse mail comporte
+	 * un @
 	 * 
 	 * @param email
 	 * @throws ModelException
@@ -277,9 +283,9 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * vérifie que le pseudo ne fait pas plus de 30 caractères 
-	 * vérifie que le pseudo n'est pas déjà utilisé 
-	 * vérifie que le pseudo ne contient que des caractères alphanumériques
+	 * vérifie que le pseudo ne fait pas plus de 30 caractères vérifie que le pseudo
+	 * n'est pas déjà utilisé vérifie que le pseudo ne contient que des caractères
+	 * alphanumériques
 	 * 
 	 * @param pseudo
 	 * @throws ModelException
@@ -338,16 +344,18 @@ public class UtilisateurManager {
 
 	}
 
-	
 	/* ----------------------------------------- */
 	/* ------------- Méthodes CRUD ------------- */
 	/* ----------------------------------------- */
-	
+
 	/**
-	 * recherche un hypothétique utilisateur dans la base de donnée par son pseudo ou son email
+	 * recherche un hypothétique utilisateur dans la base de donnée par son pseudo
+	 * ou son email
 	 * 
-	 * @param identifiant (pseudo ou email)
-	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si l'utilisateur existe
+	 * @param identifiant
+	 *            (pseudo ou email)
+	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si
+	 *         l'utilisateur existe
 	 * @throws ModelException
 	 */
 	public Utilisateur rechercheUtilisateur(String identifiant) throws ModelException {
@@ -364,8 +372,8 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * récupère et vérifie que le crédit de l'utilisateur est suffisant pour effectuer l'enchère
-	 * qu'il souhaite
+	 * récupère et vérifie que le crédit de l'utilisateur est suffisant pour
+	 * effectuer l'enchère qu'il souhaite
 	 * 
 	 * @param noUtilisateur
 	 * @param montantEnchere
@@ -392,7 +400,7 @@ public class UtilisateurManager {
 
 		return credit;
 	}
-	
+
 	/*
 	 * récupère le crédit d'un utilisateur
 	 */
@@ -427,7 +435,7 @@ public class UtilisateurManager {
 				throw e;
 			}
 		} else {
-			
+
 			try {
 				((UtilisateurDAO) utilisateurDAO).updateCredit(enchere, null);
 
@@ -436,6 +444,37 @@ public class UtilisateurManager {
 				throw e;
 			}
 		}
+	}
+
+	/**
+	 * crédite un vendeur d'une vente
+	 * 
+	 * @param noUtilisateur
+	 * @param article
+	 * @throws ModelException
+	 */
+	public List<Object> crediteVendeur(Integer noUtilisateur, Article article) throws ModelException {
+
+		Enchere derniereEnchere = null;
+		Boolean auMoinsUneEnchere = false;
+		List<Object> valeursARetourner = new ArrayList<>();
+
+		try {
+			derniereEnchere = ((EnchereDAO) enchereDAO).retrieveItemLastBid(article.getNoArticle());
+
+			if (derniereEnchere != null) {
+				auMoinsUneEnchere = true;
+				((UtilisateurDAO) utilisateurDAO).updateCredit(noUtilisateur, derniereEnchere.getMontant());
+			}
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		valeursARetourner.add(derniereEnchere);
+		valeursARetourner.add(auMoinsUneEnchere);
+		return valeursARetourner;
 	}
 
 }
