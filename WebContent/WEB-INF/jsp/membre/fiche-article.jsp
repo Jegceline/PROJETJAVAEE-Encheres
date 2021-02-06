@@ -8,13 +8,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Détail vente</title>
 
-<%@ include file="css.jspf"%>
+<!-- Bootstrap core CSS -->
+<link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../css/customstylesheet.css" rel="stylesheet">
 
 </head>
 
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="../jspf/header.jspf"%>
 
 	<div class="content">
 		<div class="container my-4 pt-5">
@@ -38,7 +42,8 @@
 				</div>
 
 				<div class="col">
-					<form action="detail-article" method="POST">
+
+					<form action="<%=request.getContextPath()%>/membre/fiche-article" method="POST">
 
 						<div class="mb-3">
 							<input id="titre" type="text" value="${articleSelectionne.nomArticle }" name="libelle" class="form-control" disabled />
@@ -76,33 +81,46 @@
 								value="${articleSelectionne.dateFinEncheres} (${articleSelectionne.heureFinEncheres})" class="form-control" disabled />
 						</div>
 
-						<div class="mb-3">
-							<label for="enchere_prix">Mon enchère :</label> <input id="enchere_prix" type="number" name="enchere_prix" class="form-control" />
-						</div>
+						<!-- le champ enchérir ne doit pas s'afficher si l'article est vendu par l'utilisateur -->
+						<!-- il ne doit également pas s'afficher si les enchères sont clôturées sur un article dont il n'est pas le vendeur -->
+						
+						<c:if test="${ sessionScope.profilUtilisateur.noUtilisateur != articleSelectionne.vendeur.noUtilisateur && empty encheresCloturees}">
+							<div class="mb-3">
+								<label for="enchere_prix">Mon enchère :</label> <input id="enchere_prix" type="number" name="enchere_prix" class="form-control" />
+							</div>
+						</c:if>
 
 						<div class="mb-3">
-							<button class="btn btn-success " name="encherir">Enchérir</button>
 
-							<c:if test="${ profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur && empty encheresOuvertes}">
+							<!-- le bouton enchérir ne doit pas s'afficher si l'article est vendu par l'utilisateur -->
+							<!-- il ne doit également pas s'afficher si les enchères sont clôturées sur un article dont il n'est pas le vendeur -->
+							
+							<c:if test="${ sessionScope.profilUtilisateur.noUtilisateur != articleSelectionne.vendeur.noUtilisateur && empty encheresCloturees}">
+								<button class="btn btn-success" name="encherir">Enchérir</button>
+							</c:if>
+
+							<!-- le bouton Modifier ne doit pas s'afficher si l'utilisateur n'est pas le vendeur de l'article ou si les enchères sont ouvertes ou clôturées -->
+							
+							<c:if test="${ sessionScope.profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur && empty encheresOuvertes && empty encheresCloturees}">
 								<button class="btn btn-info ml-4" name="modifier">Modifier</button>
 							</c:if>
 
 						</div>
 					</form>
-					
-									<nav aria-label="breadcrumb">
-					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
-						<li class="breadcrumb-item active" aria-current="page">Fiche Article</li>
-					</ol>
-				</nav>
+
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="../accueil">Accueil</a></li>
+							<li class="breadcrumb-item active" aria-current="page">Fiche Article</li>
+						</ol>
+					</nav>
 				</div>
 			</div>
 
 		</div>
 	</div>
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="../jspf/footer.jspf"%>
 
 
 </body>

@@ -6,13 +6,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Accueil</title>
 
-<%@ include file="css.jspf"%>
+<%@ include file="jspf/css.jspf"%>
 
 </head>
 
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="jspf/header.jspf"%>
 
 	<div class="content">
 
@@ -21,48 +21,48 @@
 			<h2 class="my-4">Liste des enchères</h2>
 			<hr>
 			
-			<c:if test="${trieur.ventesUtilisateurAttente == 'ventes_attente'}">checked</c:if>
+			<!-- DEBUG
+			<c:if test="${trieur.ventesUtilisateurAttente == 'ventes_attente'}">checked</c:if> 
+			-->
 			
 			<!--  div à l'affichage conditionnel -->
 			
-			<c:if test="${not empty requestScope.succesSuppressionArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
-				<div class="alert alert-success" role="alert">${succesSuppressionArticle}</div>
+			<c:if test="${not empty param.succesSuppressionArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+				<div class="alert alert-success" role="alert">${param.succesSuppressionArticle}</div>
 			</c:if>
 			
-			<c:if test="${not empty requestScope.succesModificationsArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
-				<div class="alert alert-success" role="alert">${succesModificationsArticle}</div>
+			<c:if test="${not empty param.succesModificationsArticle}"> <!-- attribut envoyé par la servlet VenteArticle -->
+				<div class="alert alert-success" role="alert">${param.succesModificationsArticle}</div>
 			</c:if>
 
-			<c:if test="${ not empty requestScope.succesEnchere}"> <!-- attribut envoyé par la servlet DetailArticle -->
-				<div class="alert alert-success" role="alert">${succesEnchere}</div>
+			<c:if test="${ not empty param.succesEnchere}"> <!-- attribut envoyé par la servlet DetailArticle -->
+				<div class="alert alert-success" role="alert">${param.succesEnchere}</div>
 			</c:if>
 			
-			<c:if test="${ not empty requestScope.succesInscription}"> <!-- attribut envoyé par la servlet Inscription -->
-				<div class="alert alert-success" role="alert">${succesInscription}</div>
+			<c:if test="${ not empty param.succesInscription}"> <!-- attribut envoyé par la servlet Inscription -->
+				<div class="alert alert-success" role="alert">${param.succesInscription}</div>
 			</c:if>
 
-			<c:if test="${ not empty requestScope.succesAjoutVente}"> <!-- attribut envoyé par la servlet VenteArticle -->
-				<div class="alert alert-success" role="alert">${succesAjoutVente}</div>
+			<c:if test="${ not empty param.succesAjoutVente}"> <!-- attribut envoyé par la servlet VenteArticle -->
+				<div class="alert alert-success" role="alert">${param.succesAjoutVente}</div>
 			</c:if>
 			
-			<c:if test="${ not empty requestScope.succesSupressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
-				<div class="alert alert-success" role="alert">${succesSupressionUtilisateur}</div>
+			<c:if test="${ not empty param.succesSupressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
+				<div class="alert alert-success" role="alert">${param.succesSupressionUtilisateur}</div>
 			</c:if>
 			
-			<c:if test="${ not empty requestScope.echecSuppressionUtilisateur}"> <!-- attribut envoyé par la servlet ModifierProfil -->
-				<div class="alert alert-danger" role="alert">${echecSuppressionUtilisateur}</div>
-			</c:if>
-			
-			<c:forEach var="couple" items="${ requestScope.mapErreurs }"> <!-- attribut envoyé par toutes les servlets -->
+			<!--
+			<c:forEach var="couple" items="${ requestScope.mapErreurs }"> 
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
+			-->
 			
 			<!-- Fin des div à afficage conditionnel -->
 
 
 			<h4 class="my-4">Filtres</h4>
 
-			<form action="accueil" method="POST">
+			<form action="<%=request.getContextPath()%>/accueil" method="POST">
 
 				<div class="row my-4">
 					<div class="col">
@@ -73,7 +73,7 @@
 
 				<div class="row">
 					<div class="col-sm">
-						<%@ include file="liste-categories.jspf"%>
+						<%@ include file="jspf/liste-categories.jspf"%>
 					</div>
 				</div>
 
@@ -174,8 +174,8 @@
 								<p class="card-text">Début des enchères : <b>${article.dateDebutEncheres}</b> (${article.heureDebutEncheres})</p>
 								<p class="card-text">Clôture des enchères : <b>${article.dateFinEncheres}</b> (${article.heureFinEncheres})</p>
 								<p class="card-text">Vendeur : <b>${article.vendeur.pseudo}</b></p>
-								<p class="card-text">Dernière enchère : <b>${article.prixVente} points</b></p>
-								<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
+								<p class="card-text">Dernière enchère : <b>${article.prixVente} points (${article.dernierEncherisseur.pseudo})</b></p>
+								<a href="<%=request.getContextPath()%>/membre/fiche-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
 							</div>
 						</div>
 
@@ -198,8 +198,8 @@
 								<p class="card-text">Début des enchères : <b>${article.dateDebutEncheres}</b> (${article.heureDebutEncheres})</p>
 								<p class="card-text">Clôture des enchères : <b>${article.dateFinEncheres}</b> (${article.heureFinEncheres})</p>
 								<p class="card-text">Vendeur : <b>${article.vendeur.pseudo}</b></p>
-								<p class="card-text">Dernière enchère : <b>${article.prixVente} points</b></p>
-								<a href="<%=request.getContextPath()%>/detail-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
+								<p class="card-text">Dernière enchère : <b>${article.prixVente} points (${article.dernierEncherisseur.pseudo})</b></p>
+								<a href="<%=request.getContextPath()%>/membre/fiche-article?noArticle=${article.noArticle}" class="btn btn-info">Plus de détails</a>
 							</div>
 						</div>
 
@@ -217,7 +217,7 @@
 	</div>
 	
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="jspf/footer.jspf"%>
 
 
 </body>

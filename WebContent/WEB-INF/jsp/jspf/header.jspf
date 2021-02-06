@@ -24,7 +24,7 @@
 -->
 
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark text-white">
-	<a class="navbar-brand" href="accueil"><strong>ENI Encheres</strong></a>
+	<a class="navbar-brand" href="<%=request.getContextPath()%>/accueil"><strong>ENI Encheres</strong></a>
 	
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
 		aria-expanded="false" aria-label="Toggle navigation">
@@ -46,10 +46,10 @@
 
 			<c:if test="${not empty sessionScope.profilUtilisateur }">
 
-	<li class="nav-item active"><a class="nav-link disabled" href="#">Bonjour ${profilUtilisateur.prenom}, vous avez ${profilUtilisateur.credit } crédit(s)  -</a></li> 
-	<li class="nav-item active"><a class="nav-link" href="vente">Vendre un article</a></li>
-	<li class="nav-item active"><a class="nav-link" href="profil">Mon Profil</a></li>   
-	<li class="nav-item active"><a class="nav-link" href="deconnexion">Déconnexion</a></li> 
+	<li class="nav-item active"><a class="nav-link disabled" href="#">Bonjour ${profilUtilisateur.prenom}, vous avez ${profilUtilisateur.credit } point(s)  -</a></li> 
+	<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/vente">Vendre un article</a></li>
+	<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/profil">Mon Profil</a></li>   
+	<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/deconnexion">Déconnexion</a></li> 
 
 			</c:if>
 		</ul>

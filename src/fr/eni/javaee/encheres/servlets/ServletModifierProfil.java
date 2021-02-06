@@ -15,7 +15,7 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
 /**
  * Servlet implementation class ServletModifierProfil
  */
-@WebServlet("/modifier-profil")
+@WebServlet("/membre/modifier-profil")
 public class ServletModifierProfil extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -24,7 +24,7 @@ public class ServletModifierProfil extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/modifier-profil.jsp").forward(request, response);
+		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/modifier-profil.jsp").forward(request, response);
 	}
 
 	/**
@@ -74,15 +74,16 @@ public class ServletModifierProfil extends HttpServlet {
 				/* mise à jour de l'objet utilisateur dans la session (ce nouvel attribut écrasera l'ancien) */
 				request.getSession().setAttribute("profilUtilisateur", utilisateurMisAJour);
 				
-				/* attribut à envoyer à la page profil.jsp pour affichage */
-				request.setAttribute("succesModifProfil", "Les modifications ont été enregistrées avec succès.");
+//				/* attribut à envoyer à la page profil.jsp pour affichage */
+//				request.setAttribute("succesModifProfil", "Les modifications ont été enregistrées avec succès.");
+//				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/profil.jsp").forward(request, response);
 				
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/profil.jsp").forward(request, response);
+	 			response.sendRedirect(request.getContextPath() + "/membre/profil?succesModifProfil=Les modifications ont %C3%A9t%C3%A9 enregistr%C3%A9es avec succ%C3%A8s.");
 
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs()); // on créé un attribut dans lequel on place la map d'erreurs
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/modifier-profil.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/modifier-profil.jsp").forward(request, response);
 			}
 			
 			/* ---------------------------------------------------------- */
@@ -97,17 +98,20 @@ public class ServletModifierProfil extends HttpServlet {
 				utilisateurManager.supprimeUtilisateur(noUtilisateur);
 				request.getSession().invalidate();
 				
-				/* attribut à envoyer à la page accueil.jsp pour affichage */
-				request.setAttribute("succesSupressionUtilisateur", "Votre compte a bien été supprimé.");
+//				/* attribut à envoyer à la page accueil.jsp pour affichage */
+//				request.setAttribute("succesSupressionUtilisateur", "Votre compte a bien été supprimé.");
+//				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp?").forward(request, response);
+				
+				response.sendRedirect(request.getContextPath() + "/accueil?succesSupressionUtilisateur=Votre compte a bien %C3%A9t%C3%A9 supprim%C3%A9.");
 				
 			} catch (ModelException e) {
 				e.printStackTrace();
 				
 				/* attribut à envoyer à la page accueil.jsp pour affichage */
 				request.setAttribute("echecSuppressionUtilisateur", "Il n'a pas été possible de supprimer votre compte.");
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/modifier-profil.jsp").forward(request, response);
 			}
 			
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 		}
 		
 	}

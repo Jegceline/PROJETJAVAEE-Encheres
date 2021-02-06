@@ -6,12 +6,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Vendre un article</title>
 
-<%@ include file="css.jspf"%>
+<!-- Bootstrap core CSS -->
+<link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../css/customstylesheet.css" rel="stylesheet">
 </head>
 
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="../jspf/header.jspf"%>
 
 	<div class="content">
 
@@ -56,7 +60,7 @@
 						<textarea id="description" cols="50" name="description" rows="4" cols="50" class="form-control" maxlength="300"
 							placeholder="Pas plus de 300 caractères" required <c:if test="${not empty encheresOuvertes}">disabled</c:if>>${ param.description } ${article.description}</textarea>
 
-						<%@ include file="liste-categories.jspf"%>
+						<%@ include file="../jspf/liste-categories.jspf"%>
 
 						<label for="photo" class="form-label">Photo de l'article : </label> <input id="photo" type="file" value="" name="photo" class="form-control"
 							disabled />
@@ -156,7 +160,7 @@
 	</div>
 
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="../jspf/footer.jspf"%>
 
 </body>
 </html>

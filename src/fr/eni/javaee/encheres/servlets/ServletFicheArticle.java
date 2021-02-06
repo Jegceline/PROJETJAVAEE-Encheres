@@ -18,8 +18,8 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
 /**
  * Servlet implementation class ServletDetailArticle
  */
-@WebServlet("/detail-article")
-public class ServletDetailArticle extends HttpServlet {
+@WebServlet("/membre/fiche-article")
+public class ServletFicheArticle extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -44,44 +44,47 @@ public class ServletDetailArticle extends HttpServlet {
 
 		/*
 		 * Mettre l'article en mémoire dans la session pour le rendre disponible pour la
-		 * méthode doPost
+		 * méthode doPoset
 		 */
 		request.getSession().setAttribute("articleSelectionne", article);
 
-		/* Rediriger vers la page detail-article.jsp si l'utilisateur est identifié */
-		if (request.getSession().getAttribute("profilUtilisateur") != null) {
+		request.setAttribute("articleSelectionne", article); // ?
+
+		boolean encheresOuvertes;
+		boolean encheresCloturees;
+
+		/* regarder si les enchères sont ouvertes OU si elles sont clôturées */
+		try {
+			encheresOuvertes = articleManager.controleDateDebutOuvertureEncheres(article);
+			encheresCloturees = articleManager.controleDateFinClotureEncheres(article);
+
+			/*
+			 * si elles le sont, envoyer un attribut nePasAfficherBoutonEncherir à la page
+			 * detail-article.jsp l'affichage d'un bouton modifier sera conditionné par
+			 * l'absence de cet attribut
+			 */
+
+			if (encheresOuvertes) {
+				request.setAttribute("encheresOuvertes", "Le bouton Modifier ne doit pas s'afficher");
+			}
 			
-			request.setAttribute("articleSelectionne", article);
-
-			boolean encheresOuvertes = false;
-
-			/* regarder si les enchères sont ouvertes sur l'article */
-			try {
-				encheresOuvertes = articleManager.controleDateDebutOuvertureEncheres(article);
-
-				/* si elles le sont, envoyer un attribut encheresOuvertes à la page detail-article.jsp 
-				 * l'affichage d'un bouton modifier sera conditionné par l'absence de cet attribut */
-				
-				if (encheresOuvertes) {
-					request.setAttribute("encheresOuvertes",
-							"Vous ne pouvez pas modifier un article sur lequel les enchères sont ouvertes.");
-				}
-
-			} catch (ModelException e) {
-				e.printStackTrace();
-				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
+			if(encheresCloturees) {
+				request.setAttribute("encheresCloturees", "Le bouton Enchérir ne doit pas s'afficher");
 			}
 
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
 
-		} else {
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
+		} catch (ModelException e) {
+			e.printStackTrace();
+			request.setAttribute("mapErreurs", e.getMapErreurs());
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
 		}
+
 	}
 
 	/**
-	 * cette méthode peut être appelée par les boutons enchérir et modifier de la page detail-article.jsp
+	 * cette méthode peut être appelée par les boutons enchérir et modifier de la
+	 * page detail-article.jsp
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -98,7 +101,7 @@ public class ServletDetailArticle extends HttpServlet {
 		/* --------------------------------------------------------- */
 		/* Si la méthode doPost a été appelée par le bouton enchérir */
 		/* --------------------------------------------------------- */
-		
+
 		if (request.getParameter("encherir") != null) {
 
 			/* Récupérer l'enchère et le numéro de l'article */
@@ -135,25 +138,30 @@ public class ServletDetailArticle extends HttpServlet {
 				 */
 				Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
 				request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
-//				System.out.println("\nTEST SERVLET DETAIL ARTICLE // Crédit en session : " + utilisateurMaj.getCredit());
+				// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Crédit en session : " +
+				// utilisateurMaj.getCredit());
 
-				request.setAttribute("succesEnchere", "Votre enchère a bien été prise en compte.");
-//				System.out.println("\nTEST SERVLET DETAIL ARTICLE // Un attribut succesEnchere a été créé.");
+				// request.setAttribute("succesEnchere", "Votre enchère a bien été prise en
+				// compte.");
+				// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Un attribut
+				// succesEnchere a été créé.");
 
-//				response.sendRedirect(request.getContextPath() + "/accueil");
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+				response.sendRedirect(
+						request.getContextPath() + "/accueil?succesEnchere=Votre ench%C3%A8re a bien %C3%A9t%C3%A9 prise en compte.");
+				// request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request,
+				// response);
 
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/detail-article.jsp").forward(request, response);
 
 			}
 
 			/* ------------------------------------------------------------ */
 			/* Si la méthode doPost a été appelée par le bouton modifier */
 			/* ------------------------------------------------------------ */
-			
+
 		} else {
 
 			boolean enchereEnCours = false;
@@ -171,16 +179,17 @@ public class ServletDetailArticle extends HttpServlet {
 					request.setAttribute("encheresEnCours",
 							"Vous ne pouvez pas modifier un article sur lequel les enchères sont ouvertes.");
 				}
-				
-//			Rq : en théorie, la méthode doPost n'a de toute façon pas pu être appelée par le bouton Modifier si les enchères étaient ouvertes sur l'article
-				
+
+				// Rq : en théorie, la méthode doPost n'a de toute façon pas pu être appelée par
+				// le bouton Modifier si les enchères étaient ouvertes sur l'article
+
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/detail-article.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/detail-article.jsp").forward(request, response);
 			}
 
-			request.getServletContext().getRequestDispatcher("/vente").forward(request, response);
+			request.getServletContext().getRequestDispatcher("/membre/vente").forward(request, response);
 		}
 
 	}

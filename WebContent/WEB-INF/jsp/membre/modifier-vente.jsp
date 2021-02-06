@@ -6,12 +6,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Modifier vente</title>
 
-<%@ include file="css.jspf"%>
+<!-- Bootstrap core CSS -->
+<link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../css/customstylesheet.css" rel="stylesheet">
+
 </head>
 
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="../jspf/header.jspf"%>
 
 	<div class="content">
 		<div class="container my-4 pt-5">
@@ -90,7 +95,7 @@
 		</div>
 	</div>
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="../jspf/footer.jspf"%>
 
 
 </body>

@@ -16,6 +16,8 @@ public interface ArticleDAO extends DAO<Article>{
 	public List<Article> selectByCriteria(Trieur trieur) throws ModelException;
 
 	public Integer retrieveItemStartingPrice(Integer noArticle) throws ModelException;
+	
+	public LocalDateTime retrieveBidClosingDateTime(Article article) throws ModelException;
 
 	public Integer retrieveItemCurrentPrice(Integer noArticle) throws ModelException;
 

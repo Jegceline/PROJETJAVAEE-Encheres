@@ -6,11 +6,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Modifier mes informations</title>
 
-<%@ include file="css.jspf"%>
+<!-- Bootstrap core CSS -->
+<link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../css/customstylesheet.css" rel="stylesheet">
+
 </head>
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="../jspf/header.jspf"%>
 	<div class="content">
 
 		<div class="container my-4 pt-5">
@@ -18,9 +23,11 @@
 			<h2 class="mt-4">Modifier mon profil</h2>
 			<hr>
 
-			<c:if test="${ not empty succesModif}">
-				<div class="alert alert-success" role="alert">${succesModif}</div>
+			<!--
+			<c:if test="${ not empty succesModifProfil}">
+				<div class="alert alert-success" role="alert">${succesModifProfil}</div>
 			</c:if>
+			-->
 
 
 			<c:forEach var="couple" items="${ mapErreurs }">
@@ -102,8 +109,8 @@
 			<div>
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
-						<li class="breadcrumb-item"><a href="profil">Profil</a></li>
+						<li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/accueil">Accueil</a></li>
+						<li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/membre/profil">Profil</a></li>
 						<li class="breadcrumb-item active" aria-current="page">Modifier mon profil</li>
 					</ol>
 				</nav>
@@ -111,7 +118,7 @@
 		</div>
 	</div>
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="../jspf/footer.jspf"%>
 
 </body>
 </html>

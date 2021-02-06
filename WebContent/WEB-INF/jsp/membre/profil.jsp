@@ -6,12 +6,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Mes informations personnelles</title>
 
-<%@ include file="css.jspf"%>
+<!-- Bootstrap core CSS -->
+<link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../css/customstylesheet.css" rel="stylesheet">
+
 </head>
 
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="../jspf/header.jspf"%>
 
 	<div class="content">
 
@@ -23,14 +28,14 @@
 
 			<!-- Messages conditionnels  -->
 
-			<c:if test="${not empty succesModifProfil}">
+			<c:if test="${not empty param.succesModifProfil}">
 				<!-- attribut envoyé par la servlet Modifier profil -->
-				<div class="alert alert-success" role="alert">${succesModifProfil}</div>
+				<div class="alert alert-success" role="alert">${param.succesModifProfil}</div>
 			</c:if>
 
 			<!-- fin des messages conditionnels -->
 
-			<form action="profil" method="POST">
+			<form action="<%=request.getContextPath()%>/membre/profil" method="POST">
 
 				<div class="row my-2">
 					<div class="col">
@@ -108,7 +113,7 @@
 			<div class="my-4">
 				<nav aria-label="breadcrumb">
 					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="accueil">Accueil</a></li>
+						<li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/accueil">Accueil</a></li>
 						<li class="breadcrumb-item active" aria-current="page">Profil</li>
 					</ol>
 				</nav>
@@ -117,7 +122,7 @@
 		</div>
 	</div>
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="../jspf/footer.jspf"%>
 
 </body>
 </html>

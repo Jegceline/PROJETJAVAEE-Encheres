@@ -21,7 +21,7 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
 /**
  * Servlet implementation class ServletVenteArticle
  */
-@WebServlet("/vente")
+@WebServlet("/membre/vente")
 public class ServletVenteArticle extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class ServletVenteArticle extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vente.jsp").forward(request, response);
 	}
 
 	/**
@@ -41,6 +41,7 @@ public class ServletVenteArticle extends HttpServlet {
 
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 
 		/* ------------------------------------------------------------ */
 		/* Si la méthode doPost a été appelée par le bouton enregistrer */
@@ -105,15 +106,15 @@ public class ServletVenteArticle extends HttpServlet {
 
 			try {
 				articleManager.ajouteArticle(article);
+//				request.setAttribute("succesAjoutVente", "La mise en vente de votre article a bien été prise en compte.");
+//				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+				response.sendRedirect(request.getContextPath() + "/accueil?succesAjoutVente=La mise en vente de votre article a bien %C3%A9t%C3%A9 prise en compte.");
 
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vente.jsp").forward(request, response);
 			}
-
-				request.setAttribute("succesAjoutVente", "La mise en vente de votre article a bien été prise en compte.");
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 		}
 
 		/* ---------------------------------------------------------- */
@@ -128,7 +129,7 @@ public class ServletVenteArticle extends HttpServlet {
 
 //			System.out.println("\TEST SERVLET VENTE ARTICLE // article après modification : " + article);
 			request.setAttribute("article", article);
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vente.jsp").forward(request, response);
 		}
 
 		/* ------------------------------------------------------------------------------- */
@@ -175,11 +176,11 @@ public class ServletVenteArticle extends HttpServlet {
 			Adresse adresseRetrait = new Adresse(rue, codePostal, ville);
 //			System.out.println("\nTEST SERVLET VENTE ARTICLE // L'adresse de retrait est : " + adresseRetrait);
 
-			/* Création d'un objet utilisateur à donner à l'objet Article */
+			/* Création d'un objet Utilisateur à donner à l'objet Article */
 			Utilisateur vendeur = new Utilisateur();
 			vendeur.setNoUtilisateur(noUtilisateur);
 
-			/* Création d'un objet catégorie à donner à l'objet Article */
+			/* Création d'un objet Catégorie à donner à l'objet Article */
 			Categorie categorie = new Categorie();
 			categorie.setNoCategorie(noCategorie);
 
@@ -194,13 +195,14 @@ public class ServletVenteArticle extends HttpServlet {
 			
 			try {
 				articleManager.metAJourArticle(article);
-				request.setAttribute("succesModificationsArticle", "Vos modifications ont bien été prises en compte.");
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
-
+//				request.setAttribute("succesModificationsArticle", "Vos modifications ont bien été prises en compte.");
+//				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+				response.sendRedirect(request.getContextPath() + "/accueil?succesModificationsArticle=Vos modifications ont bien %C3%A9t%C3%A9 prises en compte.");
+				
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vente.jsp").forward(request, response);
 			}
 		}
 
@@ -216,14 +218,15 @@ public class ServletVenteArticle extends HttpServlet {
 			
 			try {
 				articleManager.supprimerArticle(noArticle);
-				request.setAttribute("succesSuppressionArticle", "L'article a bien été supprimé.");
+//				request.setAttribute("succesSuppressionArticle", "L'article a bien été supprimé.");
+//				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 //				System.out.println("\nTEST SERVLET VENTE ARTICLE // Un attribut succesSuppressionArticle a été créé.");
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
+	 			response.sendRedirect(request.getContextPath() + "/accueil?succesSuppressionArticle=L'article a bien %C3%A9t%C3%A9 supprim%C3%A9.");
 				
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/vente.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vente.jsp").forward(request, response);
 			}
 		}
 

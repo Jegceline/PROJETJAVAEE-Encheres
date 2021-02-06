@@ -17,6 +17,7 @@ public class Article {
 	private Adresse adresseRetrait;
 	private Utilisateur vendeur;
 	private Categorie categorie;
+	private Utilisateur dernierEncherisseur;
 
 
 	/* Constructeurs */
@@ -172,6 +173,14 @@ public class Article {
 				+ dateDebutEncheres + ", heureDebutEncheres=" + heureDebutEncheres + ", dateFinEncheres=" + dateFinEncheres
 				+ ", heureFinEncheres=" + heureFinEncheres + ", prixInitial=" + prixInitial + ", prixVente=" + prixVente
 				+ ", adresseRetrait=" + adresseRetrait + ", vendeur=" + vendeur + ", categorie=" + categorie + "]";
+	}
+
+	public Utilisateur getDernierEncherisseur() {
+		return dernierEncherisseur;
+	}
+
+	public void setDernierEncherisseur(Utilisateur dernierEncherisseur) {
+		this.dernierEncherisseur = dernierEncherisseur;
 	}
 
 

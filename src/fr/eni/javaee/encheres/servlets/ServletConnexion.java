@@ -87,8 +87,10 @@ public class ServletConnexion extends HttpServlet {
 //			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 			
 //			Rq : le RequestDispatcher étant appelé depuis la méthode doPost, il va appeler la méthode doPost() de la servlet Accueil et non sa méthode doGet()
-//			Par conséquent, les articles pour lesquels les enchères sont onvertes ne seront pas automatiquement affichés. C'est pourquoi on utilise une redirection
-//			La redirection appelle la méthode doGet par défaut.
+//			Par conséquent, les articles pour lesquels les enchères sont onvertes ne seront pas automatiquement affichés sur la page d'accueil 
+//			(en effet, leur chargement se fait dans la méthode doGet() de la servlet Accueil)
+//			C'est pourquoi on utilise une redirection (car sendRedirect appelle par défaut les méthodes doGet)
+//			Pour transmettre des attributs à la jsp si le sendRedirect est utilisé, il faut les mettre non pas dans l'objet request mais dans l'objet session
 
  			response.sendRedirect(request.getContextPath() + "/accueil");
 

@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Inscription</title>
 
-<%@ include file="css.jspf"%>
+<%@ include file="jspf/css.jspf"%>
 
 </head>
 
@@ -16,7 +16,7 @@
 
 		<div class="content">
 
-			<%@ include file="header.jspf"%>
+			<%@ include file="jspf/header.jspf"%>
 
 			<h2 class="my-4">S'inscrire</h2>
 			<hr>
@@ -32,7 +32,7 @@
 
 			<div class="card-body">
 
-				<form action="inscription" method="POST">
+				<form action="<%=request.getContextPath()%>/inscription" method="POST">
 
 					<div class="row">
 						<div class="col">
@@ -109,6 +109,6 @@
 
 	</div>
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="jspf/footer.jspf"%>
 </body>
 </html>

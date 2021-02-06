@@ -11,48 +11,37 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * Servlet Filter implementation class FiltreUtilisateur
  */
-@WebFilter("/inscrit/*")
-public class FiltreInscrit implements Filter {
+@WebFilter("/membre/*")
+public class FilterMembre implements Filter {
 	
 	public static final String SESSION_UTILISATEUR = "profilUtilisateur";
 
-    /**
-     * Default constructor. 
-     */
-    public FiltreInscrit() {
+    public FilterMembre() {
     }
 
-	/**
-	 * @see Filter#destroy()
-	 */
+
 	public void destroy() {
 	}
 
-	/**
-	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
+
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 
 		 /* Cast des objets request et response */
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        /* Récupération de la session depuis la requête */
-        HttpSession session = request.getSession();
-
         /**
          * Si l'objet utilisateur n'existe pas dans la session en cours, alors
          * l'utilisateur n'est pas connecté.
          */
-        if ( session.getAttribute(SESSION_UTILISATEUR) == null ) {
+        if ( request.getSession().getAttribute(SESSION_UTILISATEUR) == null ) {
         	
             /* Redirection vers la page publique */
-            response.sendRedirect( request.getContextPath()+"/connexion.jsp");
+            response.sendRedirect( request.getContextPath()+"/connexion");
             
         } else {
             /* Affichage de la page restreinte */
@@ -60,9 +49,6 @@ public class FiltreInscrit implements Filter {
         }
 	}
 
-	/**
-	 * @see Filter#init(FilterConfig)
-	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 		
        

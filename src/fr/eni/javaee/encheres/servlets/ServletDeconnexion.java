@@ -1,19 +1,17 @@
 package fr.eni.javaee.encheres.servlets;
 
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.SendResult;
 
 /**
  * Servlet implementation class ServletDeconnexion
  */
-@WebServlet("/deconnexion")
+@WebServlet("/membre/deconnexion")
 public class ServletDeconnexion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

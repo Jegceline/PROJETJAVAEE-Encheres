@@ -128,7 +128,7 @@ public class UtilisateurManager {
 				utilisateurAvecModif.setCredit(utilisateurSession.getCredit());
 				utilisateurAvecModif.setAdministrateur(utilisateurSession.isAdministrateur());
 
-				System.out.println("\nTEST MANAGER // Utilisateur modifié qui va être envoyé au DAO : + " + utilisateurAvecModif);
+//				System.out.println("\nTEST MANAGER // Utilisateur modifié qui va être envoyé au DAO : + " + utilisateurAvecModif);
 				utilisateurDAO.update(utilisateurAvecModif);
 
 			} catch (ModelException e) {

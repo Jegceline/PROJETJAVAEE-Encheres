@@ -7,12 +7,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Connexion</title>
 
-<%@ include file="css.jspf"%>
+<%@ include file="jspf/css.jspf"%>
 </head>
 
 <body class="body-flex">
 
-	<%@ include file="header.jspf"%>
+	<%@ include file="jspf/header.jspf"%>
 
 	<div class="content">
 
@@ -38,7 +38,7 @@
 
 			<div class="card card-signin flex-row m-auto col-sm-8 col-xs-12">
 				<div class="card-body">
-						<form action="connexion" method="POST">
+						<form action="<%=request.getContextPath()%>/connexion" method="POST">
 
 					<div class="mb-3 col-sm-12 col-xs-12">
 							<p>
@@ -93,7 +93,7 @@
 		</div>
 	</div>
 
-	<%@ include file="footer.jspf"%>
+	<%@ include file="jspf/footer.jspf"%>
 
 </body>
 </html>

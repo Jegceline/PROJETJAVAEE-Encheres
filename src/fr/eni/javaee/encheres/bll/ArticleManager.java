@@ -266,8 +266,7 @@ public class ArticleManager {
 	}
 
 	/**
-	 * vérifie que les enchères ne sont pas ouvertes sur un article passé en
-	 * paramètre
+	 * vérifie que les enchères ne sont pas ouvertes sur un article passé en paramètre
 	 * 
 	 * @param article
 	 * @return encheresOuvertes
@@ -275,22 +274,50 @@ public class ArticleManager {
 	 */
 	public boolean controleDateDebutOuvertureEncheres(Article article) throws ModelException {
 
-		LocalDateTime dateHeureDebutEnchere = null;
+		LocalDateTime dateHeureDebutEncheres = null;
 		boolean encheresOuvertes = false;
 
 		try {
-			dateHeureDebutEnchere = ((ArticleDAO) articleDAO).retrieveBidStartingDateTime(article);
+			dateHeureDebutEncheres = ((ArticleDAO) articleDAO).retrieveBidStartingDateTime(article);
+
 
 		} catch (ModelException e) {
 			e.printStackTrace();
 			throw e;
 		}
 
-		if (dateHeureDebutEnchere.isBefore(LocalDateTime.now()) || dateHeureDebutEnchere.isEqual(LocalDateTime.now())) {
+		if (dateHeureDebutEncheres.isBefore(LocalDateTime.now()) || dateHeureDebutEncheres.isEqual(LocalDateTime.now())) {
 			encheresOuvertes = true;
 		}
 
 		return encheresOuvertes;
+	}
+	
+	/**
+	 * vérifie que les enchères ne sont pas clôturées sur un article passé en paramètre
+	 * 
+	 * @param article
+	 * @return encheresCloturees
+	 * @throws ModelException
+	 */
+	public boolean controleDateFinClotureEncheres(Article article) throws ModelException {
+
+		LocalDateTime dateHeureFinEncheres = null;
+		boolean encheresCloturees = false;
+
+		try {
+			dateHeureFinEncheres = ((ArticleDAO) articleDAO).retrieveBidClosingDateTime(article);
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		if (dateHeureFinEncheres.isBefore(LocalDateTime.now()) || dateHeureFinEncheres.isEqual(LocalDateTime.now())) {
+			encheresCloturees = true;
+		}
+
+		return encheresCloturees;
 	}
 
 	

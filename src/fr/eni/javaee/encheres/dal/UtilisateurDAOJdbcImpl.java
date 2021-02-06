@@ -246,10 +246,10 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				/* S'il y avait eu une précédente enchère sur l'article */
 				if (precedenteEnchere != null) {
 					Integer montantDerniereEnchere = precedenteEnchere.getMontant();
-					System.out.println("\nTEST DAO UTILISATEUR // Montant de l'enchère qu'avait fait le précédent enchérisseur : " + montantDerniereEnchere);
+//					System.out.println("\nTEST DAO UTILISATEUR // Montant de l'enchère qu'avait fait le précédent enchérisseur : " + montantDerniereEnchere);
 					
 					Integer creditActuel2 = retrieveUserCredit(precedenteEnchere.getEncherisseur().getNoUtilisateur());
-					System.out.println("\nTEST DAO UTILISATEUR // Crédit actuel du précédent enchérisseur : " + creditActuel2);
+//					System.out.println("\nTEST DAO UTILISATEUR // Crédit actuel du précédent enchérisseur : " + creditActuel2);
 					
 					Integer creditNouveau2 = creditActuel2 + montantDerniereEnchere;
 					System.out.println("\nTEST DAO UTILISATEUR // Crédit de cet enchérisseur après lui avoir récrédité ce montant : " + creditNouveau2);
@@ -426,8 +426,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 					password = rs.getString(1);
 				}
 
-				// System.out.println("\nTEST DAO : Le mot de passe de cet utilisateur est : " +
-				// password);
+//				System.out.println("\nTEST DAO : Le mot de passe de cet utilisateur est : " + password);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
