@@ -28,8 +28,11 @@ public class ServletPaiement extends HttpServlet {
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		
 		Utilisateur utilisateurSession = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
+		
 		try {
 			utilisateurManager.crediteVendeur(utilisateurSession.getNoUtilisateur());
+			Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(utilisateurSession.getNoUtilisateur());
+			request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
 			
 		} catch (ModelException e) {
 			e.printStackTrace();
