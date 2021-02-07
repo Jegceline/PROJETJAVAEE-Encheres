@@ -453,7 +453,7 @@ public class UtilisateurManager {
 	 * @param article
 	 * @throws ModelException
 	 */
-	public List<Object> crediteVendeur(Integer noUtilisateur, Article article) throws ModelException {
+	public List<Object> verifieExistenceEnchere(Integer noUtilisateur, Article article) throws ModelException {
 
 		Enchere derniereEnchere = null;
 		Boolean auMoinsUneEnchere = false;
@@ -464,7 +464,6 @@ public class UtilisateurManager {
 
 			if (derniereEnchere != null) {
 				auMoinsUneEnchere = true;
-				((UtilisateurDAO) utilisateurDAO).updateCredit(noUtilisateur, derniereEnchere.getMontant());
 			}
 
 		} catch (ModelException e) {
@@ -475,6 +474,18 @@ public class UtilisateurManager {
 		valeursARetourner.add(derniereEnchere);
 		valeursARetourner.add(auMoinsUneEnchere);
 		return valeursARetourner;
+	}
+
+	
+	public void crediteVendeur(Integer noUtilisateur) throws ModelException {
+		try {
+			((UtilisateurDAO) utilisateurDAO).updateSellerCredit(noUtilisateur);
+			
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
 	}
 
 }

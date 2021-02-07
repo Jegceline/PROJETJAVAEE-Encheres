@@ -20,6 +20,6 @@ public interface UtilisateurDAO extends DAO<Utilisateur>{
 
 	public void updateCredit(Enchere enchere, Enchere precedenteEnchere) throws ModelException;
 
-	public void updateCredit(Integer noUtilisateur, Integer montantDerniereEnchere) throws ModelException;
+	public void updateSellerCredit(Integer noUtilisateur) throws ModelException;
 
 }

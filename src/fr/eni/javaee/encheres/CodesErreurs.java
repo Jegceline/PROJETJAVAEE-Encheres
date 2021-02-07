@@ -1,9 +1,9 @@
 package fr.eni.javaee.encheres;
 
 public abstract class CodesErreurs {
-	
+
 	// Erreurs de la BLL (entre 100 et 199)
-	
+
 	public static int ERREUR_PRENOM_INVALIDE = 100;
 	public static int ERREUR_NOM_INVALIDE = 101;
 	public static int ERREUR_MOTDEPASSE_LONGUEUR = 102;
@@ -29,9 +29,8 @@ public abstract class CodesErreurs {
 	public static int ERREUR_MONTANT_ENCHERE = 124;
 	public static int ERREUR_ARTICLE_HEURE_DEBUT_ENCHERES_INVALIDE = 125;
 
-
 	// Erreurs de la DAL (entre 0 et 99)
-	
+
 	public static int ERREUR_INSERTION_SQL = 0;
 	public static int ERREUR_CONNEXION_BASE = 1;
 	public static int ERREUR_SELECT_MAILS_SQL = 2;
@@ -55,6 +54,6 @@ public abstract class CodesErreurs {
 	public static int ERREUR_SELECT_BID_STARTING_DATETIME = 20;
 	public static int ERREUR_UPDATE_ITEM = 21;
 	public static int ERREUR_SELECT_ARTICLE_BY_ID = 22;
+	public static int ERREUR_UPDATE_ITEM_PAYMENT_STATUS = 23;
 
-		
 }

@@ -73,7 +73,7 @@ public class ServletFicheArticle extends HttpServlet {
 
 			if (encheresCloturees) {
 				request.setAttribute("encheresCloturees", "La JSP n'affichera pas le bouton Enchérir");
-				// crediteVendeur(article.getVendeur().getNoUtilisateur(), article, request);
+				verifieExistenceEnchere(article.getVendeur().getNoUtilisateur(), article, request);
 			}
 
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
@@ -86,14 +86,14 @@ public class ServletFicheArticle extends HttpServlet {
 
 	}
 
-	private void crediteVendeur(Integer noVendeur, Article article, HttpServletRequest request) throws ModelException {
+	private void verifieExistenceEnchere(Integer noVendeur, Article article, HttpServletRequest request) throws ModelException {
 
 		List<Object> valeursRetournees = new ArrayList<>();
 
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		try {
 
-			valeursRetournees = utilisateurManager.crediteVendeur(noVendeur, article);
+			valeursRetournees = utilisateurManager.verifieExistenceEnchere(noVendeur, article);
 
 			if ((boolean) valeursRetournees.get(1)) {
 

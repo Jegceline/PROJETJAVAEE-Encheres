@@ -22,7 +22,7 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
 public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	private ModelException modelDalException = new ModelException();
-	private DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
+	// private DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
 
 	/* Constantes */
 
@@ -32,13 +32,12 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	private static final String UPDATE_ITEM = "UPDATE Articles_vendus SET nom_article = ?, description = ?, date_debut_encheres = ?, date_fin_encheres = ?, "
 			+ "prix_initial = ?, no_categorie = ? WHERE no_article = ?";
-
 	private static final String UPDATE_PICKUP_ADDRESS = "UPDATE Retraits SET rue = ?, code_postal = ?, ville = ? WHERE no_article = ?";
+	private static final String UPDATE_ITEM_PAYMENT_STATUS = "UPDATE Articles_Vendus SET vendeur_paye = ? WHERE no_article = ?";
+
 	private static final String DELETE_ITEM = "DELETE FROM Articles_vendus WHERE no_article = ?";
 	private static final String DELETE_PICKUP_ADDRESS = "DELETE FROM Retraits WHERE no_article = ?";
 
-	// private static final String SELECT_USER = "SELECT pseudo FROM Utilisateurs
-	// WHERE no_utilisateur = ?";
 	private static final String SELECT_ARTICLE_BY_ID = "SELECT a.no_article, nom_article, description, date_debut_encheres, date_fin_encheres, "
 			+ "prix_initial, prix_vente, a.no_utilisateur, pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
 			+ "FROM Articles_vendus a " + "INNER JOIN Retraits r ON a.no_article = r.no_article "
@@ -46,17 +45,25 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie " + "WHERE a.no_article = ?";
 
 	private static final String SELECT_ITEM_STARTING_PRICE = "SELECT prix_initial FROM Articles_vendus WHERE no_article = ?";
+
 	private static final String SELECT_ITEM_CURRENT_PRICE = "SELECT prix_vente FROM Articles_vendus WHERE no_article = ?";
-	// private static final String SELECT_ITEM_PICKUP_ADDRESS = "SELECT rue,
-	// code_postal, ville FROM Retraits WHERE no_article = ?";
 
 	private static final String SELECT_BID_STARTING_DATETIME = "SELECT date_debut_encheres FROM ARTICLES_VENDUS WHERE no_article = ?";
+
 	private static final String SELECT_BID_CLOSING_DATETIME = "SELECT date_fin_encheres FROM ARTICLES_VENDUS WHERE no_article = ?";
+
 	private static final String SELECT_USER_SELLS = "SELECT a.no_article, nom_article, description, date_debut_encheres, "
 			+ "date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
 			+ "FROM Articles_vendus a " + "INNER JOIN Retraits r ON a.no_article = r.no_article "
 			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie "
 			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur " + "WHERE a.no_utilisateur = ?";
+
+	private static final String SELECT_SELLER_NOT_YET_PAID_ITEMS = "SELECT a.no_article, nom_article, description, date_debut_encheres, "
+			+ "date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
+			+ "FROM Articles_vendus a " + "INNER JOIN Retraits r ON a.no_article = r.no_article "
+			+ "INNER JOIN Categories c on a.no_categorie = c.no_categorie "
+			+ "INNER JOIN Utilisateurs u on u.no_utilisateur = a.no_utilisateur "
+			+ "WHERE a.no_utilisateur = ? AND a.date_fin_encheres < GETDATE() AND a.vendeur_paye = 0";
 
 	private static final String SELECT_ITEMS_USER_HAVE_BIDS_ON = "SELECT DISTINCT a.no_article, nom_article, description, "
 			+ "date_debut_encheres, date_fin_encheres, prix_initial, prix_vente, a.no_utilisateur, u.pseudo, a.no_categorie, libelle, r.rue, r.code_postal, r.ville "
@@ -229,7 +236,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	@Override
 	public void update(Article article) throws ModelException {
 
-		System.out.println("\nTEST DAO ARTICLE update() // article = " + article);
+		// System.out.println("\nTEST DAO ARTICLE update() // article = " + article);
 
 		try {
 			/* Obtention d'un connexion */
@@ -293,6 +300,54 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	}
 
+	/* passe le statut "paye" d'un article à true */
+	@Override
+	public void updateItemPaymentStatus(Integer noArticle) throws ModelException {
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+				/* Préparation de requête */
+				PreparedStatement query = cnx.prepareStatement(UPDATE_ITEM_PAYMENT_STATUS);
+
+				/* Valorisation des paramètres */
+				query.setBoolean(1, true);
+				query.setInt(2, noArticle);
+
+				/* exécution de la requête */
+				query.executeUpdate();
+				cnx.commit();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+
+				cnx.rollback();
+
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_ITEM_PAYMENT_STATUS,
+						"L'exécution de la requête UPDATE_ITEM_PAYMENT_STATUS a échoué.");
+				System.out.println("L'exécution de la requête UPDATE_ITEM_PAYMENT_STATUS a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+	}
+
 	/**
 	 * récupère et retourne un article grâce à sa primary key
 	 */
@@ -314,10 +369,10 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
-				
+
 				if (rs.next()) {
 					article = articleBuilder(rs);
-					
+
 					/* on récupère la dernière enchére effectuée sur l'article */
 					if (article.getNoArticle() != null) {
 						DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
@@ -357,8 +412,9 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return article;
 	}
 
-	
-	/* ------ Méthodes de tri qui retournent des listes d'articles -------- */
+	/* ------------------------------------------------------------------- */
+	/* ------ Méthodes de tri qui retournent une liste d'articles -------- */
+	/* ------------------------------------------------------------------- */
 
 	/**
 	 * récupère et retourne les enchères gagnantes d'un utilisateur
@@ -576,7 +632,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 							article.setDernierEncherisseur(enchere.getEncherisseur());
 						}
 					}
-					
+
 					listeEncheresEnCours.add(article);
 				}
 
@@ -799,6 +855,80 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return listeArticlesFiltres;
 	}
 
+	/*
+	 * récupère et retourne les articles du vendeur pour lesquels les enchères sont
+	 * terminées et pour lesquels le vendeur n'a pas été payé
+	 */
+	@Override
+	public List<Article> retrieveSellerYetNotPaidItems(Integer noVendeur) throws ModelException {
+
+		List<Article> listeArticlesEncheresCloturees = new ArrayList<Article>();
+
+		try {
+			/* Obtention d'un connexion */
+			Connection cnx = ConnectionProvider.getConnection();
+
+			try {
+
+				/* Préparation de requête */
+				PreparedStatement query = cnx.prepareStatement(SELECT_SELLER_NOT_YET_PAID_ITEMS);
+
+				/* valorisation du paramètre */
+				query.setInt(1, noVendeur);
+
+				/* Exécution de la requête */
+				ResultSet rs = query.executeQuery();
+
+				Integer noArticle;
+				Enchere enchere;
+
+				while (rs.next()) {
+
+					Article article = articleBuilder(rs);
+					noArticle = (rs.getInt(1));
+
+					/* on récupère la dernière enchére effectuée sur l'article */
+					if (noArticle != null) {
+						DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
+						enchere = ((EnchereDAO) enchereDAO).retrieveItemLastBid(noArticle);
+
+						/* s'il y avait bien eu une enchère */
+						if (enchere != null) {
+							article.setDernierEncherisseur(enchere.getEncherisseur());
+						}
+					}
+					listeArticlesEncheresCloturees.add(article);
+				}
+
+				// System.out.println("\nTEST DAO ARTICLE ArticleBuilder // listeArticlesFiltres
+				// : " + listeArticlesFiltres);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECTION_SQL, "L'exécution de la requête SELECT_USER_SELLS a échoué.");
+				System.out.println("L'exécution d'une des requêtes SELECT_USER_SELLS a échoué !");
+				throw modelDalException;
+
+			} finally {
+				if (cnx != null) {
+					cnx.close();
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (!modelDalException.contientErreurs()) {
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+				System.out.println("Impossible de se connecter à la base de données !");
+			}
+
+			throw modelDalException;
+		}
+
+		return listeArticlesEncheresCloturees;
+	}
+
 	/**
 	 * récupère et retourne les articles sur lequels l'utilisateur a effectué au
 	 * moins une enchère
@@ -851,7 +981,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 							article.setDernierEncherisseur(enchere.getEncherisseur());
 						}
 					}
-					
+
 					listeArticlesFiltres.add(article);
 				}
 
@@ -889,7 +1019,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 	 * récupère et retourne les articles répondant à certains critères
 	 */
 	@Override
-	public List<Article> selectByCriteria(Trieur trieur) throws ModelException {
+	public List<Article> retrieveItemsByCriteria(Trieur trieur) throws ModelException {
 		List<Article> listeArticlesFiltres = new ArrayList<Article>();
 
 		String select_articles_filtres = SELECT_CURRENTLY_ON_SALE_ITEMS;
@@ -956,7 +1086,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 							article.setDernierEncherisseur(enchere.getEncherisseur());
 						}
 					}
-					
+
 					listeArticlesFiltres.add(article);
 				}
 
@@ -990,7 +1120,9 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 		return listeArticlesFiltres;
 	}
 
+	/* -------------------------------------------------------------------- */
 	/* -------- Méthodes de sélection qui retournent une variable --------- */
+	/* -------------------------------------------------------------------- */
 
 	/**
 	 * récupère et retourne le datetime d'ouverture des enchères d'un article

@@ -13,7 +13,7 @@ public interface ArticleDAO extends DAO<Article>{
 
 	public List<Article> retrieveCurrentlyForSaleItemsAndSalesToComeWithFilter(Trieur trieur) throws ModelException;
 	
-	public List<Article> selectByCriteria(Trieur trieur) throws ModelException;
+	public List<Article> retrieveItemsByCriteria(Trieur trieur) throws ModelException;
 
 	public Integer retrieveItemStartingPrice(Integer noArticle) throws ModelException;
 	
@@ -24,6 +24,8 @@ public interface ArticleDAO extends DAO<Article>{
 	public List<Article> retrieveUserWishlistWithFilter(Trieur trieur) throws ModelException;
 
 	public List<Article> retrieveUserSellsWithFilter(Trieur trieur) throws ModelException;
+	
+	public List<Article> retrieveSellerYetNotPaidItems(Integer noVendeur) throws ModelException;
 
 	public List<Article> retrieveCurrentlyForSaleItemsGet() throws ModelException;
 	
@@ -32,4 +34,6 @@ public interface ArticleDAO extends DAO<Article>{
 	public List<Article> retrieveUserPurchasedItems(Trieur trieur) throws ModelException;
 
 	public LocalDateTime retrieveBidStartingDateTime(Article article) throws ModelException;
+
+	public void updateItemPaymentStatus(Integer noArticle) throws ModelException;
 }

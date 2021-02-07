@@ -4,10 +4,7 @@
   <welcome-file-list>
     <welcome-file>accueil</welcome-file>
   </welcome-file-list>
-  
-  <!-- La session sera détruire au bout de 20 min d'inactivité -->
-  <session-config> 
-		<session-timeout>20</session-timeout>
-	</session-config>
-	
+  <session-config>
+    <session-timeout>20</session-timeout>
+  </session-config>
 </web-app>

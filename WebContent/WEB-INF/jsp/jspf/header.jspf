@@ -46,7 +46,8 @@
 
 			<c:if test="${not empty sessionScope.profilUtilisateur }">
 
-	<li class="nav-item active"><a class="nav-link disabled" href="#">Bonjour ${profilUtilisateur.prenom}, vous avez ${profilUtilisateur.credit } point(s)  -</a></li> 
+	<li class="nav-item active"><a class="nav-link disabled" href="#">Bonjour ${profilUtilisateur.prenom}, vous avez ${profilUtilisateur.credit } point(s) </a></li> 
+		<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/paiement">(Récupérer les points de mes ventes)</a></li>
 	<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/vente">Vendre un article</a></li>
 	<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/profil">Mon Profil</a></li>   
 	<li class="nav-item active"><a class="nav-link" href="<%=request.getContextPath()%>/membre/deconnexion">Déconnexion</a></li> 
