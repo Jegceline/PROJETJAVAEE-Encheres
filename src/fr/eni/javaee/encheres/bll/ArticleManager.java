@@ -33,7 +33,7 @@ public class ArticleManager {
 
 	/**
 	 * contrôle le respect des contraintes imposées par la BDD sur les champs de
-	 * colonne appelle le DAO si toutes les contraintes sont respectées returne null
+	 * colonne, appelle le DAO si toutes les contraintes sont respectées, returne null
 	 * si au moins une contrainte n'a pas été respectée
 	 * 
 	 * @param article
@@ -97,8 +97,10 @@ public class ArticleManager {
 
 	public Article recupereArticle(Integer noArticle) {
 		Article article = null;
+		
 		try {
 			article = articleDAO.selectById(noArticle);
+			
 		} catch (ModelException e) {
 			e.printStackTrace();
 
@@ -120,7 +122,7 @@ public class ArticleManager {
 	}
 
 	/* ----------------------------------------- */
-	/* ------- Méthodes de vérification -------- */
+	/* ---------- Méthodes de contrôle --------- */
 	/* ----------------------------------------- */
 
 	/**

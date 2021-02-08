@@ -1,8 +1,8 @@
 package fr.eni.javaee.encheres.servlets;
 
-import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -53,7 +53,7 @@ public class ServletFicheArticle extends HttpServlet {
 
 		/*
 		 * Mettre l'article en mémoire dans la session pour le rendre disponible pour la
-		 * méthode doPoset
+		 * méthode doPost
 		 */
 		request.getSession().setAttribute("articleSelectionne", article);
 		request.setAttribute("articleSelectionne", article);
@@ -129,6 +129,8 @@ public class ServletFicheArticle extends HttpServlet {
 		/* Récupérer le numéro de l'utilisateur en session */
 		Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 		Integer noUtilisateur = utilisateur.getNoUtilisateur();
+		
+		/* Récupérer le numéro de l'article mis en session par la méthode doGet */
 		Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
 
 		/* --------------------------------------------------------- */
@@ -172,17 +174,10 @@ public class ServletFicheArticle extends HttpServlet {
 				Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
 				request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
 				// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Crédit en session : " +
-				// utilisateurMaj.getCredit());
-
-				// request.setAttribute("succesEnchere", "Votre enchère a bien été prise en
-				// compte.");
-				// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Un attribut
-				// succesEnchere a été créé.");
 
 				response.sendRedirect(
 						request.getContextPath() + "/accueil?succesEnchere=Votre ench%C3%A8re a bien %C3%A9t%C3%A9 prise en compte.");
-				// request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request,
-				// response);
+
 
 			} catch (ModelException e) {
 				e.printStackTrace();
@@ -197,32 +192,7 @@ public class ServletFicheArticle extends HttpServlet {
 
 		} else {
 
-			boolean enchereEnCours = false;
-
-			/* Créer un objet Article pour le donner à l'objet Enchere */
-			Article article = new Article();
-			article.setNoArticle(noArticle);
-
-			ArticleManager articleManager = new ArticleManager();
-
-			try {
-				enchereEnCours = articleManager.controleDateDebutOuvertureEncheres(article);
-
-				if (enchereEnCours) {
-					request.setAttribute("encheresEnCours",
-							"Vous ne pouvez pas modifier un article sur lequel les enchères sont ouvertes.");
-				}
-
-				// Rq : en théorie, la méthode doPost n'a de toute façon pas pu être appelée par
-				// le bouton Modifier si les enchères étaient ouvertes sur l'article
-
-			} catch (ModelException e) {
-				e.printStackTrace();
-				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/detail-article.jsp").forward(request, response);
-			}
-
-			request.getServletContext().getRequestDispatcher("/membre/vente").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/membre/modifier-article?noArticle=" + noArticle);
 		}
 
 	}

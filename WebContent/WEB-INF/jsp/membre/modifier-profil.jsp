@@ -37,7 +37,7 @@
 
 
 
-			<form action="modifier-profil" method="POST">
+			<form action="<%=request.getContextPath()%>/membre/modifier-profil" method="POST">
 
 				<div class="row my-2">
 					<div class="col">
