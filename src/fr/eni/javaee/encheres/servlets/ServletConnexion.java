@@ -43,8 +43,7 @@ public class ServletConnexion extends HttpServlet {
 		/* Récupérer les paramètres du formulaire */
 		String identifiant = request.getParameter("identifiant").trim();
 		String motDePasse = request.getParameter("motdepasse").trim();
-		// System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera
-		// envoyé au Manager : " + identifiant);
+		// System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
 
 		/* Appeler le manager */
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
@@ -52,8 +51,7 @@ public class ServletConnexion extends HttpServlet {
 
 		try {
 			utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);
-			// System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le
-			// Manager : " + utilisateur);
+			// System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
 
 			/* si l'utilisateur existe */
 			if (utilisateur != null) {
@@ -62,10 +60,8 @@ public class ServletConnexion extends HttpServlet {
 				/* On place l'objet utilisateur dans la session */
 				request.getSession().setAttribute("profilUtilisateur", utilisateur);
 
-				/*
-				 * si l'utilisateur a coché la case "se souvenir de moi", on enregistre son id
-				 * et son mdp dans deux cookies qu'on envoie au navigateur
-				 */
+				/* si l'utilisateur a coché la case "se souvenir de moi", on enregistre son id
+				 * et son mdp dans deux cookies qu'on envoie au navigateur */
 				if (request.getParameter("memoriserUtilisateur") != null) {
 
 					Cookie cookieIdentifiant = new Cookie(COOKIE_UTILISATEUR_IDENTIFIANT, identifiant);
@@ -77,9 +73,9 @@ public class ServletConnexion extends HttpServlet {
 					response.addCookie(cookieIdentifiant);
 					response.addCookie(cookieMdp);
 				}
-				
+
 				response.sendRedirect(request.getContextPath() + "/accueil");
-				
+
 			} else { /* si aucun utilisateur ne correspond à l'identifiant renseigné */
 				request.setAttribute("utilisateurInconnu", "Utilisateur inexistant.");
 				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);

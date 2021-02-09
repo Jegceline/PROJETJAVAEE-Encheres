@@ -38,23 +38,18 @@ public class ServletFicheArticle extends HttpServlet {
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
 
-		/*
-		 * Récupérer le paramètre et le mettre en session pour qu'il soit dispo pour la
-		 * méthode doPost
-		 */
+		/* Récupérer le paramètre et le mettre en session pour qu'il soit dispo pour la
+		 * méthode doPost */
 		Integer noArticle = Integer.parseInt(request.getParameter("noArticle"));
 		request.getSession().setAttribute("noArticle", noArticle);
-		// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Numéro de l'objet = " +
-		// noArticle);
+		// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Numéro de l'objet = " + noArticle);
 
 		/* Appeler le manager pour récupérer les infos de l'objet */
 		ArticleManager articleManager = new ArticleManager();
 		Article article = articleManager.recupereArticle(noArticle);
 
-		/*
-		 * Mettre l'article en mémoire dans la session pour le rendre disponible pour la
-		 * méthode doPost
-		 */
+		/* Mettre l'article en mémoire dans la session pour le rendre disponible pour la
+		 * méthode doPost */
 		request.getSession().setAttribute("articleSelectionne", article);
 		request.setAttribute("articleSelectionne", article);
 
@@ -86,10 +81,9 @@ public class ServletFicheArticle extends HttpServlet {
 
 	}
 
-	/* Cette méthode est appelée si les enchères sont clôturées.
-	 * Elle permet de vérifier qu'au moins une enchère a été émise sur l'article affiché.
-	 * Si c'est le cas, elle récupère le nom du dernier enchérisseur.
-	 * */
+	/* Cette méthode est appelée si les enchères sont clôturées. Elle permet de
+	 * vérifier qu'au moins une enchère a été émise sur l'article affiché. Si c'est
+	 * le cas, elle récupère le nom du dernier enchérisseur. */
 	private void verifieExistenceEnchere(Integer noVendeur, Article article, HttpServletRequest request) throws ModelException {
 
 		List<Object> valeursRetournees = new ArrayList<>();
@@ -105,11 +99,11 @@ public class ServletFicheArticle extends HttpServlet {
 
 				Enchere derniereEnchere = (Enchere) valeursRetournees.get(0);
 				request.setAttribute("nomDernierEncherisseur", derniereEnchere.getEncherisseur().getPseudo());
-//				System.out.println("\nTEST SERVLET FICHE ARTICLE // Les attributs aucuneEnchere et auMoinsUneEnchere ont été créés.");
+				// System.out.println("\nTEST SERVLET FICHE ARTICLE // Les attributs aucuneEnchere et auMoinsUneEnchere ont été créés.");
 
 			} else {
 				request.setAttribute("aucuneEnchere", "L'existence de cet attribut conditionnera l'affichage d'un message");
-//				System.out.println("\nTEST SERVLET FICHE ARTICLE // Un attribut aucuneEnchere a été créé.");
+				// System.out.println("\nTEST SERVLET FICHE ARTICLE // Un attribut aucuneEnchere a été créé.");
 			}
 
 		} catch (ModelException e) {
@@ -133,7 +127,7 @@ public class ServletFicheArticle extends HttpServlet {
 		/* Récupérer le numéro de l'utilisateur en session */
 		Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 		Integer noUtilisateur = utilisateur.getNoUtilisateur();
-		
+
 		/* Récupérer le numéro de l'article mis en session par la méthode doGet */
 		Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
 
@@ -165,23 +159,17 @@ public class ServletFicheArticle extends HttpServlet {
 				/* récupération de la précédente enchère s'il y en avait une */
 				precedenteEnchere = articleManager.controleEtAjouteEnchereSurArticle(enchere);
 
-				/*
-				 * actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y
-				 * en avait un
-				 */
+				/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y
+				 * en avait un */
 				utilisateurManager.actualiseCredit(enchere, precedenteEnchere);
 
-				/*
-				 * récupération des infos mises à jour de l'utilisateur et mise à jour de ses
-				 * infos dans la session
-				 */
+				/* récupération des infos mises à jour de l'utilisateur et mise à jour de ses
+				 * infos dans la session */
 				Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
 				request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
 				// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Crédit en session : " +
 
-				response.sendRedirect(
-						request.getContextPath() + "/accueil?succesEnchere=Votre ench%C3%A8re a bien %C3%A9t%C3%A9 prise en compte.");
-
+				response.sendRedirect(request.getContextPath() + "/accueil?succesEnchere=Votre ench%C3%A8re a bien %C3%A9t%C3%A9 prise en compte.");
 
 			} catch (ModelException e) {
 				e.printStackTrace();

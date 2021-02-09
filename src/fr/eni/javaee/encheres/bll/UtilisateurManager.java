@@ -348,8 +348,7 @@ public class UtilisateurManager {
 	 * recherche un hypothétique utilisateur dans la base de donnée par son pseudo
 	 * ou son email
 	 * 
-	 * @param identifiant
-	 *            (pseudo ou email)
+	 * @param identifiant (pseudo ou email)
 	 * @return null si l'utilisateur n'existe pas, un objet Utilisateur si
 	 *         l'utilisateur existe
 	 * @throws ModelException

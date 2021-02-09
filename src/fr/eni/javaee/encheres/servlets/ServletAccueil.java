@@ -24,8 +24,7 @@ public class ServletAccueil extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/** 
-	 * retourne les articles pour lequels les enchères sont ouvertes
-	 * cette méthode est appelée par l'url /accueil de la servlet
+	 * retourne les articles pour lequels les enchères sont ouvertes cette méthode est appelée par l'url /accueil de la servlet
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -39,7 +38,7 @@ public class ServletAccueil extends HttpServlet {
 		try {
 			listesEncheresEC = articleManager.recupereArticlesEncheresOuvertesGet();
 			request.setAttribute("encheresOuvertes", listesEncheresEC);
-//			System.out.println("\nTEST SERVLET ACCUEIL doGet // Un attribut encheresOuvertes a été créé.");
+			// System.out.println("\nTEST SERVLET ACCUEIL doGet // Un attribut encheresOuvertes a été créé.");
 
 		} catch (ModelException e) {
 			e.printStackTrace();
@@ -51,8 +50,7 @@ public class ServletAccueil extends HttpServlet {
 	}
 
 	/**
-	 * retourne les articles que l'utilisateur souhaite afficher
-	 * cette méthode est appelée par le bouton Rechercher de la page accueil.jsp
+	 * retourne les articles que l'utilisateur souhaite afficher cette méthode est appelée par le bouton Rechercher de la page accueil.jsp
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -69,16 +67,16 @@ public class ServletAccueil extends HttpServlet {
 		String ventesUtilisateurEC = request.getParameter("ventes_ouvertes");
 		String ventesUtilisateurTerminees = request.getParameter("ventes_terminees");
 
-//		System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur du paramètre ventes_terminees = " + ventesUtilisateurT);
-//		System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur du paramètre mes_encheres = " + encheresUtilisateur);
+		// System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur du paramètre ventes_terminees = " + ventesUtilisateurT);
+		// System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur du paramètre mes_encheres = " + encheresUtilisateur);
 
 		Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 
 		/* Créer un objet Trieur */
-		Trieur trieur = new Trieur(utilisateur, keyword, noCategorie, encheresEC, encheresUtilisateurEC, encheresUtilisateurGagnantes,
-				ventesUtilisateurAttente, ventesUtilisateurEC, ventesUtilisateurTerminees);
+		Trieur trieur = new Trieur(utilisateur, keyword, noCategorie, encheresEC, encheresUtilisateurEC, encheresUtilisateurGagnantes, ventesUtilisateurAttente,
+			ventesUtilisateurEC, ventesUtilisateurTerminees);
 
-//		System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur de keyword = " + keyword);
+		// System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur de keyword = " + keyword);
 
 		/* Appeler le manager */
 
@@ -90,11 +88,10 @@ public class ServletAccueil extends HttpServlet {
 			/* si un utilisateur est en session */
 			if (utilisateur != null) {
 				listeArticlesFiltres = articleManager.trieEtRecupereArticles(trieur);
-//				System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut articlesFiltres a été créé.");
+				// System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut articlesFiltres a été créé.");
 
-			/* si pas d'utilisateur en session */
-			} else {
-
+			} else { /* si pas d'utilisateur en session */
+ 
 				if (trieur.getCategorie() != null || !trieur.getKeyword().isEmpty()) {
 					listeArticlesFiltres = articleManager.recupereArticlesEncheresOuvertesPost(trieur);
 				}
@@ -104,15 +101,15 @@ public class ServletAccueil extends HttpServlet {
 		} catch (ModelException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (listeArticlesFiltres.isEmpty()) {
 			request.setAttribute("noResult", "Votre recherche n'a retourné aucun résultat.");
-//			System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut noResult a été créé.");
+			// System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut noResult a été créé.");
 		}
 
 		/* Rediriger vers la page accueil.jsp */
 		request.setAttribute("trieur", trieur);
-//		System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut trieur a été créé.");
+		// System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut trieur a été créé.");
 		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
 
 	}
