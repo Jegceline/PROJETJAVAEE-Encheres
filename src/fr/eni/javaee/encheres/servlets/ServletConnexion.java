@@ -33,7 +33,7 @@ public class ServletConnexion extends HttpServlet {
 	}
 
 	/**
-	 * méthode appelée depuis le bouton Connexion de la pahe connexion.jsp
+	 * méthode appelée depuis le bouton Connexion de la page connexion.jsp
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -41,9 +41,10 @@ public class ServletConnexion extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		/* Récupérer les paramètres du formulaire */
-		String identifiant = request.getParameter("identifiant");
-		String motDePasse = request.getParameter("motdepasse");
-//		System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
+		String identifiant = request.getParameter("identifiant").trim();
+		String motDePasse = request.getParameter("motdepasse").trim();
+		// System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera
+		// envoyé au Manager : " + identifiant);
 
 		/* Appeler le manager */
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
@@ -51,13 +52,35 @@ public class ServletConnexion extends HttpServlet {
 
 		try {
 			utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);
-//			System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
+			// System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le
+			// Manager : " + utilisateur);
 
 			/* si l'utilisateur existe */
 			if (utilisateur != null) {
 				utilisateurManager.recupereEtControleMdp(identifiant, motDePasse);
 
-			} else {
+				/* On place l'objet utilisateur dans la session */
+				request.getSession().setAttribute("profilUtilisateur", utilisateur);
+
+				/*
+				 * si l'utilisateur a coché la case "se souvenir de moi", on enregistre son id
+				 * et son mdp dans deux cookies qu'on envoie au navigateur
+				 */
+				if (request.getParameter("memoriserUtilisateur") != null) {
+
+					Cookie cookieIdentifiant = new Cookie(COOKIE_UTILISATEUR_IDENTIFIANT, identifiant);
+					cookieIdentifiant.setMaxAge(60 * 60 * 24 * 365 * 10); // bricolage pour spécifier une durée de vie très longue
+
+					Cookie cookieMdp = new Cookie(COOKIE_UTILISATEUR_MDP, motDePasse);
+					cookieMdp.setMaxAge(60 * 60 * 24 * 365 * 10);
+
+					response.addCookie(cookieIdentifiant);
+					response.addCookie(cookieMdp);
+				}
+				
+				response.sendRedirect(request.getContextPath() + "/accueil");
+				
+			} else { /* si aucun utilisateur ne correspond à l'identifiant renseigné */
 				request.setAttribute("utilisateurInconnu", "Utilisateur inexistant.");
 				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 			}
@@ -68,34 +91,5 @@ public class ServletConnexion extends HttpServlet {
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 		}
 
-			/* On place l'objet utilisateur dans la session */
-			request.getSession().setAttribute("profilUtilisateur", utilisateur);
-
-			/* si l'utilisateur a coché la case "se souvenir de moi", on enregistre son id et son mdp dans deux cookies qu'on envoie au navigateur */
-			if (request.getParameter("memoriserUtilisateur") != null) {
-				
-				Cookie cookieIdentifiant = new Cookie(COOKIE_UTILISATEUR_IDENTIFIANT, identifiant);
-				cookieIdentifiant.setMaxAge(60 * 60 * 24 * 365 * 10); // bricolage pour spécifier une durée de vie très longue
-				
-				Cookie cookieMdp = new Cookie(COOKIE_UTILISATEUR_MDP, motDePasse);
-				cookieMdp.setMaxAge(60 * 60 * 24 * 365 * 10);
-				
-				response.addCookie(cookieIdentifiant);
-				response.addCookie(cookieMdp);
-			}
-
-//			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request, response);
-			
-//			Rq : le RequestDispatcher étant appelé depuis la méthode doPost, il va appeler la méthode doPost() de la servlet Accueil et non sa méthode doGet()
-//			Par conséquent, les articles pour lesquels les enchères sont onvertes ne seront pas automatiquement affichés sur la page d'accueil 
-//			(en effet, leur chargement se fait dans la méthode doGet() de la servlet Accueil)
-//			C'est pourquoi on utilise une redirection (car sendRedirect appelle par défaut les méthodes doGet)
-//			Pour transmettre des attributs à la jsp si le sendRedirect est utilisé, il faut les mettre non pas dans l'objet request mais dans l'objet session
-
- 			response.sendRedirect(request.getContextPath() + "/accueil");
-
 	}
-	
-	
-
 }

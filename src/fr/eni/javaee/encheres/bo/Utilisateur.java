@@ -10,26 +10,24 @@ public class Utilisateur {
 	private boolean administrateur;
 	
 	
-	/* Constructeur */
+	/* Constructeurs */
 
 	public Utilisateur() {
 		this.administrateur = false; // par défaut, tout nouvel utilisateur ne sera PAS administrateur
 	}
-
-	// constructeur utilisé pour ajouter un utilisateur
 	
 	public Utilisateur(String pseudo, String nom, String prenom, String email, String telephone, String rue, String codePostal,
 			String ville, String motDePasse) {
 		this();
-		this.pseudo = pseudo.trim();
+		this.pseudo = pseudo;
 		this.nom = nom.toUpperCase();
 		this.prenom = prenom;
-		this.email = email.trim();
+		this.email = email;
 		this.telephone = telephone;
-		this.rue = rue.trim();
-		this.codePostal = codePostal.trim();
-		this.ville = ville.trim();
-		this.motDePasse = motDePasse.trim();
+		this.rue = rue;
+		this.codePostal = codePostal;
+		this.ville = ville;
+		this.motDePasse = motDePasse;
 	}
 
 	// constructeur avec id

@@ -18,7 +18,7 @@ public abstract class ConnectionProvider {
             dataSource = (DataSource)context.lookup("java:comp/env/jdbc/pool_cnx");
         } catch (NamingException var2) {
             var2.printStackTrace();
-            throw new RuntimeException("Impossible d'accéder à la base de données");
+            throw new RuntimeException("Impossible d'accéder à la base de données.");
         }
     }
 

@@ -175,11 +175,7 @@ public class UtilisateurManager {
 			throw e;
 		}
 
-		if (motDePasseBdd == null) {
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_UTILISATEUR_INEXISTANT, "Cet utilisateur n'existe pas.");
-			throw modelBllException;
-
-		} else if (!motDePasseBdd.equals(motDePasse)) {
+		if (!motDePasseBdd.equals(motDePasse)) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_INCORRECT, "Le mot de passe est incorrect.");
 			throw modelBllException;
 		}
@@ -447,13 +443,15 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * crédite un vendeur d'une vente
+	 * vérifie que l'article a fait l'objet d'une enchère avant la date de clôture
+	 * si c'est le cas, récupère la dernière enchère émise sur l'article
+	 * retourne un booléen et la dernière enchère récupérée
 	 * 
 	 * @param noUtilisateur
 	 * @param article
 	 * @throws ModelException
 	 */
-	public List<Object> verifieExistenceEnchere(Integer noUtilisateur, Article article) throws ModelException {
+	public List<Object> verifieExistenceEnchere(Article article) throws ModelException {
 
 		Enchere derniereEnchere = null;
 		Boolean auMoinsUneEnchere = false;
@@ -476,7 +474,7 @@ public class UtilisateurManager {
 		return valeursARetourner;
 	}
 
-	
+	/* crédite le vendeur des points gagnés grâce à ses ventes */
 	public void crediteVendeur(Integer noUtilisateur) throws ModelException {
 		try {
 			((UtilisateurDAO) utilisateurDAO).updateSellerCredit(noUtilisateur);

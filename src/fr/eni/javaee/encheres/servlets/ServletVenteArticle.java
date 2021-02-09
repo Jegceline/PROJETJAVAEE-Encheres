@@ -21,7 +21,7 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
 /**
  * Servlet implementation class ServletVenteArticle
  */
-@WebServlet("/membre/vendre-article")
+@WebServlet("/membre/vente-article")
 public class ServletVenteArticle extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -108,7 +108,7 @@ public class ServletVenteArticle extends HttpServlet {
 		} catch (ModelException e) {
 			e.printStackTrace();
 			request.setAttribute("mapErreurs", e.getMapErreurs());
-			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vente.jsp").forward(request, response);
+			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vendre-article.jsp").forward(request, response);
 		}
 	}
 }

@@ -39,16 +39,16 @@ public class ServletInscription extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		// récupérer les paramètres du formulaire
-		String pseudo = request.getParameter("pseudo");
-		String nom = request.getParameter("nom");
-		String prenom = request.getParameter("prenom");
-		String email = request.getParameter("email");
-		String telephone = request.getParameter("telephone");
-		String rue = request.getParameter("rue");
-		String codepostal = request.getParameter("codePostal");
-		String ville = request.getParameter("ville");
-		String motdepasse = request.getParameter("motDePasse");
-		String confirmation = request.getParameter("motDePasseBis");
+		String pseudo = request.getParameter("pseudo").trim();
+		String nom = request.getParameter("nom").trim();
+		String prenom = request.getParameter("prenom").trim();
+		String email = request.getParameter("email").trim();
+		String telephone = request.getParameter("telephone").trim();
+		String rue = request.getParameter("rue").trim();
+		String codepostal = request.getParameter("codePostal").trim();
+		String ville = request.getParameter("ville").trim();
+		String motdepasse = request.getParameter("motDePasse").trim();
+		String confirmation = request.getParameter("motDePasseBis").trim();
 
 		/* Création de l'objet Utilisateur */
 		Utilisateur utilisateur = new Utilisateur(pseudo, nom, prenom, email, telephone, rue, codepostal, ville, motdepasse);
@@ -67,14 +67,6 @@ public class ServletInscription extends HttpServlet {
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(request, response);
 
 		}
-
-//		if (utilisateur == null) {
-//			request.setAttribute("erreurData", "L'inscription a échoué.");
-//			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(request, response);
-//
-//		} else {
-//			request.setAttribute("succesInscription", "Bienvenue " + utilisateur.getPrenom() + ", vous avez été crédité de 100 points !");
-//			System.out.println("\nTEST SERVLET INSCRIPTION // Un attribut succesInscription a été créé.");
 			
 			/* On place l'objet utilisateur dans la session (la session est conservée avec le sendRedirect) */
 			request.getSession().setAttribute("profilUtilisateur", utilisateur);
@@ -87,7 +79,7 @@ public class ServletInscription extends HttpServlet {
 //			C'est pourquoi on utilise une redirection (car sendRedirect appelle par défaut les méthodes doGet)
 //			Pour transmettre des attributs à la jsp si le sendRedirect est utilisé, il faut les mettre non pas dans l'objet request mais dans l'objet session
 			
-			response.sendRedirect(request.getContextPath() + "/accueil?succesInscription=Bienvenue \" + utilisateur.getPrenom() + \", vous avez été crédité de 100 points !");
+			response.sendRedirect(request.getContextPath() + "/accueil?succesInscription=Bienvenue " + utilisateur.getPrenom() + ", vous avez %C3%A9t%C3%A9 cr%C3%A9dit%C3%A9 de 100 points !");
 //		}
 
 	}

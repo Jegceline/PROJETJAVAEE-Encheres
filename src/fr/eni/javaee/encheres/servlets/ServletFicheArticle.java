@@ -86,6 +86,10 @@ public class ServletFicheArticle extends HttpServlet {
 
 	}
 
+	/* Cette méthode est appelée si les enchères sont clôturées.
+	 * Elle permet de vérifier qu'au moins une enchère a été émise sur l'article affiché.
+	 * Si c'est le cas, elle récupère le nom du dernier enchérisseur.
+	 * */
 	private void verifieExistenceEnchere(Integer noVendeur, Article article, HttpServletRequest request) throws ModelException {
 
 		List<Object> valeursRetournees = new ArrayList<>();
@@ -93,18 +97,18 @@ public class ServletFicheArticle extends HttpServlet {
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		try {
 
-			valeursRetournees = utilisateurManager.verifieExistenceEnchere(noVendeur, article);
+			valeursRetournees = utilisateurManager.verifieExistenceEnchere(article);
 
 			if ((boolean) valeursRetournees.get(1)) {
 
-				request.setAttribute("auMoinsUneEnchere", "un message");
+				request.setAttribute("auMoinsUneEnchere", "L'existence de cet attribut conditionnera l'affichage d'un message");
 
 				Enchere derniereEnchere = (Enchere) valeursRetournees.get(0);
 				request.setAttribute("nomDernierEncherisseur", derniereEnchere.getEncherisseur().getPseudo());
 //				System.out.println("\nTEST SERVLET FICHE ARTICLE // Les attributs aucuneEnchere et auMoinsUneEnchere ont été créés.");
 
 			} else {
-				request.setAttribute("aucuneEnchere", "un message");
+				request.setAttribute("aucuneEnchere", "L'existence de cet attribut conditionnera l'affichage d'un message");
 //				System.out.println("\nTEST SERVLET FICHE ARTICLE // Un attribut aucuneEnchere a été créé.");
 			}
 
@@ -182,7 +186,7 @@ public class ServletFicheArticle extends HttpServlet {
 			} catch (ModelException e) {
 				e.printStackTrace();
 				request.setAttribute("mapErreurs", e.getMapErreurs());
-				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/detail-article.jsp").forward(request, response);
+				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
 
 			}
 

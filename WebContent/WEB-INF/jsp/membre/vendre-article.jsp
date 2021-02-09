@@ -48,7 +48,7 @@
 
 			<!--  Fin des div à affichage conditionnel -->
 
-			<form action="vente" method="POST">
+			<form action="<%=request.getContextPath()%>/membre/vente-article" method="POST">
 
 				<div class="row">
 

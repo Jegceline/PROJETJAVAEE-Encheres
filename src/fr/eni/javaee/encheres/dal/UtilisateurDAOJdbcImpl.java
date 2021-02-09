@@ -443,14 +443,15 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		List<String> listePseudo = new ArrayList<>();
 
 		try {
-			// obtention d'un connexion
+			
+			/* obtention d'un connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la requête
+				/* Préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_ALL_PSEUDO);
 
-				// exécution de la requête
+				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				while (rs.next()) {
@@ -556,6 +557,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		try {
 			// obtention d'un connexion
 			Connection cnx = ConnectionProvider.getConnection();
+			System.out.println("\nTEST DAO UTILISATEUR retrieveUsersAlias // cnx  = " + cnx);
 
 			try {
 				// Préparation de la requête
@@ -582,6 +584,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				if (cnx != null) {
 					cnx.close();
 				}
+				System.out.println("\nTEST DAO UTILISATEUR retrieveUsersAlias après fermeture // cnx  = " + cnx);
 			}
 
 		} catch (Exception e) {
