@@ -136,8 +136,21 @@ public class ServletFicheArticle extends HttpServlet {
 		/* --------------------------------------------------------- */
 
 		if (request.getParameter("encherir") != null) {
-
-			/* Récupérer l'enchère et le numéro de l'article */
+		
+//			Integer montantEnchere = null;
+//
+//			/* Récupérer le montant de l'enchère et gérer le cas où l'utilisateur n'a renseigné aucune valeur */
+			
+//			try {
+//				montantEnchere = Integer.parseInt(request.getParameter("enchere_prix"));
+//
+//			} catch (NumberFormatException e) {
+//				e.printStackTrace();
+//				request.setAttribute("montantNonRenseigne", "Vous n'avez pas renseigné de montant !");
+//				request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/fiche-article.jsp").forward(request, response);
+//			}
+			
+			/* Récupérer le montant de l'enchère */
 			Integer montantEnchere = Integer.parseInt(request.getParameter("enchere_prix"));
 
 			/* Créer un objet Article pour le donner à l'objet Enchere */
@@ -158,16 +171,15 @@ public class ServletFicheArticle extends HttpServlet {
 			try {
 				/* récupération de la précédente enchère s'il y en avait une */
 				precedenteEnchere = articleManager.controleEtAjouteEnchereSurArticle(enchere);
+				
+				System.out.println("\nTEST SERVLET FICHE ARTICLE doPost() // Précédente enchère = "  + precedenteEnchere);
 
-				/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y
-				 * en avait un */
+				/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y en avait un */
 				utilisateurManager.actualiseCredit(enchere, precedenteEnchere);
 
-				/* récupération des infos mises à jour de l'utilisateur et mise à jour de ses
-				 * infos dans la session */
+				/* récupération des infos mises à jour de l'utilisateur et mise à jour de ses infos dans la session */
 				Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(noUtilisateur);
 				request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
-				// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Crédit en session : " +
 
 				response.sendRedirect(request.getContextPath() + "/accueil?succesEnchere=Votre ench%C3%A8re a bien %C3%A9t%C3%A9 prise en compte.");
 

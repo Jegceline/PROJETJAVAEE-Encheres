@@ -47,11 +47,12 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 	public void insert(Enchere enchere) throws ModelException {
 
 		try {
-			/* obtention d'un connexion */
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
+			cnx.setAutoCommit(false);
 
 			try {
-				/* Préparation de la première requête */
+				/* préparation de la première requête */
 				PreparedStatement query = cnx.prepareStatement(INSERT_BID);
 
 				/* valorisation des paramètres */
@@ -66,7 +67,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* exécution de la requête */
 				query.executeUpdate();
 
-				/* Préparation de la seconde requête */
+				/* préparation de la seconde requête */
 				PreparedStatement query2 = cnx.prepareStatement(UPDATE_ARTICLE_PRICE);
 
 				/* valorisation des paramètres */
@@ -76,6 +77,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* exécution de la requête */
 				query2.executeUpdate();
 
+				/* commit des deux requêtes */
 				cnx.commit();
 
 			} catch (SQLException e) {
@@ -83,14 +85,13 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 				cnx.rollback();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERT_BID, "L'exécution de la requête INSERT_BID a échoué.");
-				System.out.println("L'exécution de la requête INSERT_BID a échoué !");
+				// System.out.println("L'exécution de la requête INSERT_BID a échoué !");
 
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				/* fermeture de la connexion */
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -109,11 +110,12 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 	public void update(Enchere enchere) throws ModelException {
 
 		try {
-			/* obtention d'un connexion */
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
+			cnx.setAutoCommit(false);
 
 			try {
-				/* Préparation de la requête */
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(UPDATE_BID);
 
 				/* valorisation des paramètres */
@@ -126,7 +128,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* exécution de la requête */
 				query.executeQuery();
 
-				/* Préparation de la seconde requête */
+				/* préparation de la seconde requête */
 				PreparedStatement query2 = cnx.prepareStatement(UPDATE_ARTICLE_PRICE);
 
 				/* valorisation des paramètres */
@@ -136,21 +138,21 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 				/* exécution de la requête */
 				query2.executeUpdate();
 
+				/* on commit les deux requêtes */
 				cnx.commit();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-
+				
 				cnx.rollback();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_BID, "L'exécution de la requête UPDATE_BID ou UPDATE_ARTICLE_PRICE a échoué.");
-				System.out.println("L'exécution de la requête UPDATE_BID ou UPDATE_ARTICLE_PRICE a échoué !");
+				// System.out.println("L'exécution de la requête UPDATE_BID ou UPDATE_ARTICLE_PRICE a échoué !");
 
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				/* fermeture de la connexion */
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -158,7 +160,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
 
 			throw modelDalException;
@@ -192,38 +194,36 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 //		System.out.println("\nTEST DAO ENCHERE // Numéro de l'article = " + noArticle);
 
 		try {
-			/* Obtention d'un connexion */
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				/* Préparation de la requête */
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_LAST_BID);
 
-				/* Valorisation des paramètres */
+				/* valorisation des paramètres */
 				query.setInt(1, noArticle);
 
-				/* Exécution de la requête */
+				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
-				/* Récupération du résultat et création d'un objet Enchere */
+				/* pécupération du résultat et création d'un objet Enchere */
 				if (rs.next()) {
-					// System.out.println(rs);
+					
 					derniereEnchere = EnchereBuilder(rs);
 //					System.out.println("\nTEST DAO ENCHERE // La dernière enchère sur l'article était celle-ci : " + derniereEnchere);
 				}
 
 			} catch (SQLException e) {
-
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL,
-						"L'exécution de la requête SELECT_LAST_BID a échoué.");
-				System.out.println("L'exécution de la requête SELECT_LAST_BID a échoué !");
+				
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT_LAST_BID a échoué.");
+				// System.out.println("L'exécution de la requête SELECT_LAST_BID a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -231,11 +231,10 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
-
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
+			
 			throw modelDalException;
-
 		}
 
 		return derniereEnchere;
@@ -281,8 +280,7 @@ public class EnchereDAOJdbcImpl implements EnchereDAO {
 
 			} catch (SQLException e) {
 				e.getMessage();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_ENCHEREBUILDER,
-						"Une erreur est survenue dans la méthode EnchereBuilder().");
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_ENCHEREBUILDER, "Une erreur est survenue dans la méthode EnchereBuilder().");
 			}
 
 		return derniereEnchere;

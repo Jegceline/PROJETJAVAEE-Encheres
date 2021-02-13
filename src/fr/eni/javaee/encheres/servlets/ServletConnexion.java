@@ -22,6 +22,8 @@ public class ServletConnexion extends HttpServlet {
 
 	public static final String COOKIE_UTILISATEUR_IDENTIFIANT = "cookieUserId";
 	public static final String COOKIE_UTILISATEUR_MDP = "cookieUserPassword";
+	
+	private UtilisateurManager utilisateurManager = new UtilisateurManager();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -46,7 +48,7 @@ public class ServletConnexion extends HttpServlet {
 		// System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
 
 		/* Appeler le manager */
-		UtilisateurManager utilisateurManager = new UtilisateurManager();
+		// UtilisateurManager utilisateurManager = new UtilisateurManager();
 		Utilisateur utilisateur = null;
 
 		try {

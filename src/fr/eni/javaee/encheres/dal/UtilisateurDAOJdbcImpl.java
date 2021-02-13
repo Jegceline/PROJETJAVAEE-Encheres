@@ -23,7 +23,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 	private ModelException modelDalException = new ModelException();
 	private static final String INSERT_USER = "INSERT INTO Utilisateurs (pseudo, nom, prenom, email, telephone, rue, "
-			+ "code_postal, ville, mot_de_passe, credit, administrateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		+ "code_postal, ville, mot_de_passe, credit, administrateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SELECT_ALL_EMAILS = "SELECT email FROM Utilisateurs";
 	private static final String SELECT_ALL_PSEUDO = "SELECT pseudo FROM Utilisateurs";
 	private static final String SELECT_PASSWORD = "SELECT mot_de_passe FROM Utilisateurs WHERE email = ? OR pseudo = ?";
@@ -31,7 +31,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	private static final String SELECT_USER = "SELECT * FROM Utilisateurs WHERE no_utilisateur = ?";
 	private static final String DELETE_USER = "DELETE FROM Utilisateurs WHERE no_utilisateur = ?";
 	private static final String UPDATE_USER = "UPDATE Utilisateurs SET pseudo = ?, nom = ?, prenom = ?, email = ?, telephone = ?, rue = ?, "
-			+ "code_postal = ?, ville = ?, mot_de_passe = ?, credit = ?, administrateur = ? WHERE no_utilisateur = ?";
+		+ "code_postal = ?, ville = ?, mot_de_passe = ?, credit = ?, administrateur = ? WHERE no_utilisateur = ?";
 	private static final String SELECT_CREDIT = "SELECT credit FROM Utilisateurs WHERE no_utilisateur = ?";
 	private static final String UPDATE_CREDIT = "UPDATE Utilisateurs SET credit = ? WHERE no_utilisateur = ?";
 
@@ -40,13 +40,13 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	public UtilisateurDAOJdbcImpl() {
 	}
 
-	/* ----------- Méthodes CRUD ------------ */
+	/* ----------- Méthodes C-U-D ------------ */
 
 	@Override
 	public void insert(Utilisateur utilisateur) throws ModelException {
 
 		try {
-			/* obtention d'une connexion */
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
@@ -69,27 +69,25 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				/* exécution de la requête */
 				query.executeUpdate();
 
-				cnx.commit();
-
 				/* récupération de la clé primaire/identity générée par la BDD */
 				ResultSet rs = query.getGeneratedKeys();
+				
 				if (rs.next()) {
-					// valorisation de l'attribut Id de l'objet repas avec cette clé
+					/* valorisation de l'attribut Id de l'objet repas avec cette clé */
 					utilisateur.setNoUtilisateur(rs.getInt(1));
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-
-				cnx.rollback();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête INSERT_USER a échoué.");
-				System.out.println("L'exécution de la requête INSERT_USER a échoué !");
+				// System.out.println("L'exécution de la requête INSERT_USER a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				/* fermeture de la connexion */
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -97,7 +95,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
 
 			throw modelDalException;
@@ -112,34 +110,29 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	public void delete(Integer noUtilisateur) throws ModelException {
 
 		try {
-			// obtention d'un connexion
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la requête
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(DELETE_USER);
 
-				// valorisation du paramètre
+				/* valorisation du paramètre */
 				query.setInt(1, noUtilisateur);
 
-				// exécution de la requête
+				/* exécution de la requête */
 				query.executeUpdate();
-
-				cnx.commit();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-
-				cnx.rollback();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_DELETE_SQL, "L'exécution de la requête DELETE_USER a échoué.");
-				System.out.println("L'exécution de la requête DELETE_USER a échoué !");
+				// System.out.println("L'exécution de la requête DELETE_USER a échoué !");
 
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -147,7 +140,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
 
 			throw modelDalException;
@@ -162,14 +155,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	public void update(Utilisateur utilisateur) throws ModelException {
 
 		try {
-			// obtention d'un connexion
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la requête
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(UPDATE_USER);
 
-				// valorisation des paramètres
+				/* valorisation des paramètres */
 				query.setString(1, utilisateur.getPseudo());
 				query.setString(2, utilisateur.getNom());
 				query.setString(3, utilisateur.getPrenom());
@@ -183,24 +176,19 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				query.setBoolean(11, utilisateur.isAdministrateur());
 				query.setInt(12, utilisateur.getNoUtilisateur());
 
-				// exécution de la requête
+				/* exécution de la requête */
 				query.executeUpdate();
-
-				cnx.commit();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-
-				cnx.rollback();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_SQL, "L'exécution de la requête UPDATE_USER a échoué.");
-				System.out.println("L'exécution de la requête UPDATE_USER a échoué !");
+				// System.out.println("L'exécution de la requête UPDATE_USER a échoué !");
 
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -208,7 +196,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
 
 			throw modelDalException;
@@ -216,79 +204,71 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 	}
 
-	
-	/* --------------- UPDATE --------------- */
-
 	/**
-	 * actualise le crédit du nouvel enchérisseur en lui soustrayant le montant de
-	 * son enchère récrédite le crédit du précédent enchérisseur du montant de
-	 * l'enchère qu'il avait faite
+	 * actualise le crédit du nouvel enchérisseur en lui retirant le montant de son enchère 
+	 * récrédite le crédit du précédent enchérisseur du montant de l'enchère qu'il avait faite sur l'article
 	 */
 	@Override
 	public void updateCredit(Enchere enchere, Enchere precedenteEnchere) throws ModelException {
 
 		try {
-			/* obtention d'un connexion */
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
+			cnx.setAutoCommit(false);
 
 			try {
 
-				/* Crédit du nouvel enchérisseur */
+				/* crédit du nouvel enchérisseur */
 				Integer creditActuel = retrieveUserCredit(enchere.getEncherisseur().getNoUtilisateur());
 				Integer creditNouveau = creditActuel - enchere.getMontant();
-				// System.out.println("\nTEST DAO UTILISATEUR // Crédit de l'enchérisseur après
-				// enchere : " + creditNouveau);
+				System.out.println("\nTEST DAO UTILISATEUR updateCredit() // Crédit de l'enchérisseur après enchere : " + creditNouveau);
 
-				/* Préparation de la requête pour diminuer le solde de l'enchérisseur */
+				/* préparation de la requête pour diminuer le solde de l'enchérisseur */
 				PreparedStatement query = cnx.prepareStatement(UPDATE_CREDIT);
 
-				/* Valorisation des paramètres */
+				/* valorisation des paramètres */
 				query.setInt(1, creditNouveau);
 				query.setInt(2, enchere.getEncherisseur().getNoUtilisateur());
 
-				/* Exécution de la requête */
+				/* exécution de la requête */
 				query.executeUpdate();
 
-				/* S'il y avait eu une précédente enchère sur l'article */
+				/* s'il y avait eu une précédente enchère sur l'article */
 				if (precedenteEnchere != null) {
 					Integer montantDerniereEnchere = precedenteEnchere.getMontant();
-					// System.out.println("\nTEST DAO UTILISATEUR // Montant de l'enchère qu'avait
-					// fait le précédent enchérisseur : " + montantDerniereEnchere);
+					// System.out.println("\nTEST DAO UTILISATEUR updateCredit() // Montant de l'enchère qu'avait fait le précédent enchérisseur : " + montantDerniereEnchere);
 
-					Integer creditActuel2 = retrieveUserCredit(precedenteEnchere.getEncherisseur().getNoUtilisateur());
-					// System.out.println("\nTEST DAO UTILISATEUR // Crédit actuel du précédent
-					// enchérisseur : " + creditActuel2);
+					Integer creditActuel2 = retrieveUserCredit(precedenteEnchere.getEncherisseur().getNoUtilisateur(), cnx);
+					// System.out.println("\nTEST DAO UTILISATEUR updateCredit() // Crédit actuel du précédent enchérisseur : " + creditActuel2);
 
 					Integer creditNouveau2 = creditActuel2 + montantDerniereEnchere;
-					System.out.println("\nTEST DAO UTILISATEUR // Crédit de cet enchérisseur après lui avoir récrédité ce montant : "
-							+ creditNouveau2);
+					// System.out.println("\nTEST DAO UTILISATEUR updateCredit() // Crédit de cet enchérisseur après lui avoir récrédité ce montant : " + creditNouveau2);
 
-					/* Préparation de la requête */
+					/* préparation de la seconde requête */
 					PreparedStatement query2 = cnx.prepareStatement(UPDATE_CREDIT);
 
-					/* Valorisation des paramètres */
+					/* valorisation des paramètres */
 					query2.setInt(1, creditNouveau2);
 					query2.setInt(2, precedenteEnchere.getEncherisseur().getNoUtilisateur());
 
-					/* exécution de la requête */
+					/* exécution de la seconde requête */
 					query2.executeUpdate();
 				}
 
+				/* commit des deux requêtes */
 				cnx.commit();
 
 			} catch (Exception e) {
 				e.printStackTrace();
-
+				
 				cnx.rollback();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_CREDIT, "L'exécution de la requête UPDATE_CREDIT a échoué.");
-				System.out.println("L'exécution de la requête UPDATE_CREDIT a échoué !");
+				// System.out.println("L'exécution de la requête UPDATE_CREDIT a échoué !");
 
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -296,7 +276,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
 
 			throw modelDalException;
@@ -304,7 +284,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 	}
 
-	/* crédite le vendeur des points de ses ventes sur lequelles il y a eu une enchère*/
+	/* crédite le vendeur des points de ses ventes (un article n'est vendu que s'il a fait l'objet d'au moins une enchère) */
 	@Override
 	public void updateSellerCredit(Integer noVendeur) throws ModelException {
 
@@ -313,60 +293,53 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		Integer totalACrediter = 0;
 
 		try {
-			/* obtention d'un connexion */
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
 
-				/* Crédit actuel du vendeur */
+				/* on récupère le crédit actuel du vendeur */
 				Integer creditActuel = retrieveUserCredit(noVendeur);
-//				System.out.println("\nTEST DAO UTILISATEUR updateSellerCredit // Crédit actuel du vendeur : " + creditActuel);
+				// System.out.println("\nTEST DAO UTILISATEUR updateSellerCredit // Crédit actuel du vendeur : " + creditActuel);
 
-				/* récupérer les articles du vendeur pour lesquels les enchères sont clôturées */
+				/* on récupère les articles du vendeur pour lesquels les enchères sont clôturées */
 				listeArticlesEncheresCloturees = ((ArticleDAO) articleDAO).retrieveSellerYetNotPaidItems(noVendeur);
 
-				/*
-				 * pour chaque article, on récupère le montant de la dernière enchère émise et
-				 * on l'ajoute au total à créditer
-				 */
+				/* pour chaque article, on récupère le montant de la dernière enchère émise et on l'ajoute au total à créditer */
 				for (Article article : listeArticlesEncheresCloturees) {
 					derniereEnchere = ((EnchereDAO) enchereDAO).retrieveItemLastBid(article.getNoArticle());
 
 					if (derniereEnchere != null) {
-//						System.out.println("\nTEST DAO UTILISATEUR updateSellerCredit // Montant de la dernière enchère : " + derniereEnchere.getMontant());
+						// System.out.println("\nTEST DAO UTILISATEUR updateSellerCredit // Montant de la dernière enchère : " + derniereEnchere.getMontant());
 						totalACrediter += derniereEnchere.getMontant();
 					}
-					
-//					System.out.println("\nTEST DAO UTILISATEUR updateSellerCredit // Total à créditer au vendeur : " + totalACrediter);
+
+					// System.out.println("\nTEST DAO UTILISATEUR updateSellerCredit // Total à créditer au vendeur : " + totalACrediter);
 
 					/* on passe le statut du paiement de l'article à true */
 					((ArticleDAO) articleDAO).updateItemPaymentStatus(article.getNoArticle());
 				}
 
-				/* Préparation de la requête pour créditer le vendeur */
+				/* préparation de la requête pour créditer le vendeur */
 				PreparedStatement query = cnx.prepareStatement(UPDATE_CREDIT);
 
-				/* Valorisation des paramètres */
+				/* valorisation des paramètres */
 				query.setInt(1, creditActuel + totalACrediter);
 				query.setInt(2, noVendeur);
 
-				/* Exécution de la requête */
+				/* exécution de la requête */
 				query.executeUpdate();
-				cnx.commit();
 
 			} catch (Exception e) {
 				e.printStackTrace();
-
-				cnx.rollback();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_UPDATE_CREDIT, "L'exécution de la requête UPDATE_CREDIT a échoué.");
-				System.out.println("L'exécution de la requête UPDATE_CREDIT a échoué !");
+				// System.out.println("L'exécution de la requête UPDATE_CREDIT a échoué !");
 
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -374,15 +347,15 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
 
 			throw modelDalException;
 		}
 
 	}
-	
-	/* --------------- SELECT --------------- */
+
+	/* --------------- METHODES SELECT --------------- */
 
 	/**
 	 * récupère et retourne une liste des e-mails de tous les utilisateurs en BDD
@@ -393,14 +366,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		List<String> listeEmails = new ArrayList<>();
 
 		try {
-			// obtention d'un connexion
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la requête
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_ALL_EMAILS);
 
-				// exécution de la requête
+				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				while (rs.next()) {
@@ -409,15 +382,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_MAILS_SQL,
-						"L'exécution de la requête SELECT_ALL_EMAILS a échoué.");
-				System.out.println("L'exécution de la requête SELECT_ALL_EMAILS a échoué !");
+				
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_MAILS_SQL, "L'exécution de la requête SELECT_ALL_EMAILS a échoué.");
+				// System.out.println("L'exécution de la requête SELECT_ALL_EMAILS a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -425,7 +397,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
+				// System.out.println("Impossible de se connecter à la base de données !");
 
 			}
 			throw modelDalException;
@@ -443,12 +415,12 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		List<String> listePseudo = new ArrayList<>();
 
 		try {
-			
-			/* obtention d'un connexion */
+
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				/* Préparation de la requête */
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_ALL_PSEUDO);
 
 				/* exécution de la requête */
@@ -460,15 +432,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL,
-						"L'exécution de la requête SELECT_ALL_PSEUDO a échoué.");
-				System.out.println("L'exécution de la requête SELECT_ALL_PSEUDO a échoué !");
+				
+				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT_ALL_PSEUDO a échoué.");
+				// System.out.println("L'exécution de la requête SELECT_ALL_PSEUDO a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -476,11 +447,10 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
-
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
+			
 			throw modelDalException;
-
 		}
 
 		return listePseudo;
@@ -495,59 +465,54 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		String password = null;
 
 		try {
-			// obtention d'un connexion
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la requête
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_PASSWORD);
 
-				// Valorisation des paramètres
+				/* valorisation des paramètres */
 				query.setString(1, identifiant);
 				query.setString(2, identifiant);
 
-				// exécution de la requête
+				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				if (rs.next()) {
 					password = rs.getString(1);
 				}
 
-				// System.out.println("\nTEST DAO : Le mot de passe de cet utilisateur est : " +
-				// password);
+				// System.out.println("\nTEST DAO : Le mot de passe de cet utilisateur est : " + password);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PASSWORD, "L'exécution de la requête SELECT_PASSWORD a échoué.");
-				System.out.println("\n TEST DAO : L'exécution de la requête SELECT_PASSWORD a échoué !");
+				// System.out.println("\n TEST DAO : L'exécution de la requête SELECT_PASSWORD a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("\n DEBUG DAO : Impossible de se connecter à la base de données !");
-
+				// System.out.println("\n DEBUG DAO : Impossible de se connecter à la base de données !");
 			}
+			
 			throw modelDalException;
 		}
 
 		return password;
-
 	}
 
 	/**
-	 * va chercher en base s'il existe un utilisateur dont l'identifiant est
-	 * similaire à celui passé en paramètre
+	 * va chercher en base s'il existe un utilisateur dont l'identifiant est identique à celui passé en paramètre
 	 */
 	@Override
 	public Utilisateur retrieveUserInfo(String identifiantConnexion) throws ModelException {
@@ -555,19 +520,19 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		Utilisateur utilisateur = null;
 
 		try {
-			// obtention d'un connexion
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
-			System.out.println("\nTEST DAO UTILISATEUR retrieveUsersAlias // cnx  = " + cnx);
+			// System.out.println("\nTEST DAO UTILISATEUR retrieveUsersAlias // cnx  = " + cnx);
 
 			try {
-				// Préparation de la requête
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(FOUND_USER_ID_CONNECTION);
 
-				// valorisation du paramètre
+				/* valorisation du paramètre */
 				query.setString(1, identifiantConnexion);
 				query.setString(2, identifiantConnexion);
 
-				// exécution de la requête
+				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				while (rs.next()) {
@@ -576,15 +541,15 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_PSEUDO_SQL, "L'exécution de la requête SELECT_USER a échoué.");
 				System.out.println("L'exécution de la requête SELECT_USER a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
-				System.out.println("\nTEST DAO UTILISATEUR retrieveUsersAlias après fermeture // cnx  = " + cnx);
+				ConnectionProvider.closeConnection(cnx);
+				// System.out.println("\nTEST DAO UTILISATEUR retrieveUsersAlias après fermeture // cnx  = " + cnx);
 			}
 
 		} catch (Exception e) {
@@ -592,34 +557,34 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
-
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
+			
 			throw modelDalException;
-
 		}
+		
 		return utilisateur;
 	}
 
 	/*
-	 * récupère et retourne un utilisateur à partir de sa primary key
+	 * récupère et retourne un utilisateur identifié par sa primary key
 	 */
 	@Override
 	public Utilisateur selectById(Integer noUtilisateur) throws ModelException {
 		Utilisateur utilisateur = null;
 
 		try {
-			// obtention d'un connexion
+			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				// Préparation de la requête
+				/* préparation de la requête */
 				PreparedStatement query = cnx.prepareStatement(SELECT_USER);
 
-				// valorisation du paramètre
+				/* valorisation du paramètre */
 				query.setInt(1, noUtilisateur);
 
-				// exécution de la requête
+				/* exécution de la requête */
 				ResultSet rs = query.executeQuery();
 
 				if (rs.next()) {
@@ -628,14 +593,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			} catch (SQLException e) {
 				e.printStackTrace();
+				
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_USER, "L'exécution de la requête SELECT_USER a échoué.");
-				System.out.println("L'exécution de la requête SELECT_USER a échoué !");
+				// System.out.println("L'exécution de la requête SELECT_USER a échoué !");
+				
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
 		} catch (Exception e) {
@@ -643,14 +608,13 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 			if (!modelDalException.contientErreurs()) {
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
-
+				// System.out.println("Impossible de se connecter à la base de données !");
 			}
+			
 			throw modelDalException;
-
 		}
+		
 		return utilisateur;
-
 	}
 
 	/**
@@ -658,53 +622,79 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	 */
 	@Override
 	public Integer retrieveUserCredit(Integer noUtilisateur) throws ModelException {
+
 		Integer credit = null;
+		Connection cnx = null;
 
 		try {
-			/* obtention d'une connexion */
-			Connection cnx = ConnectionProvider.getConnection();
 
 			try {
-				/* Préparation de la requête */
-				PreparedStatement query = cnx.prepareStatement(SELECT_CREDIT);
 
-				/* valorisation des paramètres */
-				query.setInt(1, noUtilisateur);
+				/* ouverture d'une connexion */
+				cnx = ConnectionProvider.getConnection();
 
-				/* exécution de la requête */
-				ResultSet rs = query.executeQuery();
+				/* on récupère le crédit de l'utilisateur */
+				credit = retrieveUserCredit(noUtilisateur, cnx); 
 
-				if (rs.next()) {
-					credit = rs.getInt(1);
+			} catch (Exception e) {
+				e.printStackTrace();
+
+				if (!modelDalException.contientErreurs()) {
+					modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
+					System.out.println("Impossible de se connecter à la base de données !");
 				}
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_CREDIT, "L'exécution de la requête SELECT_CREDIT a échoué.");
-				System.out.println("L'exécution de la requête SELECT_CREDIT a échoué !");
 				throw modelDalException;
 
 			} finally {
-				if (cnx != null) {
-					cnx.close();
-				}
+				ConnectionProvider.closeConnection(cnx);
 			}
 
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
-
-			if (!modelDalException.contientErreurs()) {
-				modelDalException.ajouterErreur(CodesErreurs.ERREUR_CONNEXION_BASE, "Impossible de se connecter à la base de données.");
-				System.out.println("Impossible de se connecter à la base de données !");
-
-			}
-			throw modelDalException;
-
 		}
 
 		return credit;
 	}
 
+	/**
+	 * récupère le crédit d'un utilisateur
+	 * @param noUtilisateur
+	 * @param cnx
+	 * @return credit
+	 * @throws ModelException
+	 * @throws SQLException
+	 */
+	public Integer retrieveUserCredit(Integer noUtilisateur, Connection cnx) throws ModelException, SQLException {
+
+		Integer credit = null;
+
+		try {
+			/* préparation de la requête */
+			PreparedStatement query = cnx.prepareStatement(SELECT_CREDIT);
+
+			/* valorisation des paramètres */
+			query.setInt(1, noUtilisateur);
+
+			/* exécution de la requête */
+			ResultSet rs = query.executeQuery();
+
+			if (rs.next()) {
+				credit = rs.getInt(1);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			modelDalException.ajouterErreur(CodesErreurs.ERREUR_SELECT_CREDIT, "L'exécution de la requête SELECT_CREDIT a échoué.");
+			// System.out.println("L'exécution de la requête SELECT_CREDIT a échoué !");
+			
+			throw modelDalException;
+		}
+
+		return credit;
+	}
+	
 	/* -------------- BUILDERS -------------- */
 
 	/**
@@ -735,8 +725,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		utilisateur.setCredit(rs.getInt(11));
 		utilisateur.setAdministrateur(rs.getBoolean(12));
 
-		// System.out.println("\nTEST DAO UTILISATEUR // Utilisateur créé par
-		// utilisateurBuilder : " + utilisateur);
+		// System.out.println("\nTEST DAO UTILISATEUR // Utilisateur créé par utilisateurBuilder : " + utilisateur);
 
 		return utilisateur;
 	}

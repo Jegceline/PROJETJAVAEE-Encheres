@@ -47,8 +47,9 @@ public class UtilisateurManager {
 
 		if (!modelBllException.contientErreurs()) {
 
-			System.out.println("\nMANAGER // Les paramètres sont ok, le DAO va être appelé.");
-			// on attribue un crédit de 100 à l'utilisateur
+//			System.out.println("\nMANAGER // Les paramètres sont ok, le DAO va être appelé.");
+			
+			/* on attribue un crédit de 100 à l'utilisateur */
 			utilisateur.setCredit(100);
 
 			try {

@@ -227,16 +227,14 @@ public class ArticleManager {
 		try {
 
 			prixActuel = ((ArticleDAO) articleDAO).retrieveItemCurrentPrice(noArticle);
-			// // System.out.println("\nTEST MANAGER ARTICLE // Prix actuel de l'objet : " +
-			// prixActuel);
+			// // System.out.println("\nTEST MANAGER ARTICLE // Prix actuel de l'objet : " + prixActuel);
 
 			if (prixActuel == null || prixActuel == 0) {
 				premiereEnchere = true;
 			}
 
 			prixInitial = ((ArticleDAO) articleDAO).retrieveItemStartingPrice(noArticle);
-			// System.out.println("\nTEST MANAGER ARTICLE // Prix initial de l'objet : " +
-			// prixInitial);
+			// System.out.println("\nTEST MANAGER ARTICLE // Prix initial de l'objet : " + prixInitial);
 
 			if (premiereEnchere) {
 
@@ -484,7 +482,7 @@ public class ArticleManager {
 		Boolean premiereEnchere;
 		Enchere precedenteEnchere = null;
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
-
+		
 		try {
 
 			/* déterminer si c'est la première enchère proposée pour l'article */

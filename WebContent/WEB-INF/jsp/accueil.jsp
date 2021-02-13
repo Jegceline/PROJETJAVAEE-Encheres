@@ -93,15 +93,15 @@
 								</p>
 
 								<p>
-									<input type="checkbox" class="form-check-input" id="achats1" name="encheres_ec" value="encheres_ec"><label for="encheres_ec"
+									<input type="checkbox" class="form-check-input" id="achats1" name="encheres_ec" value="encheres_ec" ${trieur.encheresEC == 'encheres_ec' ? 'checked' : ''}><label for="encheres_ec"
 										class="form-check-label">enchères en cours</label>
 								</p>
 								<p>
-									<input type="checkbox" class="form-check-input" id="achats2" name="mes_encheres" value="mes_encheres"> <label for="mes_encheres"
+									<input type="checkbox" class="form-check-input" id="achats2" name="mes_encheres" value="mes_encheres" ${trieur.encheresUtilisateurEC == 'mes_encheres' ? 'checked' : ''}> <label for="mes_encheres"
 										class="form-check-label">mes enchères en cours</label>
 								</p>
 								<p>
-									<input type="checkbox" class="form-check-input" id="achats3" name="mes_encheres_remportees" value="mes_encheres_remportees"> <label
+									<input type="checkbox" class="form-check-input" id="achats3" name="mes_encheres_remportees" value="mes_encheres_remportees" ${trieur.encheresUtilisateurG == 'mes_encheres_remportees' ? 'checked' : ''}> <label
 										for="mes_encheres_remportees" class="form-check-label">mes enchères remportées</label>
 								</p>
 							</div>
@@ -118,15 +118,15 @@
 								</p>
 
 								<p>
-									<input type="checkbox" class="form-check-input" id="ventes1" name="ventes_attente" value="ventes_attente"> <label
+									<input type="checkbox" class="form-check-input" id="ventes1" name="ventes_attente" value="ventes_attente" ${trieur.ventesUtilisateurAttente == 'ventes_attente' ? 'checked' : ''}> <label
 										for="ventes_attente" class="form-check-label">ventes à venir</label>
 								</p>
 								<p>
-									<input type="checkbox" class="form-check-input" id="ventes2" name="ventes_ouvertes" value="ventes_ouvertes"> <label
+									<input type="checkbox" class="form-check-input" id="ventes2" name="ventes_ouvertes" value="ventes_ouvertes" ${trieur.ventesUtilisateurEC == 'ventes_ouvertes' ? 'checked' : ''}> <label
 										for="ventes_ouvertes" class="form-check-label">ventes en cours</label>
 								</p>
 								<p>
-									<input type="checkbox" class="form-check-input" id="ventes3" name="ventes_terminees" value="ventes_terminees"> <label
+									<input type="checkbox" class="form-check-input" id="ventes3" name="ventes_terminees" value="ventes_terminees" ${trieur.ventesUtilisateurT == 'ventes_terminees' ? 'checked' : ''}> <label
 										for="ventes_terminees" class="form-check-label">ventes terminées</label>
 								</p>
 							</div>

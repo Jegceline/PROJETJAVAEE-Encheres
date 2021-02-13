@@ -31,6 +31,10 @@
 				<div class="alert alert-success" role="alert">${succesEnchere}</div>
 			</c:if>
 			
+			<c:if test="${ not empty requestScope.montantNonRenseigne}">
+				<div class="alert alert-warning" role="alert">${montantNonRenseigne}</div>
+			</c:if>
+			
 			<!-- si les enchères sont clôturées, qu'il y a eu au moins une enchère et que l'utilisateur est le vendeur -->
 			<c:if test="${ not empty requestScope.auMoinsUneEnchere && sessionScope.profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur}">
 				<div class="alert alert-info" role="alert">L'article a été remporté par ${nomDernierEncherisseur} !</div>
@@ -66,41 +70,41 @@
 					<form action="<%=request.getContextPath()%>/membre/fiche-article" method="POST">
 
 						<div class="mb-3">
-							<input id="titre" type="text" value="${requestScope.articleSelectionne.nomArticle }" name="libelle" class="form-control" disabled />
+							<input id="titre" type="text" value="${sessionScope.articleSelectionne.nomArticle }" name="libelle" class="form-control" disabled />
 						</div>
 
 						<div class="mb-3">
 							<label for="pseudo">Description : </label>
-							<textarea id="description" name="description" rows="4" cols="50" class="form-control" disabled>${requestScope.articleSelectionne.description }</textarea>
+							<textarea id="description" name="description" rows="4" cols="50" class="form-control" disabled>${sessionScope.articleSelectionne.description }</textarea>
 
 						</div>
 
 						<div class="mb-3">
 							<label for="vendeur">Vendeur : </label> <input id="vendeur" type="text" name="vendeur"
-								value="${requestScope.articleSelectionne.vendeur.pseudo}" class="form-control" disabled />
+								value="${sessionScope.articleSelectionne.vendeur.pseudo}" class="form-control" disabled />
 						</div>
 
 						<div class="mb-3">
 							<label for="retrait">Adresse de retrait : </label> <input id="retrait" type="text" name="retrait"
-								value="${requestScope.articleSelectionne.adresseRetrait.rue}, ${requestScope.articleSelectionne.adresseRetrait.codePostal} ${requestScope.articleSelectionne.adresseRetrait.ville}"
+								value="${sessionScope.articleSelectionne.adresseRetrait.rue}, ${requestScope.articleSelectionne.adresseRetrait.codePostal} ${requestScope.articleSelectionne.adresseRetrait.ville}"
 								class="form-control" disabled />
 						</div>
 
 						<div class="mb-3">
 							<label for="prix_initial">Mise à prix : </label> <input id="prix_initial" type="text" name="prix_initial"
-								value="${requestScope.articleSelectionne.prixInitial} point(s)" class="form-control" disabled />
+								value="${sessionScope.articleSelectionne.prixInitial} point(s)" class="form-control" disabled />
 						</div>
 
-						<c:if test="${ requestScope.articleSelectionne.prixVente != 0}">
+						<c:if test="${ sessionScope.articleSelectionne.prixVente != 0}">
 							<div class="mb-3">
 								<label for="meilleure_offre">Meilleure offre : </label> <input id="meilleure_offre" type="text" name="meilleure_offre"
-								value="${requestScope.articleSelectionne.prixVente} points (par ${ requestScope.articleSelectionne.dernierEncherisseur.pseudo})" class="form-control" disabled />
+								value="${sessionScope.articleSelectionne.prixVente} points (par ${ sessionScope.articleSelectionne.dernierEncherisseur.pseudo})" class="form-control" disabled />
 							</div>
 						</c:if>
 
 						<div class="mb-3">
 							<label for="date_fin_encheres">Fin des enchères :</label> <input id="date_fin_encheres" type="text" name="date_fin_encheres"
-								value="${requestScope.articleSelectionne.dateFinEncheres} (${requestScope.articleSelectionne.heureFinEncheres})" class="form-control" disabled />
+								value="${sessionScope.articleSelectionne.dateFinEncheres} (${sessionScope.articleSelectionne.heureFinEncheres})" class="form-control" disabled />
 						</div>
 
 						<!-- le champ enchérir ne doit pas s'afficher si l'article est vendu par l'utilisateur -->
