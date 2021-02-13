@@ -30,18 +30,20 @@
 			<c:if test="${ not empty requestScope.succesEnchere}">
 				<div class="alert alert-success" role="alert">${succesEnchere}</div>
 			</c:if>
-			
+
 			<c:if test="${ not empty requestScope.montantNonRenseigne}">
 				<div class="alert alert-warning" role="alert">${montantNonRenseigne}</div>
 			</c:if>
-			
+
 			<!-- si les enchères sont clôturées, qu'il y a eu au moins une enchère et que l'utilisateur est le vendeur -->
-			<c:if test="${ not empty requestScope.auMoinsUneEnchere && sessionScope.profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur}">
+			<c:if
+				test="${ not empty requestScope.auMoinsUneEnchere && sessionScope.profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur}">
 				<div class="alert alert-info" role="alert">L'article a été remporté par ${nomDernierEncherisseur} !</div>
 			</c:if>
-			
+
 			<!-- si les enchères sont clôturées, qu'il y a eu au moins une enchère et que l'utilisateur n'est pas le vendeur -->
-			<c:if test="${ not empty requestScope.auMoinsUneEnchere && sessionScope.profilUtilisateur.noUtilisateur != articleSelectionne.vendeur.noUtilisateur}">
+			<c:if
+				test="${ not empty requestScope.auMoinsUneEnchere && sessionScope.profilUtilisateur.noUtilisateur != articleSelectionne.vendeur.noUtilisateur}">
 				<div class="alert alert-info" role="alert">Félicitations, vous avez remporté cet article !</div>
 			</c:if>
 
@@ -49,7 +51,7 @@
 			<c:if test="${ not empty requestScope.aucuneEnchere && sessionScope.profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur}">
 				<div class="alert alert-info" role="alert">Les enchères sont clôturées. Personne n'a enchéri sur votre article.</div>
 			</c:if>
-			
+
 			<!-- si les enchères sont clôturées, qu'il n'y a pas eu d'enchères et que l'utilisateur n'est pas le vendeur -->
 			<c:if test="${ not empty requestScope.aucuneEnchere && sessionScope.profilUtilisateur.noUtilisateur != articleSelectionne.vendeur.noUtilisateur}">
 				<div class="alert alert-info" role="alert">Les enchères sont clôturées. Personne n'a enchéri.</div>
@@ -98,7 +100,8 @@
 						<c:if test="${ sessionScope.articleSelectionne.prixVente != 0}">
 							<div class="mb-3">
 								<label for="meilleure_offre">Meilleure offre : </label> <input id="meilleure_offre" type="text" name="meilleure_offre"
-								value="${sessionScope.articleSelectionne.prixVente} points (par ${ sessionScope.articleSelectionne.dernierEncherisseur.pseudo})" class="form-control" disabled />
+									value="${sessionScope.articleSelectionne.prixVente} points (par ${ sessionScope.articleSelectionne.dernierEncherisseur.pseudo})"
+									class="form-control" disabled />
 							</div>
 						</c:if>
 
@@ -106,6 +109,18 @@
 							<label for="date_fin_encheres">Fin des enchères :</label> <input id="date_fin_encheres" type="text" name="date_fin_encheres"
 								value="${sessionScope.articleSelectionne.dateFinEncheres} (${sessionScope.articleSelectionne.heureFinEncheres})" class="form-control" disabled />
 						</div>
+
+						<!-- la liste des enchérisseurs ne doit s'afficher que si l'article est vendu par l'utilisateur -->
+						<c:if test="${ sessionScope.profilUtilisateur.noUtilisateur == articleSelectionne.vendeur.noUtilisateur && not empty encheresOuvertes && not empty auMoinsUneEnchere}">
+							<div class="mb-3">
+								<label for="liste_encherisseurs">Liste des enchérisseurs :</label> <select name="liste_encherisseurs" id="liste_encherisseurs"
+									class="form-control mb-3" aria-label=".form-select-lg example">
+									<c:forEach var="enchere" items="${ listeDesEncheres }">
+										<option>${enchere.encherisseur.pseudo} (${enchere.montant} points)</option>
+									</c:forEach>
+								</select>
+							</div>
+						</c:if>
 
 						<!-- le champ enchérir ne doit pas s'afficher si l'article est vendu par l'utilisateur -->
 						<!-- il ne doit également pas s'afficher si les enchères sont clôturées sur un article dont il n'est pas le vendeur -->

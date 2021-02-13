@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
-import fr.eni.javaee.encheres.bll.ArticleManager;
+import fr.eni.javaee.encheres.bll.ArticleManagerV2;
 import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Trieur;
 import fr.eni.javaee.encheres.bo.Utilisateur;
@@ -21,7 +21,9 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
  */
 @WebServlet("/accueil")
 public class ServletAccueil extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
+	private ArticleManagerV2 articleManager = new ArticleManagerV2();
 
 	/** 
 	 * retourne les articles pour lequels les enchères sont ouvertes cette méthode est appelée par l'url /accueil de la servlet
@@ -30,11 +32,11 @@ public class ServletAccueil extends HttpServlet {
 
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
-
-		/* Appeler le manager pour récupérer la liste des articles en cours de vente */
-		ArticleManager articleManager = new ArticleManager();
 		List<Article> listesEncheresEC = null;
 
+		/* Appeler le manager pour récupérer la liste des articles en cours de vente */
+		// ArticleManager articleManager = new ArticleManager();
+		
 		try {
 			listesEncheresEC = articleManager.recupereArticlesEncheresOuvertesGet();
 			request.setAttribute("encheresOuvertes", listesEncheresEC);
@@ -78,15 +80,16 @@ public class ServletAccueil extends HttpServlet {
 
 		// System.out.println("\nTEST SERVLET ACCUEIL doPost // Valeur de keyword = " + keyword);
 
-		/* Appeler le manager */
-
-		ArticleManager articleManager = new ArticleManager();
 		List<Article> listeArticlesFiltres = new ArrayList<Article>();
 
+		/* Appeler le manager */
+		// ArticleManager articleManager = new ArticleManager();
+		
 		try {
 
 			/* si un utilisateur est en session */
 			if (utilisateur != null) {
+				
 				listeArticlesFiltres = articleManager.trieEtRecupereArticles(trieur);
 				// System.out.println("\nTEST SERVLET ACCUEIL doPost // Un attribut articlesFiltres a été créé.");
 

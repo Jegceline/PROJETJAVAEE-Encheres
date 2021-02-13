@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
-import fr.eni.javaee.encheres.bll.ArticleManager;
+import fr.eni.javaee.encheres.bll.ArticleManagerV2;
 import fr.eni.javaee.encheres.bll.UtilisateurManager;
 import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Enchere;
@@ -22,7 +22,17 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
  */
 @WebServlet("/membre/fiche-article")
 public class ServletFicheArticle extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
+	
+	// si on déclare un manager comme attribut de la servlet, on fera toujours appel à la même instance de ce manager
+	// étant donné que Tomcat n'instancie qu'une seule fois les servlet et n'utilise plus que cette unique instance jusqu'à ce qu'il soit redémarré.
+	// si on veut déclarer un manager comme attribut de la servlet, il ne faudra donc pas déclarer l'objet modelBllException
+	// en tant qu'attribut du manager car il ne sera jamais ré-initialisé et sa map d'erreurs ne sera donc jamais vidée ! 
+	// voire la version 2 du manager des articles
+	
+	private ArticleManagerV2 articleManager = new ArticleManagerV2();
+	
 
 	/**
 	 * demande au manager si les enchères sont ouvertes ou clôturées (l'état des
@@ -43,20 +53,31 @@ public class ServletFicheArticle extends HttpServlet {
 		Integer noArticle = Integer.parseInt(request.getParameter("noArticle"));
 		request.getSession().setAttribute("noArticle", noArticle);
 		// System.out.println("\nTEST SERVLET DETAIL ARTICLE // Numéro de l'objet = " + noArticle);
+		
+		Article article = null;
 
 		/* Appeler le manager pour récupérer les infos de l'objet */
-		ArticleManager articleManager = new ArticleManager();
-		Article article = articleManager.recupereArticle(noArticle);
-
-		/* Mettre l'article en mémoire dans la session pour le rendre disponible pour la
-		 * méthode doPost */
-		request.getSession().setAttribute("articleSelectionne", article);
-		request.setAttribute("articleSelectionne", article);
+		try {
+			article = articleManager.recupereArticle(noArticle);
+			
+			/* Mettre l'article en mémoire dans la session pour le rendre disponible pour la
+			 * méthode doPost */
+			request.getSession().setAttribute("articleSelectionne", article);
+			request.setAttribute("articleSelectionne", article);
+			
+			List<Enchere> listeEncheres = articleManager.recupereEncheres(noArticle);
+			request.setAttribute("listeDesEncheres", listeEncheres);
+			
+		} catch (ModelException e1) {
+			e1.printStackTrace();
+			request.setAttribute("mapErreurs", e1.getMapErreurs());
+		}
 
 		boolean encheresOuvertes;
 		boolean encheresCloturees;
 
-		/* regarder si les enchères sont ouvertes OU si elles sont clôturées */
+		/* regarder si les enchères sont ouvertes OU si elles sont clôturées 
+		 * pour conditionner l'affichage des boutons Modifier et Enchérir */
 
 		try {
 			encheresOuvertes = articleManager.controleDateDebutOuvertureEncheres(article);
@@ -165,14 +186,14 @@ public class ServletFicheArticle extends HttpServlet {
 			Enchere enchere = new Enchere(montantEnchere, encherisseur, article);
 
 			/* Appeler les managers */
-			ArticleManager articleManager = new ArticleManager();
+			// ArticleManager articleManager = new ArticleManager();
 			UtilisateurManager utilisateurManager = new UtilisateurManager();
 
 			try {
 				/* récupération de la précédente enchère s'il y en avait une */
 				precedenteEnchere = articleManager.controleEtAjouteEnchereSurArticle(enchere);
 				
-				System.out.println("\nTEST SERVLET FICHE ARTICLE doPost() // Précédente enchère = "  + precedenteEnchere);
+				// System.out.println("\nTEST SERVLET FICHE ARTICLE doPost() // Précédente enchère = "  + precedenteEnchere);
 
 				/* actualisation du crédit de l'enchérisseur et du précédent enchérisseur s'il y en avait un */
 				utilisateurManager.actualiseCredit(enchere, precedenteEnchere);

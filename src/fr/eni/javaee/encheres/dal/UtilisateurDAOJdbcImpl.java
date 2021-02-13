@@ -42,6 +42,9 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 	/* ----------- Méthodes C-U-D ------------ */
 
+	/**
+	 * ajoute un utilisateur en base de données
+	 */
 	@Override
 	public void insert(Utilisateur utilisateur) throws ModelException {
 
@@ -104,17 +107,28 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 	}
 
 	/**
-	 * supprime un utilisateur
+	 * supprime un utilisateur de la base de données
 	 */
 	@Override
 	public void delete(Integer noUtilisateur) throws ModelException {
-
+		
+		// 1 - Supprimer toutes les enchères de l'utilisateur
+		// 2 - Supprimer les ventes en attente et achevées de l'utilisateur
+		// 3 - Supprimer l'utilisateur
+		
 		try {
 			/* ouverture d'une connexion */
 			Connection cnx = ConnectionProvider.getConnection();
+			cnx.setAutoCommit(false);
 
 			try {
-				/* préparation de la requête */
+				/* suppression de toutes les enchères émises par l'utilisateur */
+				((EnchereDAO) enchereDAO).retrieveAndDeleteAllUserBids(noUtilisateur, cnx);
+				
+				/* suppression de toutes les articles de l'utilisateur */
+				((ArticleDAO) articleDAO).retrieveAndDeleteAllUserSells(noUtilisateur, cnx);
+				
+				/* préparation de la requête de supression de l'utilisateur */
 				PreparedStatement query = cnx.prepareStatement(DELETE_USER);
 
 				/* valorisation du paramètre */
@@ -122,10 +136,14 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 				/* exécution de la requête */
 				query.executeUpdate();
-
+				
+				/* commit de toutes les requêtes effectuées sur la connexion */
+				cnx.commit();
+				
 			} catch (SQLException e) {
 				e.printStackTrace();
 				
+				cnx.rollback();
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_DELETE_SQL, "L'exécution de la requête DELETE_USER a échoué.");
 				// System.out.println("L'exécution de la requête DELETE_USER a échoué !");
 
@@ -694,6 +712,7 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 
 		return credit;
 	}
+	
 	
 	/* -------------- BUILDERS -------------- */
 

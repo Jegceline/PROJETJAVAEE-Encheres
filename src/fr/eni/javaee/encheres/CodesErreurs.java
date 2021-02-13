@@ -28,6 +28,7 @@ public abstract class CodesErreurs {
 	public static int ERREUR_CREDIT_INSUFFISANT = 123;
 	public static int ERREUR_MONTANT_ENCHERE = 124;
 	public static int ERREUR_ARTICLE_HEURE_DEBUT_ENCHERES_INVALIDE = 125;
+	public static int ERREUR_SUPPRESSION_UTILISATEUR = 126;
 
 	// Erreurs de la DAL (entre 0 et 99)
 
@@ -55,5 +56,8 @@ public abstract class CodesErreurs {
 	public static int ERREUR_UPDATE_ITEM = 21;
 	public static int ERREUR_SELECT_ARTICLE_BY_ID = 22;
 	public static int ERREUR_UPDATE_ITEM_PAYMENT_STATUS = 23;
+	public static int ERREUR_SELECT_ALL_USER_BIDS = 24;
+	public static int ERREUR_DELETE_BID = 25;
+	public static int ERREUR_SELECT_ALL_ITEM_BIDS = 26;
 
 }

@@ -11,9 +11,9 @@ public class Adresse {
 	}
 	public Adresse(String rue, Integer codePostal, String ville) {
 		super();
-		this.rue = rue;
+		this.rue = rue.trim();
 		this.codePostal = codePostal;
-		this.ville = ville;
+		this.ville = ville.trim();
 	}
 	
 	
@@ -21,7 +21,7 @@ public class Adresse {
 		return rue;
 	}
 	public void setRue(String rue) {
-		this.rue = rue;
+		this.rue = rue.trim();
 	}
 	public Integer getCodePostal() {
 		return codePostal;
@@ -33,7 +33,7 @@ public class Adresse {
 		return ville;
 	}
 	public void setVille(String ville) {
-		this.ville = ville;
+		this.ville = ville.trim();
 	}
 	@Override
 	public String toString() {

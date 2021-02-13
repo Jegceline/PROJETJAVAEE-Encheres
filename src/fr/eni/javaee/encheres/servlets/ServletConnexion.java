@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
-import fr.eni.javaee.encheres.bll.UtilisateurManager;
+import fr.eni.javaee.encheres.bll.UtilisateurManagerV2;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
 /**
@@ -23,7 +23,7 @@ public class ServletConnexion extends HttpServlet {
 	public static final String COOKIE_UTILISATEUR_IDENTIFIANT = "cookieUserId";
 	public static final String COOKIE_UTILISATEUR_MDP = "cookieUserPassword";
 	
-	private UtilisateurManager utilisateurManager = new UtilisateurManager();
+	private UtilisateurManagerV2 utilisateurManager = new UtilisateurManagerV2();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -43,30 +43,27 @@ public class ServletConnexion extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		/* Récupérer les paramètres du formulaire */
-		String identifiant = request.getParameter("identifiant").trim();
+		String identifiantConnexion = request.getParameter("identifiant").trim();
 		String motDePasse = request.getParameter("motdepasse").trim();
 		// System.out.println("\nTEST SERVLET CONNEXION // Identifiant récupéré qui sera envoyé au Manager : " + identifiant);
 
-		/* Appeler le manager */
-		// UtilisateurManager utilisateurManager = new UtilisateurManager();
 		Utilisateur utilisateur = null;
 
 		try {
-			utilisateur = utilisateurManager.rechercheUtilisateur(identifiant);
+			/* Appeler le manager */
+			utilisateur = utilisateurManager.rechercheUtilisateur(identifiantConnexion);
 			// System.out.println("\nTEST SERVLET CONNEXION // Utilisateur retourné par le Manager : " + utilisateur);
 
 			/* si l'utilisateur existe */
 			if (utilisateur != null) {
-				utilisateurManager.recupereEtControleMdp(identifiant, motDePasse);
-
-				/* On place l'objet utilisateur dans la session */
-				request.getSession().setAttribute("profilUtilisateur", utilisateur);
+				utilisateurManager.recupereEtControleMdp(identifiantConnexion, motDePasse);
 
 				/* si l'utilisateur a coché la case "se souvenir de moi", on enregistre son id
 				 * et son mdp dans deux cookies qu'on envoie au navigateur */
+				
 				if (request.getParameter("memoriserUtilisateur") != null) {
 
-					Cookie cookieIdentifiant = new Cookie(COOKIE_UTILISATEUR_IDENTIFIANT, identifiant);
+					Cookie cookieIdentifiant = new Cookie(COOKIE_UTILISATEUR_IDENTIFIANT, identifiantConnexion);
 					cookieIdentifiant.setMaxAge(60 * 60 * 24 * 365 * 10); // bricolage pour spécifier une durée de vie très longue
 
 					Cookie cookieMdp = new Cookie(COOKIE_UTILISATEUR_MDP, motDePasse);
@@ -75,6 +72,10 @@ public class ServletConnexion extends HttpServlet {
 					response.addCookie(cookieIdentifiant);
 					response.addCookie(cookieMdp);
 				}
+				
+				/* on crédite l'utilisateur de toutes ses ventes qui se sont achevées depuis sa dernière connexion 
+				 * ou depuis qu'il a cliqué sur le lien "actualiser mes points" */
+				crediteUtilisateur(utilisateur, request);
 
 				response.sendRedirect(request.getContextPath() + "/accueil");
 
@@ -89,5 +90,21 @@ public class ServletConnexion extends HttpServlet {
 			request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(request, response);
 		}
 
+	}
+
+	private void crediteUtilisateur(Utilisateur utilisateur, HttpServletRequest request) throws ModelException {
+
+		try {
+			utilisateurManager.crediteVendeur(utilisateur.getNoUtilisateur());
+			Utilisateur utilisateurMaj = utilisateurManager.recupereUtilisateur(utilisateur.getNoUtilisateur());
+			
+			/* On place l'objet utilisateur dans la session */
+			request.getSession().setAttribute("profilUtilisateur", utilisateurMaj);
+			
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
 	}
 }

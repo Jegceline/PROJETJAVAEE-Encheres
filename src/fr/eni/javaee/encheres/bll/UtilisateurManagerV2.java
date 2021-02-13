@@ -10,22 +10,23 @@ import fr.eni.javaee.encheres.ModelException;
 import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.bo.Utilisateur;
+import fr.eni.javaee.encheres.dal.ArticleDAO;
 import fr.eni.javaee.encheres.dal.DAO;
 import fr.eni.javaee.encheres.dal.DAOFactory;
 import fr.eni.javaee.encheres.dal.EnchereDAO;
 import fr.eni.javaee.encheres.dal.UtilisateurDAO;
 
-public class UtilisateurManager {
+public class UtilisateurManagerV2 {
 
 	/* Variables */
 
-	private ModelException modelBllException = new ModelException();
 	private DAO<Utilisateur> utilisateurDAO = DAOFactory.getUtilisateurDAO();
 	private DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
+	private DAO<Article> articleDAO = DAOFactory.getArticleDAO();
 
 	/* Constructeur */
 
-	public UtilisateurManager() {
+	public UtilisateurManagerV2() {
 	}
 
 	/* ----------------------------------------- */
@@ -36,19 +37,21 @@ public class UtilisateurManager {
 
 		/* vérifier que les contraintes imposées par la database sont respectées */
 
-		valideNomPrenom(utilisateur.getNom(), utilisateur.getPrenom());
-		validePseudo(utilisateur.getPseudo());
-		valideEmail(utilisateur.getEmail());
-		valideTelephone(utilisateur.getTelephone());
-		valideAdresse(utilisateur.getRue(), utilisateur.getCodePostal());
-		valideMdp(utilisateur.getMotDePasse(), motDePasseBis);
+		ModelException modelBllException = new ModelException();
+
+		modelBllException = valideNomPrenom(utilisateur.getNom(), utilisateur.getPrenom(), modelBllException);
+		modelBllException = validePseudo(utilisateur.getPseudo(), modelBllException);
+		modelBllException = valideEmail(utilisateur.getEmail(), modelBllException);
+		modelBllException = valideTelephone(utilisateur.getTelephone(), modelBllException);
+		modelBllException = valideAdresse(utilisateur.getRue(), utilisateur.getCodePostal(), modelBllException);
+		modelBllException = valideMdp(utilisateur.getMotDePasse(), motDePasseBis, modelBllException);
 
 		/* si les étapes de validation ont été passées avec succès, aappeler le DAO */
 
 		if (!modelBllException.contientErreurs()) {
 
-//			System.out.println("\nMANAGER // Les paramètres sont ok, le DAO va être appelé.");
-			
+			//			System.out.println("\nMANAGER // Les paramètres sont ok, le DAO va être appelé.");
+
 			/* on attribue un crédit de 100 à l'utilisateur */
 			utilisateur.setCredit(100);
 
@@ -93,9 +96,41 @@ public class UtilisateurManager {
 	}
 
 	public void supprimeUtilisateur(Integer noUtilisateur) throws ModelException {
+		
+		// L'utilisateur peut supprimer son compte s'il n'a aucune enchère en cours
+		// ET s'il n'a aucune vente en cours
+		
+		boolean userHaveBidsOnCurrentlyOnSaleItems = false;
+		boolean userHaveItemsCurrentlyOnSale = false;
+		List<Integer> listeNoEncheres;
+		List<Integer> listeNoArticles;
+		
 		try {
-			utilisateurDAO.delete(noUtilisateur);
-
+			 
+			listeNoEncheres = ((EnchereDAO) enchereDAO).retrieveAllBidsUserHavePutOnCurrentlyOnSaleItems(noUtilisateur); 
+			
+			if(!listeNoEncheres.isEmpty()) {
+				userHaveBidsOnCurrentlyOnSaleItems = true;
+			}
+			
+			listeNoArticles = ((ArticleDAO) articleDAO).retrieveAllUserCurrentlyOnSaleItems(noUtilisateur); 
+			
+			if(!listeNoArticles.isEmpty()) {
+				userHaveItemsCurrentlyOnSale = true;
+			}
+			
+			/* si l'utilisateur n'a aucune enchère d'émise sur des articles actuellement en vente et s'il n'a aucune vente en cours */
+			if(!userHaveBidsOnCurrentlyOnSaleItems && !userHaveItemsCurrentlyOnSale) {
+				
+				/* alors il peut être supprimé */
+				utilisateurDAO.delete(noUtilisateur);
+				
+			} else {
+				ModelException modelBllException = new ModelException();
+				modelBllException.ajouterErreur(CodesErreurs.ERREUR_SUPPRESSION_UTILISATEUR, "Vous ne pouvez pas supprimer votre compte si vous avez des enchères ou des ventes en cours.");
+				throw modelBllException;
+			}
+				
 		} catch (ModelException e) {
 			e.printStackTrace();
 			throw e;
@@ -103,23 +138,24 @@ public class UtilisateurManager {
 
 	}
 
-	public Utilisateur metAJourUtilisateur(Utilisateur utilisateurSession, Utilisateur utilisateurAvecModif, String confirmationMdp)
-			throws ModelException {
+	public Utilisateur metAJourUtilisateur(Utilisateur utilisateurSession, Utilisateur utilisateurAvecModif, String confirmationMdp) throws ModelException {
 
+		ModelException modelBllException = new ModelException();
+		
 		/* Vérification des nouveaux paramètres */
 
 		if (!utilisateurSession.getEmail().equals(utilisateurAvecModif.getEmail())) {
-			valideEmail(utilisateurAvecModif.getEmail());
+			modelBllException = valideEmail(utilisateurAvecModif.getEmail(), modelBllException);
 		}
 
 		if (!utilisateurSession.getPseudo().equals(utilisateurAvecModif.getPseudo())) {
-			validePseudo(utilisateurAvecModif.getPseudo());
+			modelBllException = validePseudo(utilisateurAvecModif.getPseudo(), modelBllException);
 		}
 
-		valideNomPrenom(utilisateurAvecModif.getNom(), utilisateurAvecModif.getPrenom());
-		valideTelephone(utilisateurAvecModif.getTelephone());
-		valideAdresse(utilisateurAvecModif.getRue(), utilisateurAvecModif.getCodePostal());
-		valideMdp(utilisateurAvecModif.getMotDePasse(), confirmationMdp);
+		modelBllException = valideNomPrenom(utilisateurAvecModif.getNom(), utilisateurAvecModif.getPrenom(), modelBllException);
+		modelBllException = valideTelephone(utilisateurAvecModif.getTelephone(), modelBllException);
+		modelBllException = valideAdresse(utilisateurAvecModif.getRue(), utilisateurAvecModif.getCodePostal(), modelBllException);
+		modelBllException = valideMdp(utilisateurAvecModif.getMotDePasse(), confirmationMdp, modelBllException);
 
 		/* si les paramètres sont intègres, appeler le DAO */
 
@@ -165,8 +201,9 @@ public class UtilisateurManager {
 	 * @return motDePasseBdd
 	 * @throws ModelException
 	 */
-	public void recupereEtControleMdp(String identifiant, String motDePasse) throws ModelException {
+	public ModelException recupereEtControleMdp(String identifiant, String motDePasse) throws ModelException {
 		String motDePasseBdd = null;
+		ModelException modelBllException = new ModelException();
 
 		try {
 			motDePasseBdd = ((UtilisateurDAO) utilisateurDAO).retrieveUserPassword(identifiant);
@@ -180,6 +217,8 @@ public class UtilisateurManager {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_INCORRECT, "Le mot de passe est incorrect.");
 			throw modelBllException;
 		}
+		
+		return modelBllException;
 
 	}
 
@@ -190,7 +229,7 @@ public class UtilisateurManager {
 	 * @param mdp
 	 * @param mdp2
 	 */
-	private void valideMdp(String mdp, String mdp2) {
+	private ModelException valideMdp(String mdp, String mdp2, ModelException modelBllException) {
 
 		if (!mdp.trim().equals(mdp2.trim())) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_MOTDEPASSE_CONFIRMATION, "Les deux mots de passe ne sont pas identiques.");
@@ -202,6 +241,8 @@ public class UtilisateurManager {
 				// System.out.println("\nTEST // Le mot de passe est trop long.");
 			}
 		}
+		
+		return modelBllException;
 
 	}
 
@@ -212,15 +253,17 @@ public class UtilisateurManager {
 	 * @param rue
 	 * @param cpo
 	 */
-	private void valideAdresse(String rue, String cpo) {
+	private ModelException valideAdresse(String rue, String cpo, ModelException modelBllException) {
 		if (rue.length() > 30) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ADRESSE_LONGUEUR, "L'intitulé de la rue est trop long.");
 			System.out.println("\nTEST // L'intitulé de la rue est trop long.");
 		}
 		if (cpo.trim().length() > 10) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ADRESSE_CPO, "Le code postal n'est pas valide.");
-			System.out.println("\nTEST // Le code postal n'est pas valide.");
+			// System.out.println("\nTEST // Le code postal n'est pas valide.");
 		}
+
+		return modelBllException;
 	}
 
 	/**
@@ -228,12 +271,13 @@ public class UtilisateurManager {
 	 * 
 	 * @param telephone
 	 */
-	private void valideTelephone(String telephone) {
+	private ModelException valideTelephone(String telephone, ModelException modelBllException) {
 		if (telephone.trim().length() > 15) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_TELEPHONE_INVALIDE, "Le numéro de téléphone n'est pas valide.");
-			System.out.println("\nTEST // Le numéro de téléphone n'est pas valide.");
+			// System.out.println("\nTEST // Le numéro de téléphone n'est pas valide.");
 		}
-
+		
+		return modelBllException;
 	}
 
 	/**
@@ -244,7 +288,7 @@ public class UtilisateurManager {
 	 * @param email
 	 * @throws ModelException
 	 */
-	private void valideEmail(String email) throws ModelException {
+	private ModelException valideEmail(String email, ModelException modelBllException) throws ModelException {
 
 		List<String> listeEmails = new ArrayList<String>();
 
@@ -277,6 +321,8 @@ public class UtilisateurManager {
 			// System.out.println("MANAGER : L'adresse e-mail ne respecte pas format d'une
 			// adresse e-mail.");
 		}
+		
+		return modelBllException;
 	}
 
 	/**
@@ -287,7 +333,7 @@ public class UtilisateurManager {
 	 * @param pseudo
 	 * @throws ModelException
 	 */
-	private void validePseudo(String pseudo) throws ModelException {
+	private ModelException validePseudo(String pseudo, ModelException modelBllException) throws ModelException {
 
 		List<String> listePseudo = new ArrayList<String>();
 
@@ -316,11 +362,12 @@ public class UtilisateurManager {
 		Matcher pseudoMatcher = pattern.matcher(pseudo);
 
 		if (!pseudoMatcher.matches()) {
-			modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_FORMAT,
-					"Votre pseudo doit uniquement contenir des caractères alphanumériques.");
+			modelBllException.ajouterErreur(CodesErreurs.ERREUR_PSEUDO_FORMAT, "Votre pseudo doit uniquement contenir des caractères alphanumériques.");
 			// System.out.println("MANAGER : Le pseudo de l'uilisateur ne respecte pas le
 			// format autorisé.");
 		}
+
+		return modelBllException;
 	}
 
 	/**
@@ -329,7 +376,7 @@ public class UtilisateurManager {
 	 * @param nom
 	 * @param prenom
 	 */
-	private void valideNomPrenom(String nom, String prenom) {
+	private ModelException valideNomPrenom(String nom, String prenom, ModelException modelBllException) {
 		if (nom.trim().length() > 30) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_NOM_INVALIDE, "Le nom de famille est trop long.");
 			System.out.println("\nTEST // Le nom est trop long.");
@@ -339,6 +386,7 @@ public class UtilisateurManager {
 			System.out.println("\nTEST // Le prénom est trop long.");
 		}
 
+		return modelBllException;
 	}
 
 	/* ----------------------------------------- */
@@ -378,8 +426,9 @@ public class UtilisateurManager {
 	 */
 	public Integer recupereEtControleSoldeCredits(Integer noUtilisateur, Integer montantEnchere) throws ModelException {
 
+		ModelException modelBllException = new ModelException();
 		Integer credit;
-		UtilisateurManager utilisateurManager = new UtilisateurManager();
+		UtilisateurManagerV2 utilisateurManager = new UtilisateurManagerV2();
 
 		try {
 			credit = utilisateurManager.recupereCredit(noUtilisateur);
@@ -431,8 +480,8 @@ public class UtilisateurManager {
 				e.printStackTrace();
 				throw e;
 			}
-			
-		/* si c'est la première enchère */
+
+			/* si c'est la première enchère */
 		} else {
 
 			try {
@@ -481,12 +530,12 @@ public class UtilisateurManager {
 	public void crediteVendeur(Integer noUtilisateur) throws ModelException {
 		try {
 			((UtilisateurDAO) utilisateurDAO).updateSellerCredit(noUtilisateur);
-			
+
 		} catch (ModelException e) {
 			e.printStackTrace();
 			throw e;
 		}
-		
+
 	}
 
 }

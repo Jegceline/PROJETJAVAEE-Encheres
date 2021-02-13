@@ -14,17 +14,18 @@ import fr.eni.javaee.encheres.bo.Trieur;
 import fr.eni.javaee.encheres.dal.ArticleDAO;
 import fr.eni.javaee.encheres.dal.DAO;
 import fr.eni.javaee.encheres.dal.DAOFactory;
+import fr.eni.javaee.encheres.dal.EnchereDAO;
 
-public class ArticleManager {
+public class ArticleManagerV2 {
 
 	/* Variables */
 
-	private ModelException modelBllException = new ModelException();
 	private DAO<Article> articleDAO = DAOFactory.getArticleDAO();
+	private DAO<Enchere> enchereDAO = DAOFactory.getEnchereDAO();
 
 	/* Constructeur */
 
-	public ArticleManager() {
+	public ArticleManagerV2() {
 	}
 
 	/* ----------------------------------------- */
@@ -41,15 +42,17 @@ public class ArticleManager {
 	 * @throws ModelException
 	 */
 	public void ajouteArticle(Article article) throws ModelException {
+
+		ModelException modelBllException = new ModelException();
 		
 		/* vérifier que les contraintes imposées par la database sont respectées */
 		
-		valideNomArticle(article.getNomArticle());
-		valideDescriptionArticle(article.getDescription());
-		valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres(), article.getHeureDebutEncheres(),
-				article.getHeureFinEncheres());
-		valideCategorie(article.getCategorie().getNoCategorie());
-		validePrixInitial(article.getPrixInitial());
+		modelBllException = valideNomArticle(article.getNomArticle(), modelBllException);
+		modelBllException = valideDescriptionArticle(article.getDescription(), modelBllException);
+		modelBllException = valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres(), article.getHeureDebutEncheres(),
+				article.getHeureFinEncheres(), modelBllException);
+		modelBllException = valideCategorie(article.getCategorie().getNoCategorie(), modelBllException);
+		modelBllException = validePrixInitial(article.getPrixInitial(), modelBllException);
 
 		/* si tous les paramètres sont ok, appeler le DAO */
 
@@ -71,12 +74,16 @@ public class ArticleManager {
 
 	public void metAJourArticle(Article article) throws ModelException {
 
-		valideNomArticle(article.getNomArticle());
-		valideDescriptionArticle(article.getDescription());
-		valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres(), article.getHeureDebutEncheres(),
-				article.getHeureFinEncheres());
-		valideCategorie(article.getCategorie().getNoCategorie());
-		validePrixInitial(article.getPrixInitial());
+		ModelException modelBllException = new ModelException();
+		
+		/* vérifier que les contraintes imposées par la database sont respectées */
+		
+		modelBllException = valideNomArticle(article.getNomArticle(), modelBllException);
+		modelBllException = valideDescriptionArticle(article.getDescription(), modelBllException);
+		modelBllException = valideDatesEncheres(article.getDateDebutEncheres(), article.getDateFinEncheres(), article.getHeureDebutEncheres(),
+				article.getHeureFinEncheres(), modelBllException);
+		modelBllException = valideCategorie(article.getCategorie().getNoCategorie(), modelBllException);
+		modelBllException = validePrixInitial(article.getPrixInitial(), modelBllException);
 
 		/* si tous les paramètres sont ok */
 		if (!modelBllException.contientErreurs()) {
@@ -131,20 +138,23 @@ public class ArticleManager {
 	 * 
 	 * @param prixInitial
 	 */
-	private void validePrixInitial(Integer prixInitial) {
+	private ModelException validePrixInitial(Integer prixInitial, ModelException modelBllException) {
 		if (prixInitial < 0) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_PRIX_INVALIDE, "Le prix ne peut pas être négatif.");
 		}
+		
+		return modelBllException;
 	}
 
 	/*
 	 * vérifie qu'une catégorie a bien été sélectionnée (valeur différente de zéro)
 	 */
-	private void valideCategorie(Integer noCategorie) {
+	private ModelException valideCategorie(Integer noCategorie, ModelException modelBllException) {
 		if (noCategorie == 0) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_CATEGORIE_INEXISTANTE, "Veuillez sélectionner une catégorie.");
 		}
-
+		
+		return modelBllException;
 	}
 
 	/**
@@ -155,8 +165,8 @@ public class ArticleManager {
 	 * @param heureDebutEncheres
 	 * @param heureFinEncheres
 	 */
-	private void valideDatesEncheres(LocalDate dateDebutEncheres, LocalDate dateFinEncheres, LocalTime heureDebutEncheres,
-			LocalTime heureFinEncheres) {
+	private ModelException valideDatesEncheres(LocalDate dateDebutEncheres, LocalDate dateFinEncheres, LocalTime heureDebutEncheres,
+			LocalTime heureFinEncheres, ModelException modelBllException) {
 
 		if (dateDebutEncheres.isBefore(LocalDate.now())) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DATE_DEBUT_ENCHERES_INVALIDE,
@@ -182,6 +192,8 @@ public class ArticleManager {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_HEURE_DEBUT_ENCHERES_INVALIDE,
 					"L'heure de fin des enchères ne peut pas être antérieure à l'heure actuelle.");
 		}
+		
+		return modelBllException;
 
 	}
 
@@ -191,11 +203,12 @@ public class ArticleManager {
 	 * 
 	 * @param nomArticle
 	 */
-	private void valideNomArticle(String nomArticle) {
+	private ModelException valideNomArticle(String nomArticle, ModelException modelBllException) {
 
 		if (nomArticle.length() > 30) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_NOM_LONGUEUR, "Le nom de l'article est trop long.");
 		}
+		return modelBllException;
 	}
 
 	/**
@@ -204,10 +217,11 @@ public class ArticleManager {
 	 * 
 	 * @param description
 	 */
-	private void valideDescriptionArticle(String description) {
+	private ModelException valideDescriptionArticle(String description, ModelException modelBllException) {
 		if (description.trim().length() > 300) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DESCRIPTION_LONGUEUR, "La description est trop longue.");
 		}
+		return modelBllException;
 	}
 
 	/*
@@ -223,6 +237,7 @@ public class ArticleManager {
 		Integer prixInitial = null;
 		Integer prixActuel = null;
 		Boolean premiereEnchere = false;
+		ModelException modelBllException = new ModelException();
 
 		try {
 
@@ -336,6 +351,7 @@ public class ArticleManager {
 	public List<Article> recupereArticlesEncheresOuvertesPost(Trieur trieur) throws ModelException {
 
 		List<Article> listesEncheresEC = null;
+		ModelException modelBllException = new ModelException();
 
 		try {
 			listesEncheresEC = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsWithFilter(trieur);
@@ -361,6 +377,7 @@ public class ArticleManager {
 	public List<Article> recupereArticlesEncheresOuvertesGet() throws ModelException {
 
 		List<Article> listesEncheresEC = null;
+		ModelException modelBllException = new ModelException();
 
 		try {
 			listesEncheresEC = ((ArticleDAO) articleDAO).retrieveCurrentlyForSaleItemsGet();
@@ -482,6 +499,7 @@ public class ArticleManager {
 		Boolean premiereEnchere;
 		Enchere precedenteEnchere = null;
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
+		ModelException modelBllException = new ModelException();
 		
 		try {
 
@@ -561,6 +579,19 @@ public class ArticleManager {
 		// }
 
 		return precedenteEnchere;
+	}
+
+	/* récupère toutes les enchères émises sur un article */
+	public List<Enchere> recupereEncheres(Integer noArticle) throws ModelException {
+		List<Enchere> listeEncheres;
+		try {
+			listeEncheres = ((EnchereDAO) enchereDAO).retrieveAllItemBids(noArticle);
+		} catch (ModelException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return listeEncheres;
 	}
 
 }

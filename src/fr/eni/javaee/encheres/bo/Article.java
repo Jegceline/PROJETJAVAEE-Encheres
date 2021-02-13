@@ -26,8 +26,8 @@ public class Article {
 	}
 
 	public Article(String nomArticle, String description, LocalDate dateDebutEncheres, LocalDate dateFinEncheres, Integer prixInitial, Categorie categorie, Utilisateur vendeur, Adresse adresseRetrait) {
-		this.nomArticle = nomArticle;
-		this.description = description;
+		this.nomArticle = nomArticle.trim();
+		this.description = description.trim();
 		this.dateDebutEncheres = dateDebutEncheres;
 		this.dateFinEncheres = dateFinEncheres;
 		this.prixInitial = prixInitial;
@@ -40,8 +40,8 @@ public class Article {
 	public Article(String nomArticle, String description, LocalDate dateDebutEncheres, LocalTime heureDebutEncheres,
 			LocalDate dateFinEncheres, LocalTime heureFinEncheres, Integer prixInitial, Categorie categorie, Utilisateur vendeur, Adresse adresseRetrait) {
 		super();
-		this.nomArticle = nomArticle;
-		this.description = description;
+		this.nomArticle = nomArticle.trim();
+		this.description = description.trim();
 		this.dateDebutEncheres = dateDebutEncheres;
 		this.heureDebutEncheres = heureDebutEncheres;
 		this.dateFinEncheres = dateFinEncheres;
@@ -56,8 +56,8 @@ public class Article {
 			LocalDate dateFinEncheres, LocalTime heureFinEncheres, Integer prixInitial, Categorie categorie, Utilisateur vendeur, Adresse adresseRetrait) {
 		super();
 		this.noArticle = noArticle;
-		this.nomArticle = nomArticle;
-		this.description = description;
+		this.nomArticle = nomArticle.trim();
+		this.description = description.trim();
 		this.dateDebutEncheres = dateDebutEncheres;
 		this.heureDebutEncheres = heureDebutEncheres;
 		this.dateFinEncheres = dateFinEncheres;

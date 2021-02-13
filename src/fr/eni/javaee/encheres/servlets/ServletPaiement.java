@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
-import fr.eni.javaee.encheres.bll.UtilisateurManager;
+import fr.eni.javaee.encheres.bll.UtilisateurManagerV2;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
 /**
@@ -25,7 +25,7 @@ public class ServletPaiement extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		UtilisateurManager utilisateurManager = new UtilisateurManager();
+		UtilisateurManagerV2 utilisateurManager = new UtilisateurManagerV2();
 		
 		Utilisateur utilisateurSession = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 		

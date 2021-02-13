@@ -43,10 +43,10 @@ public class ServletVenteArticle extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		/* Récupérer les paramètres du formulaire */
-		String nomArticle = request.getParameter("nom_article").trim();
-		String description = request.getParameter("description").trim();
-		Integer noCategorie = Integer.parseInt(request.getParameter("no_categorie").trim());
-		Integer prixInitial = Integer.parseInt(request.getParameter("prix_initial").trim());
+		String nomArticle = request.getParameter("nom_article");
+		String description = request.getParameter("description");
+		Integer noCategorie = Integer.parseInt(request.getParameter("no_categorie"));
+		Integer prixInitial = Integer.parseInt(request.getParameter("prix_initial"));
 		LocalDate dateDebutEncheres = null;
 		LocalDate dateFinEncheres = null;
 		LocalTime heureDebutEncheres = null;

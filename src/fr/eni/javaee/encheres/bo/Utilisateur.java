@@ -19,15 +19,15 @@ public class Utilisateur {
 	public Utilisateur(String pseudo, String nom, String prenom, String email, String telephone, String rue, String codePostal,
 			String ville, String motDePasse) {
 		this();
-		this.pseudo = pseudo;
+		this.pseudo = pseudo.trim();
 		this.nom = nom.toUpperCase();
-		this.prenom = prenom;
-		this.email = email;
-		this.telephone = telephone;
-		this.rue = rue;
-		this.codePostal = codePostal;
-		this.ville = ville;
-		this.motDePasse = motDePasse;
+		this.prenom = prenom.trim();
+		this.email = email.trim();
+		this.telephone = telephone.trim();
+		this.rue = rue.trim();
+		this.codePostal = codePostal.trim();
+		this.ville = ville.trim();
+		this.motDePasse = motDePasse.trim();
 	}
 
 	// constructeur avec id
@@ -36,15 +36,15 @@ public class Utilisateur {
 			String codePostal, String ville, String motDePasse) {
 		super();
 		this.noUtilisateur = noUtilisateur;
-		this.pseudo = pseudo;
-		this.nom = nom;
-		this.prenom = prenom;
-		this.email = email;
-		this.telephone = telephone;
-		this.rue = rue;
-		this.codePostal = codePostal;
-		this.ville = ville;
-		this.motDePasse = motDePasse;
+		this.pseudo = pseudo.trim();
+		this.nom = nom.trim();
+		this.prenom = prenom.trim();
+		this.email = email.trim();
+		this.telephone = telephone.trim();
+		this.rue = rue.trim();
+		this.codePostal = codePostal.trim();
+		this.ville = ville.trim();
+		this.motDePasse = motDePasse.trim();
 	}
 	
 	
@@ -52,15 +52,15 @@ public class Utilisateur {
 			String codePostal, String ville, String motDePasse, Integer credit, boolean administrateur) {
 		super();
 		this.noUtilisateur = noUtilisateur;
-		this.pseudo = pseudo;
-		this.nom = nom;
-		this.prenom = prenom;
-		this.email = email;
-		this.telephone = telephone;
-		this.rue = rue;
-		this.codePostal = codePostal;
-		this.ville = ville;
-		this.motDePasse = motDePasse;
+		this.pseudo = pseudo.trim();
+		this.nom = nom.trim();
+		this.prenom = prenom.trim();
+		this.email = email.trim();
+		this.telephone = telephone.trim();
+		this.rue = rue.trim();
+		this.codePostal = codePostal.trim();
+		this.ville = ville.trim();
+		this.motDePasse = motDePasse.trim();
 		this.credit = credit;
 		this.administrateur = administrateur;
 	}

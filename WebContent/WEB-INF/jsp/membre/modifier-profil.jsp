@@ -23,18 +23,10 @@
 			<h2 class="mt-4">Modifier mon profil</h2>
 			<hr>
 
-			<!--
-			<c:if test="${ not empty succesModifProfil}">
-				<div class="alert alert-success" role="alert">${succesModifProfil}</div>
-			</c:if>
-			-->
-
 
 			<c:forEach var="couple" items="${ mapErreurs }">
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
-
-
 
 
 			<form action="<%=request.getContextPath()%>/membre/modifier-profil" method="POST">

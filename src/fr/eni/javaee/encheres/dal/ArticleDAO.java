@@ -1,5 +1,6 @@
 package fr.eni.javaee.encheres.dal;
 
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,4 +37,8 @@ public interface ArticleDAO extends DAO<Article>{
 	public LocalDateTime retrieveBidStartingDateTime(Article article) throws ModelException;
 
 	public void updateItemPaymentStatus(Integer noArticle) throws ModelException;
+	
+	public List<Integer> retrieveAllUserCurrentlyOnSaleItems(Integer noUtilisateur) throws ModelException;
+	
+	public void retrieveAndDeleteAllUserSells(Integer noUtilisateur, Connection cnx) throws ModelException;
 }
