@@ -97,7 +97,7 @@
 								value="${sessionScope.articleSelectionne.prixInitial} point(s)" class="form-control" disabled />
 						</div>
 
-						<c:if test="${ sessionScope.articleSelectionne.prixVente != 0}">
+						<c:if test="${sessionScope.articleSelectionne.prixVente != 0}">
 							<div class="mb-3">
 								<label for="meilleure_offre">Meilleure offre : </label> <input id="meilleure_offre" type="text" name="meilleure_offre"
 									value="${sessionScope.articleSelectionne.prixVente} points (par ${ sessionScope.articleSelectionne.dernierEncherisseur.pseudo})"

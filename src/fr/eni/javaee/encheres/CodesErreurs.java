@@ -59,5 +59,7 @@ public abstract class CodesErreurs {
 	public static int ERREUR_SELECT_ALL_USER_BIDS = 24;
 	public static int ERREUR_DELETE_BID = 25;
 	public static int ERREUR_SELECT_ALL_ITEM_BIDS = 26;
+	public static int ERREUR_SELECT_ALL_CATEGORIES = 27;
+	public static int ERREUR_INSERT_CATEGORY = 28;
 
 }

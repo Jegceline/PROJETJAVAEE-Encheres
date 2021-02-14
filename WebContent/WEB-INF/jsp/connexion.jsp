@@ -71,8 +71,6 @@
 
 					</form>
 
-
-
 					<form action="inscription" method="get">
 
 						<div class="mb-3 col-sm-12 col-xs-12">

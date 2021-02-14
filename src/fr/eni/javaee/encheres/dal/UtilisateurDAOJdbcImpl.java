@@ -125,10 +125,10 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 				/* suppression de toutes les enchères émises par l'utilisateur */
 				((EnchereDAO) enchereDAO).retrieveAndDeleteAllUserBids(noUtilisateur, cnx);
 				
-				/* suppression de toutes les articles de l'utilisateur */
+				/* suppression de tous les articles de l'utilisateur */
 				((ArticleDAO) articleDAO).retrieveAndDeleteAllUserSells(noUtilisateur, cnx);
 				
-				/* préparation de la requête de supression de l'utilisateur */
+				/* préparation de la requête de suppression de l'utilisateur */
 				PreparedStatement query = cnx.prepareStatement(DELETE_USER);
 
 				/* valorisation du paramètre */

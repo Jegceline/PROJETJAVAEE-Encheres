@@ -21,16 +21,12 @@ public class ServletModifierProfil extends HttpServlet {
        
 	private UtilisateurManagerV2 utilisateurManager = new UtilisateurManagerV2();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/modifier-profil.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		/* On spécifie l'encodage */

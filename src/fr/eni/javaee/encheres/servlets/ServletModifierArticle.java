@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
-import fr.eni.javaee.encheres.bll.ArticleManager;
+import fr.eni.javaee.encheres.bll.ArticleManagerV2;
 import fr.eni.javaee.encheres.bo.Adresse;
 import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Categorie;
@@ -23,12 +23,11 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
  */
 @WebServlet("/membre/modifier-article")
 public class ServletModifierArticle extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
+	private ArticleManagerV2 articleManager = new ArticleManagerV2();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		/* récupérer le numéro de l'article et le mettre en session pour le rendre dispo à la méthode doPost */
@@ -40,14 +39,15 @@ public class ServletModifierArticle extends HttpServlet {
 		Article article = new Article();
 		article.setNoArticle(noArticle);
 
-		ArticleManager articleManager = new ArticleManager();
+		// ArticleManager articleManager = new ArticleManager();
 
 		try {
+			/* on vérifie que l'article n'est pas en cours de vente */
 			enchereEnCours = articleManager.controleDateDebutOuvertureEncheres(article);
 //			System.out.println("\nTEST SERVLET MODIFIER ARTICLE // enchereEnCours = " + enchereEnCours);
 
 			if (enchereEnCours) {
-				request.setAttribute("encheresOuvertes", "Vous ne pouvez pas modifier un article sur lequel les enchères sont ouvertes.");
+				request.setAttribute("venteEnCours", "Vous ne pouvez pas modifier un article sur lequel les enchères sont ouvertes.");
 			}
 
 		} catch (ModelException e) {
@@ -63,10 +63,7 @@ public class ServletModifierArticle extends HttpServlet {
 
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		/* Spécifier l'encodage */
@@ -95,8 +92,8 @@ public class ServletModifierArticle extends HttpServlet {
 
 			/* Récupérer l'objet Uilisateur présent en session */
 			Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
-			// System.out.println("\nTEST SERVLET VENTE ARTICLE // L'utilisateur qui met en
-			// vente l'article = " + utilisateur);
+			// System.out.println("\nTEST SERVLET VENTE ARTICLE // L'utilisateur qui met en vente l'article = " + utilisateur);
+			
 			Integer noUtilisateur = utilisateur.getNoUtilisateur();
 
 			/* Formatage des dates */
@@ -115,8 +112,7 @@ public class ServletModifierArticle extends HttpServlet {
 
 			/* Création d'un objet Adresse à donner à l'objet Article */
 			Adresse adresseRetrait = new Adresse(rue, codePostal, ville);
-			// System.out.println("\nTEST SERVLET VENTE ARTICLE // L'adresse de retrait est
-			// : " + adresseRetrait);
+			// System.out.println("\nTEST SERVLET VENTE ARTICLE // L'adresse de retrait est : " + adresseRetrait);
 
 			/* Création d'un objet Utilisateur à donner à l'objet Article */
 			Utilisateur vendeur = new Utilisateur();
@@ -130,18 +126,13 @@ public class ServletModifierArticle extends HttpServlet {
 
 			Article article = new Article(noArticle, nomArticle, description, dateDebutEncheres, heureDebutEncheres, dateFinEncheres,
 					heureFinEncheres, prixInitial, categorie, vendeur, adresseRetrait);
-			// System.out.println("\nTEST SERVLET ARTICLE // L'article à vendre est : " +
-			// article);
+			// System.out.println("\nTEST SERVLET ARTICLE // L'article à vendre est : " + article);
 
 			/* Appeler le manager */
-			ArticleManager articleManager = new ArticleManager();
+			// ArticleManager articleManager = new ArticleManager();
 
 			try {
 				articleManager.metAJourArticle(article);
-				// request.setAttribute("succesModificationsArticle", "Vos modifications ont
-				// bien été prises en compte.");
-				// request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/accueil.jsp").forward(request,
-				// response);
 				response.sendRedirect(request.getContextPath()
 						+ "/accueil?succesModificationsArticle=Vos modifications ont bien %C3%A9t%C3%A9 prises en compte.");
 
@@ -160,7 +151,7 @@ public class ServletModifierArticle extends HttpServlet {
 			Integer noArticle = (Integer) request.getSession().getAttribute("noArticle");
 
 			/* Appeler le manager */
-			ArticleManager articleManager = new ArticleManager();
+			// ArticleManager articleManager = new ArticleManager();
 
 			try {
 				articleManager.supprimerArticle(noArticle);

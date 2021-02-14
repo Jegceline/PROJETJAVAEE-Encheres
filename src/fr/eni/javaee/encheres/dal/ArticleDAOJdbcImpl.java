@@ -451,7 +451,7 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 				e.printStackTrace();
 
 				modelDalException.ajouterErreur(CodesErreurs.ERREUR_INSERTION_SQL, "L'exécution de la requête SELECT_USER_PURCHASED_ITEMS a échoué.");
-				// System.out.println("L'exécution d'une des requêtes SELECT_USER_PURCHASED_ITEMS a échoué !");
+				// System.out.println("L'exécution d'une des requêtes de retrieveUserPurchasedItems a échoué !");
 
 				throw modelDalException;
 
@@ -1146,6 +1146,9 @@ public class ArticleDAOJdbcImpl implements ArticleDAO {
 
 	}
 
+	/**
+	 * récupère et supprime toutes les enchères émises par un utilisateur 
+	 */
 	public void retrieveAndDeleteAllUserSells(Integer noUtilisateur, Connection cnx) throws ModelException {
 
 		try {

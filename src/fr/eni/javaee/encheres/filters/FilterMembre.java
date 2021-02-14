@@ -18,19 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 @WebFilter("/membre/*")
 public class FilterMembre implements Filter {
 	
-	public static final String SESSION_UTILISATEUR = "profilUtilisateur";
-
     public FilterMembre() {
     }
-
 
 	public void destroy() {
 	}
 
-
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 
-		 /* Cast des objets request et response */
+		 /* cast des objets request et response */
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
@@ -38,20 +34,18 @@ public class FilterMembre implements Filter {
          * Si l'objet utilisateur n'existe pas dans la session en cours, alors
          * l'utilisateur n'est pas connecté.
          */
-        if ( request.getSession().getAttribute(SESSION_UTILISATEUR) == null ) {
+        if (request.getSession().getAttribute("profilUtilisateur") == null ) {
         	
-            /* Redirection vers la page publique */
+            /* redirection vers la page de connexion */
             response.sendRedirect( request.getContextPath()+"/connexion");
             
         } else {
-            /* Affichage de la page restreinte */
+            /* affichage de la page restreinte */
             chain.doFilter( request, response );
         }
 	}
 
 	public void init(FilterConfig fConfig) throws ServletException {
-		
-       
 	}
 
 }

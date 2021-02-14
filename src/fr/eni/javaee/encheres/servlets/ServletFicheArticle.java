@@ -32,7 +32,6 @@ public class ServletFicheArticle extends HttpServlet {
 	// voire la version 2 du manager des articles
 	
 	private ArticleManagerV2 articleManager = new ArticleManagerV2();
-	
 
 	/**
 	 * demande au manager si les enchères sont ouvertes ou clôturées (l'état des
@@ -56,7 +55,7 @@ public class ServletFicheArticle extends HttpServlet {
 		
 		Article article = null;
 
-		/* Appeler le manager pour récupérer les infos de l'objet */
+		/* Appeler le manager pour récupérer les infos de l'article */
 		try {
 			article = articleManager.recupereArticle(noArticle);
 			
@@ -135,8 +134,8 @@ public class ServletFicheArticle extends HttpServlet {
 	}
 
 	/**
-	 * cette méthode peut être appelée par les boutons enchérir et modifier de la
-	 * page detail-article.jsp
+	 * la méthode doPost peut être appelée soit par le bouton enchérir 
+	 * soit par le bouton modifier de la page detail-article.jsp
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

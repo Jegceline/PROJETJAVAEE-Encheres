@@ -17,15 +17,12 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
  */
 @WebServlet("/membre/paiement")
 public class ServletPaiement extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
+	private UtilisateurManagerV2 utilisateurManager = new UtilisateurManagerV2();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		UtilisateurManagerV2 utilisateurManager = new UtilisateurManagerV2();
 		
 		Utilisateur utilisateurSession = (Utilisateur) request.getSession().getAttribute("profilUtilisateur");
 		
@@ -41,10 +38,7 @@ public class ServletPaiement extends HttpServlet {
 		response.sendRedirect(request.getContextPath() + "/accueil");
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}

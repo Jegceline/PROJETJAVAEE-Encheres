@@ -96,7 +96,7 @@ public class ArticleManagerV2 {
 			}
 		} else { /* si est des paramètres n'est pas ok */
 
-			article = null;
+			// article = null;
 			throw modelBllException;
 		}
 
@@ -173,7 +173,7 @@ public class ArticleManagerV2 {
 					"La date d'ouverture des enchères ne peut être antérieure à la date du jour.");
 		}
 
-		if (dateFinEncheres.isBefore(dateFinEncheres)) {
+		if (dateFinEncheres.isBefore(dateDebutEncheres)) {
 			modelBllException.ajouterErreur(CodesErreurs.ERREUR_ARTICLE_DATE_FIN_ENCHERES_INVALIDE,
 					"La date de fin des enchères ne peut être antérieure à la date d'ouverture des enchères.");
 		}

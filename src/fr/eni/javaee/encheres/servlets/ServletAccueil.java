@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
 import fr.eni.javaee.encheres.bll.ArticleManagerV2;
+import fr.eni.javaee.encheres.bll.CategorieManager;
 import fr.eni.javaee.encheres.bo.Article;
+import fr.eni.javaee.encheres.bo.Categorie;
 import fr.eni.javaee.encheres.bo.Trieur;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
@@ -24,6 +26,7 @@ public class ServletAccueil extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	private ArticleManagerV2 articleManager = new ArticleManagerV2();
+	private CategorieManager categorieManager = new CategorieManager();
 
 	/** 
 	 * retourne les articles pour lequels les enchères sont ouvertes cette méthode est appelée par l'url /accueil de la servlet
@@ -32,15 +35,18 @@ public class ServletAccueil extends HttpServlet {
 
 		/* Spécifier l'encodage */
 		request.setCharacterEncoding("UTF-8");
-		List<Article> listesEncheresEC = null;
-
-		/* Appeler le manager pour récupérer la liste des articles en cours de vente */
+		
+		/* Appeler les managers pour récupérer la liste des articles en cours de vente et la liste des catégories */
 		// ArticleManager articleManager = new ArticleManager();
 		
 		try {
-			listesEncheresEC = articleManager.recupereArticlesEncheresOuvertesGet();
+			List<Article> listesEncheresEC = articleManager.recupereArticlesEncheresOuvertesGet();
 			request.setAttribute("encheresOuvertes", listesEncheresEC);
 			// System.out.println("\nTEST SERVLET ACCUEIL doGet // Un attribut encheresOuvertes a été créé.");
+			
+			List<Categorie> listeCategories = categorieManager.recupereCategories();
+			request.getSession().setAttribute("categories", listeCategories);
+			// System.out.println("\nTEST SERVLET ACCUEIL doGet // Un attribut categories a été créé.");
 
 		} catch (ModelException e) {
 			e.printStackTrace();

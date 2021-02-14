@@ -23,11 +23,9 @@
 			<h2 class="mt-4">Modifier mon profil</h2>
 			<hr>
 
-
 			<c:forEach var="couple" items="${ mapErreurs }">
 				<div class="alert alert-danger" role="alert">${couple.value}</div>
 			</c:forEach>
-
 
 			<form action="<%=request.getContextPath()%>/membre/modifier-profil" method="POST">
 

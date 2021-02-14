@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.eni.javaee.encheres.ModelException;
-import fr.eni.javaee.encheres.bll.ArticleManager;
+import fr.eni.javaee.encheres.bll.ArticleManagerV2;
+import fr.eni.javaee.encheres.bll.CategorieManager;
 import fr.eni.javaee.encheres.bo.Adresse;
 import fr.eni.javaee.encheres.bo.Article;
 import fr.eni.javaee.encheres.bo.Categorie;
@@ -23,20 +25,29 @@ import fr.eni.javaee.encheres.bo.Utilisateur;
  */
 @WebServlet("/membre/vente-article")
 public class ServletVenteArticle extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
+	private ArticleManagerV2 articleManager = new ArticleManagerV2();
+	private CategorieManager categorieManager = new CategorieManager();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		/* Chargement des catégories */
+		try {
+			List<Categorie> listeCategories = categorieManager.recupereCategories();
+			request.getSession().setAttribute("categories", listeCategories);
+			// System.out.println("\nTEST SERVLET ACCUEIL doGet // Un attribut categories a été créé.");
+
+		} catch (ModelException e) {
+			e.printStackTrace();
+			request.setAttribute("mapErreurs", e.getMapErreurs());
+		}
+		
 		request.getServletContext().getRequestDispatcher("/WEB-INF/jsp/membre/vendre-article.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		/* Spécifier l'encodage */
@@ -92,12 +103,10 @@ public class ServletVenteArticle extends HttpServlet {
 		/* Création d'un objet Article */
 		Article article = new Article(nomArticle, description, dateDebutEncheres, heureDebutEncheres, dateFinEncheres, heureFinEncheres,
 				prixInitial, categorie, vendeur, adresseRetrait);
-		// System.out.println("\nTEST SERVLET ARTICLE // L'article à ajouter aux
-		// articles à vendre est : " + article);
+		// System.out.println("\nTEST SERVLET ARTICLE // L'article qui sera envoyé au DAO : " + article);
 
 		/* Appeler le manager */
-
-		ArticleManager articleManager = new ArticleManager();
+		// ArticleManager articleManager = new ArticleManager();
 
 		try {
 			articleManager.ajouteArticle(article);

@@ -1,10 +1,12 @@
 <label for="categorie" class="form-label my-2">Catégorie : </label>
 
-<select name="no_categorie" id="categorie" class="form-control mb-3" aria-label=".form-select-lg example" required>
-				<option value="0">Sélectionnez une catégorie</option>
-				<option value="1" <c:if test="${ article.categorie.noCategorie == 1 || param.categorie == 1}">selected</c:if> <c:if test="${param.no_categorie == 1}">selected</c:if> >Informatique</option>
-				<option value="2" <c:if test="${ article.categorie.noCategorie == 2}">selected</c:if> <c:if test="${param.no_categorie == 2}">selected</c:if> >Ameublement</option>
-				<option value="3" <c:if test="${ article.categorie.noCategorie == 3}">selected</c:if> <c:if test="${param.no_categorie == 3}">selected</c:if> >Sports & Loisirs</option>
-				<option value="4" <c:if test="${ article.categorie.noCategorie == 4}">selected</c:if> <c:if test="${param.no_categorie == 4}">selected</c:if> >Vêtements</option>
-			</select>
-			
+<select name="no_categorie" id="categorie" class="form-control mb-3" aria-label=".form-select-lg example" required <c:if test="${not empty venteEnCours}">disabled</c:if> >
+	<option value="0">Sélectionnez une catégorie</option>
+
+	<c:forEach var="categorie" items="${sessionScope.categories}">
+		<option value="${categorie.noCategorie}"
+			<c:if test="${article.categorie.noCategorie == categorie.noCategorie || param.categorie == categorie.noCategorie}">selected</c:if>
+			<c:if test="${param.no_categorie == categorie.noCategorie}">selected</c:if>> ${categorie.libelle} </option>
+	</c:forEach>
+
+</select>

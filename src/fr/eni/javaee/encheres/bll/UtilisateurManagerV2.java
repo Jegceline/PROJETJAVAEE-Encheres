@@ -97,11 +97,13 @@ public class UtilisateurManagerV2 {
 
 	public void supprimeUtilisateur(Integer noUtilisateur) throws ModelException {
 		
-		// L'utilisateur peut supprimer son compte s'il n'a aucune enchère en cours
-		// ET s'il n'a aucune vente en cours
+		// L'utilisateur peut supprimer son compte que s'il n'a aucune enchère en cours
+		// ET qu'il n'a aucune vente en cours
 		
+		ModelException modelBllException = new ModelException();
 		boolean userHaveBidsOnCurrentlyOnSaleItems = false;
 		boolean userHaveItemsCurrentlyOnSale = false;
+		boolean userHaveSoldItemsOrWonItems = true;
 		List<Integer> listeNoEncheres;
 		List<Integer> listeNoArticles;
 		
@@ -119,16 +121,26 @@ public class UtilisateurManagerV2 {
 				userHaveItemsCurrentlyOnSale = true;
 			}
 			
-			/* si l'utilisateur n'a aucune enchère d'émise sur des articles actuellement en vente et s'il n'a aucune vente en cours */
-			if(!userHaveBidsOnCurrentlyOnSaleItems && !userHaveItemsCurrentlyOnSale) {
+			/* si l'utilisateur a émis ne serait-ce qu'une enchère sur un article actuellement en vente ou s'il a une vente en cours */
+			if(userHaveBidsOnCurrentlyOnSaleItems || userHaveItemsCurrentlyOnSale) {
 				
-				/* alors il peut être supprimé */
-				utilisateurDAO.delete(noUtilisateur);
-				
-			} else {
-				ModelException modelBllException = new ModelException();
+				/* il n'a pas le droit de supprimer son compte */
 				modelBllException.ajouterErreur(CodesErreurs.ERREUR_SUPPRESSION_UTILISATEUR, "Vous ne pouvez pas supprimer votre compte si vous avez des enchères ou des ventes en cours.");
 				throw modelBllException;
+			
+			} else { /* s'il n'a pas émis d'enchères sur des articles en cours de vente et s'il n'a pas de ventes en cours */
+				
+				/* alors s'il n'a PAS d'articles vendus ou remportés*/
+				if(!userHaveSoldItemsOrWonItems) {
+					
+					/* il peut supprimer son compte */
+					utilisateurDAO.delete(noUtilisateur);
+					
+				} else { /* en revanche, s'il a déjà vendu des articles ou remporté ne serait-ce qu'un article */
+					
+					/* alors on effectue une pseudo-suppression pour ne pas avoir à supprimer les articles en question */
+				}
+
 			}
 				
 		} catch (ModelException e) {

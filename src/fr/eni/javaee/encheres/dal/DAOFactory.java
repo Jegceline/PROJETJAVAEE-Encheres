@@ -1,6 +1,7 @@
 package fr.eni.javaee.encheres.dal;
 
 import fr.eni.javaee.encheres.bo.Article;
+import fr.eni.javaee.encheres.bo.Categorie;
 import fr.eni.javaee.encheres.bo.Enchere;
 import fr.eni.javaee.encheres.bo.Utilisateur;
 
@@ -23,6 +24,10 @@ public abstract class DAOFactory {
 	
 	public static DAO<Enchere> getEnchereDAO(){
 		return new EnchereDAOJdbcImpl();
+	}
+	
+	public static DAO<Categorie> getCategorieDAO(){
+		return new CategorieDAOJdbcImpl();
 	}
 
 }

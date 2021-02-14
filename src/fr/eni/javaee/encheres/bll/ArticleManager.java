@@ -392,8 +392,7 @@ public class ArticleManager {
 
 			try {
 				listeSelectionArticles = ((ArticleDAO) articleDAO).retrieveUserPurchasedItems(trieur);
-				// System.out.println("\nTEST MANAGER ARTICLE trieEtRecupereArticles //
-				// listeSelectionArticles = " + listeSelectionArticles);
+				// System.out.println("\nTEST MANAGER ARTICLE trieEtRecupereArticles // listeSelectionArticles = " + listeSelectionArticles);
 
 			} catch (ModelException e) {
 				e.printStackTrace();
